@@ -171,7 +171,7 @@
   .card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
   .card h3 { margin: 0 0 8px; font-size: 12.5px; color: var(--text-secondary); font-weight: 600; }
   .kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; padding: 2px 0; }
-  .kv .k { color: var(--text-muted); flex-shrink: 0; }
+  .kv .k { color: var(--text-muted); min-width: 0; overflow-wrap: anywhere; }
   .kv .v { font-variant-numeric: tabular-nums; text-align: right; min-width: 0; overflow-wrap: anywhere; }
   .kv.total { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 6px; font-weight: 600; }
   .comp { margin: 6px 0; }
@@ -1321,8 +1321,8 @@ function detailHTML(r) {
       <div class="kv"><span class="k">Talent Quality</span><span class="v">${fmt1(bpAll.talent)}</span></div>
       <div class="kv"><span class="k">Media Visibility</span><span class="v">${fmt1(bpAll.media)}</span></div>
       ${bpAll.official ? `
-      <div class="kv total"><span class="k">Official NIRF Perception (PR) survey score${c.prYear ? ` — ${c.prYear}` : ""}</span><span class="v">${fmt2(c.pr)} / 100</span></div>
-      <div class="kv total"><span class="k">Brand Perception Index (official PR, rescaled — used in core score)</span><span class="v">${fmt1(r.bp)}</span></div>
+      <div class="kv total"><span class="k">Official NIRF PR survey score${c.prYear ? ` (${c.prYear})` : ""}</span><span class="v">${fmt2(c.pr)} / 100</span></div>
+      <div class="kv total"><span class="k">Brand Perception Index (official PR, rescaled)</span><span class="v">${fmt1(r.bp)}</span></div>
       <p class="note">NIRF surveys employers and academic peers for its Perception (PR) parameter.
       The official score is rescaled onto this dashboard's 0–100 brand scale (raw PR is heavily
       skewed toward the IITs) and used as the index. The six sub-factors above remain indicative
