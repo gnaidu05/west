@@ -1,0 +1,16 @@
+
+=== accreditation status page
+https://www.naac.gov.in/index.php/en/2-uncategorised/32-accreditation-status
+ERROR HTTPSConnectionPool(host='www.naac.gov.in', port=443): Max retries exceeded with url: /index.php/en/2-uncategorised/32-accreditation-status (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.naac.gov.in', port=443) at 0x7effccbe65a0>, 'Connection to www.naac.gov.in timed out. (connect timeout=60)'))
+
+=== accreditation results quick link
+https://www.naac.gov.in/index.php/en/19-quick-links/62-accreditationresults
+ERROR HTTPSConnectionPool(host='www.naac.gov.in', port=443): Max retries exceeded with url: /index.php/en/19-quick-links/62-accreditationresults (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.naac.gov.in', port=443) at 0x7effcc7f04d0>, 'Connection to www.naac.gov.in timed out. (connect timeout=60)'))
+
+=== assessmentonline results (searchable)
+https://assessmentonline.naac.gov.in/public/index.php/accreditationresults
+ERROR HTTPSConnectionPool(host='assessmentonline.naac.gov.in', port=443): Max retries exceeded with url: /public/index.php/accreditationresults (Caused by ConnectTimeoutError(<HTTPSConnection(host='assessmentonline.naac.gov.in', port=443) at 0x7effcc7f0bf0>, 'Connection to assessmentonline.naac.gov.in timed out. (connect timeout=60)'))
+
+=== assessmentonline HEI dashboard
+https://assessmentonline.naac.gov.in/public/index.php/hei_dashboard
+ERROR HTTPSConnectionPool(host='assessmentonline.naac.gov.in', port=443): Max retries exceeded with url: /public/index.php/hei_dashboard (Caused by ConnectTimeoutError(<HTTPSConnection(host='assessmentonline.naac.gov.in', port=443) at 0x7effccb684d0>, 'Connection to assessmentonline.naac.gov.in timed out. (connect timeout=60)'))
