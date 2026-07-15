@@ -349,11 +349,11 @@
       <div class="fields">
         <div class="field wide"><label for="f_name">College name *</label>
           <input id="f_name" required list="nirfNames" autocomplete="off"
-            placeholder="start typing — official NIRF institutes appear as suggestions">
+            placeholder="start typing — West-zone NIRF institutes appear as suggestions">
           <datalist id="nirfNames"></datalist></div>
         <div class="field wide dup-warn" id="dupWarn" hidden></div>
         <div class="field wide"><label for="f_loc">Location *</label>
-          <input id="f_loc" placeholder='e.g. "Mysuru, Karnataka" or "Karnataka, Mysuru"'>
+          <input id="f_loc" placeholder='e.g. "Pune, Maharashtra" — West-zone states only'>
           <span class="sub-hint" id="locPreview"></span></div>
         <div class="field"><label for="f_type">Type</label>
           <input id="f_type" placeholder="e.g. Private (Autonomous)"></div>
@@ -915,13 +915,16 @@ const NIRF_DIRECTORY = [{"n":"ABES Engineering College","c":"Ghaziabad","s":"Utt
 /* NIRF_DIRECTORY_END */
 
 const nirfNorm = s => String(s).toLowerCase().replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
+/* The Add College form only offers (and accepts) West-zone campuses. */
+const WEST_STATES = new Set(["Maharashtra", "Gujarat", "Goa"]);
+const NIRF_WEST = NIRF_DIRECTORY.filter(e => WEST_STATES.has(e.s));
 function nirfMatches(query, limit = 3) {
   const q = nirfNorm(query);
   if (q.length < 4) return [];
   const qTokens = q.split(" ").filter(t => t.length > 1);
   if (!qTokens.length) return [];
   const scored = [];
-  for (const e of NIRF_DIRECTORY) {
+  for (const e of NIRF_WEST) {
     const hay = nirfNorm(e.n + " " + (e.c || ""));
     let hit = 0;
     for (const t of qTokens) if (hay.includes(t)) hit++;
@@ -1653,6 +1656,12 @@ function validateForm(c) {
     if (clash) return "A college with this exact name already exists — names must be unique.";
   }
   if (!c.loc) return "Location is required (it drives city, state and zone).";
+  const loc = resolveLocation(c);
+  if (loc.zone !== "West") {
+    return loc.zone === "Unknown"
+      ? `Could not resolve "${c.loc}" to a state — use "City, State" with a West-zone state (Maharashtra, Gujarat or Goa).`
+      : `This dashboard tracks West-zone campuses only — "${c.loc}" resolves to the ${loc.zone} zone. Only Maharashtra, Gujarat and Goa colleges can be added.`;
+  }
   return "";
 }
 
@@ -1781,12 +1790,12 @@ F("dupWarn").addEventListener("click", handleEditRemoveClick);
 function renderNirfSuggestions() {
   const box = F("nirfSuggest");
   const name = editBaseName ?? F("f_name").value;
-  const exact = NIRF_DIRECTORY.some(d => nirfNorm(d.n) === nirfNorm(name));
+  const exact = NIRF_WEST.some(d => nirfNorm(d.n) === nirfNorm(name));
   const matches = exact ? [] : nirfMatches(name);
   if (!matches.length) { box.hidden = true; box.innerHTML = ""; return; }
   const fmtR = v => v === null || v === undefined ? "—" : v;
   box.hidden = false;
-  box.innerHTML = `<div class="nirf-chips"><span class="nlabel">NIRF engineering rankings — click to fill location & ranks:</span>` +
+  box.innerHTML = `<div class="nirf-chips"><span class="nlabel">West-zone NIRF institutes — click to fill location & ranks:</span>` +
     matches.map((e, i) => `<button type="button" class="nirf-chip" data-nirf="${i}"
       title="${esc(e.n)} — fills location (${esc(e.c || "")}, ${esc(e.s || "")}) and the 2025/2024/2023 ranks">
       ${esc(e.n.length > 44 ? e.n.slice(0, 43) + "…" : e.n)} <b>'25: ${fmtR(e.r25)} · '24: ${fmtR(e.r24)} · '23: ${fmtR(e.r23)}</b></button>`).join("") +
@@ -1801,7 +1810,7 @@ function applyNirfEntry(m, setName) {
   // fill the location unless the user typed a custom one (a value matching a
   // directory "City, State" was auto-filled, so switching names may update it)
   const loc = F("f_loc").value.trim().toLowerCase();
-  const wasAuto = !loc || NIRF_DIRECTORY.some(d => `${d.c}, ${d.s}`.toLowerCase() === loc);
+  const wasAuto = !loc || NIRF_WEST.some(d => `${d.c}, ${d.s}`.toLowerCase() === loc);
   if (m.c && m.s && wasAuto) F("f_loc").value = `${m.c}, ${m.s}`;
   F("nirfSuggest").hidden = true;
   F("nirfSuggest").innerHTML = "";
@@ -1816,12 +1825,12 @@ F("nirfSuggest").addEventListener("click", e => {
 // populate the name field's native autocomplete with the official institute names
 (() => {
   const dl = F("nirfNames");
-  dl.innerHTML = NIRF_DIRECTORY.map(e => `<option value="${esc(e.n)}">`).join("");
+  dl.innerHTML = NIRF_WEST.map(e => `<option value="${esc(e.n)}">`).join("");
 })();
 els.form.addEventListener("input", e => {
   els.formError.classList.remove("ok"); els.formError.textContent = "";
   if (e.target && e.target.id === "f_name") {
-    const exact = NIRF_DIRECTORY.find(d => nirfNorm(d.n) === nirfNorm(F("f_name").value));
+    const exact = NIRF_WEST.find(d => nirfNorm(d.n) === nirfNorm(F("f_name").value));
     if (exact) { applyNirfEntry(exact, false); return; }  // picked from the list -> just fill
     renderNirfSuggestions();
     renderDupWarn();
