@@ -33,9 +33,31 @@ ROW_TAIL = re.compile(
     r"\s*<td[^>]*>\s*([\d.]+)\s*</td>\s*<td[^>]*>\s*(\d+)\s*</td>\s*</tr>", re.I)
 
 
+def extract_pr(part):
+    """Perception (PR) score from the row's nested parameter table.
+    The details table has headers like "TLR (100)" ... "PERCEPTION (100)"
+    followed by a row of values; take the value under the perception column."""
+    ths = re.findall(r"<th[^>]*>\s*(.*?)\s*</th>", part, re.S)
+    idx = next((i for i, t in enumerate(ths)
+                if "PERCEPTION" in t.upper() or re.match(r"PR\s*\(", t.strip(), re.I)), None)
+    if idx is None:
+        return None
+    m = re.search(r"</thead>\s*<tbody[^>]*>\s*<tr[^>]*>(.*?)</tr>", part, re.S)
+    if not m:
+        return None
+    tds = re.findall(r"<td[^>]*>\s*([\d.]+)\s*</td>", m.group(1))
+    if idx < len(tds):
+        try:
+            return float(tds[idx])
+        except ValueError:
+            return None
+    return None
+
+
 def parse_ranked(html):
     out = []
     parts = re.split(r"(?=<tr[^>]*>\s*<td[^>]*>\s*IR-)", html)
+    first_diag = True
     for part in parts[1:]:
         m = re.match(r"<tr[^>]*>\s*<td[^>]*>\s*(IR-[A-Za-z0-9-]+)\s*</td>\s*<td[^>]*>\s*([^<]+)", part)
         if not m:
@@ -45,7 +67,12 @@ def parse_ranked(html):
         if not name or not tails:
             continue
         city, state, _score, rank = tails[-1]
-        out.append((name, city.strip(), state.strip(), int(rank)))
+        pr = extract_pr(part)
+        if pr is None and first_diag:
+            first_diag = False
+            print("    DIAG no PR in first row; excerpt: "
+                  + re.sub(r"\s+", " ", part[:1200]))
+        out.append((name, city.strip(), state.strip(), int(rank), pr))
     return out
 
 
@@ -58,7 +85,7 @@ def parse_band(html, band):
         name, city, state = (re.sub(r"\s+", " ", g).strip() for g in m.groups())
         if len(name) < 4 or name.replace(".", "").isdigit():
             continue
-        out.append((name, city, state, band))
+        out.append((name, city, state, band, None))
     return out
 
 
@@ -87,11 +114,17 @@ def main():
                 body = resp.text.split("<tbody", 1)[-1]
                 print("    DIAG tbody head: " + re.sub(r"\s+", " ", body[:600]))
             year_rows += len(rows)
-            for name, city, state, rank in rows:
+            prs = sum(1 for r in rows if r[4] is not None)
+            if band is None:
+                print(f"    perception scores parsed: {prs}/{len(rows)}")
+            for name, city, state, rank, pr in rows:
                 key = norm(name) + "|" + norm(city)
                 e = merged.setdefault(key, {"n": name, "c": city, "s": state,
-                                            "r25": None, "r24": None, "r23": None})
+                                            "r25": None, "r24": None, "r23": None,
+                                            "p25": None, "p24": None, "p23": None})
                 e[f"r{year % 100}"] = rank
+                if pr is not None:
+                    e[f"p{year % 100}"] = pr
         counts[year] = year_rows
         if year_rows < 95:
             print(f"SANITY FAIL: only {year_rows} rows parsed for {year}")
