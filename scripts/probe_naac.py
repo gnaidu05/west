@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Probe official NAAC sources for a machine-readable accreditation list.
 Writes findings to probe/naac_probe.txt (committed by the probe workflow)."""
+import os
 import re
 import requests
 
@@ -46,6 +47,7 @@ probe("https://assessmentonline.naac.gov.in/public/index.php/accreditationresult
 probe("https://assessmentonline.naac.gov.in/public/index.php/hei_dashboard",
       "assessmentonline HEI dashboard", grab="ajax")
 
+os.makedirs("probe", exist_ok=True)
 with open("probe/naac_probe.txt", "w") as f:
     f.write("\n".join(out) + "\n")
 print("\n".join(out))
