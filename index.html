@@ -445,7 +445,7 @@
       <div id="zoneChart"></div>
     </div>
     <div class="visual chartbox">
-      <p class="vtitle">Colleges by CG Priority <span class="vhint">· click to filter</span></p>
+      <p class="vtitle">Colleges by SPOC <span class="vhint">· click to filter</span></p>
       <div id="cgChart"></div>
     </div>
     <div class="visual chartbox">
@@ -468,7 +468,7 @@
   <div id="catView" class="vgroup" hidden>
     <div class="visual cat-toolbar">
       <div class="slicers">
-        <p class="vtitle" style="margin:0">College catalogue <span class="vhint">· priority tiers, then zone · filters, bonus toggles and cutoffs are chosen on the Dashboard tab</span></p>
+        <p class="vtitle" style="margin:0">College catalogue <span class="vhint">· SPOC portfolios, then state · filters and bonus toggles are chosen on the Dashboard tab</span></p>
         <label class="control" style="margin-left:auto"><input type="checkbox" id="hideTest" checked> Hide test colleges</label>
         <button class="btn" id="printBtn" type="button">Print / Save PDF</button>
       </div>
@@ -1080,6 +1080,7 @@ function populateFilters() {
   for (const g of ["NA","P1","P2"]) els.cg.add(new Option(g));
   for (const s of [...new Set(COLLEGES.map(c => c.spoc).filter(Boolean))].sort())
     els.spoc.add(new Option(s));
+  els.spoc.add(new Option("Unassigned"));
 }
 const zoneMatch = z => zoneSet.size === 0 || zoneSet.has(z);
 function salaryBounds() {
@@ -1097,17 +1098,20 @@ function viewSets() {
     || r.tpo.toLowerCase().includes(q) || r.spoc.toLowerCase().includes(q);
   const byZone = r => zoneMatch(r.state);
   const byCg = r => els.cg.value === "All" || r.cg === els.cg.value;
-  const bySpoc = r => els.spoc.value === "All" || r.spoc === els.spoc.value;
+  const bySpoc = r => els.spoc.value === "All"
+    || (els.spoc.value === "Unassigned" ? !r.spoc : r.spoc === els.spoc.value);
   const { lo, hi } = salaryBounds();
   const bySalary = r => {
     if (lo === null && hi === null) return true;
     if (typeof r.raw.med !== "number") return false;
     return (lo === null || r.raw.med >= lo) && (hi === null || r.raw.med <= hi);
   };
-  const searched = ordered.filter(bySearch).filter(bySalary).filter(bySpoc);
-  const view = searched.filter(byZone).filter(byCg);
+  const searched = ordered.filter(bySearch).filter(bySalary);
+  const view = searched.filter(byZone).filter(byCg).filter(bySpoc);
   view.forEach((r, k) => r.rank = k + 1); // rank is the position within the filtered view
-  return { all: rows, view, forZoneChart: searched.filter(byCg), forCgChart: searched.filter(byZone) };
+  return { all: rows, view,
+           forZoneChart: searched.filter(byCg).filter(bySpoc),
+           forSpocChart: searched.filter(byZone).filter(byCg) };
 }
 
 function buildHead() {
@@ -1205,10 +1209,16 @@ function donutArc(cx, cy, rOut, rIn, a0, a1) {
   return `M ${p(rOut, a0)} A ${rOut} ${rOut} 0 ${large} 1 ${p(rOut, a1)} L ${p(rIn, a1)} A ${rIn} ${rIn} 0 ${large} 0 ${p(rIn, a0)} Z`;
 }
 
-function cgChartHTML(rows) {
-  const sel = els.cg.value;
-  const order = ["P1", "P2", "NA"];
-  const counts = order.map(g => ({ g, n: rows.filter(r => r.cg === g).length })).filter(d => d.n > 0);
+const SPOC_COLORS = ["#2a78d6", "#0b8457", "#b4009e", "#ca5010", "#5c2d91", "#038387"];
+const spocKey = r => r.spoc || "Unassigned";
+const spocOrder = (a, b) => (a === "Unassigned") - (b === "Unassigned") || a.localeCompare(b);
+const spocColor = (name, names) =>
+  name === "Unassigned" ? "var(--cat-na)" : SPOC_COLORS[names.filter(n => n !== "Unassigned").indexOf(name) % SPOC_COLORS.length];
+
+function spocChartHTML(rows) {
+  const sel = els.spoc.value;
+  const names = [...new Set(rows.map(spocKey))].sort(spocOrder);
+  const counts = names.map(g => ({ g, n: rows.filter(r => spocKey(r) === g).length })).filter(d => d.n > 0);
   const total = counts.reduce((a,d) => a + d.n, 0);
   if (!total) return `<div class="empty">No colleges match</div>`;
   const cx = 85, cy = 85, rOut = 78, rIn = 50, gapA = 0.035;
@@ -1217,8 +1227,8 @@ function cgChartHTML(rows) {
     const span = d.n / total * Math.PI * 2;
     const pad = counts.length > 1 ? gapA : 0.0001;
     const dim = sel !== "All" && d.g !== sel ? " dim" : "";
-    svg += `<path class="mark${dim}" data-cg="${d.g}" d="${donutArc(cx, cy, rOut, rIn, a + pad/2, a + span - pad/2)}"
-      fill="${CAT[d.g]}" data-tip="${d.g} — <b>${d.n}</b> college${d.n>1?"s":""} (${Math.round(d.n/total*100)}%)"></path>`;
+    svg += `<path class="mark${dim}" data-spoc="${esc(d.g)}" d="${donutArc(cx, cy, rOut, rIn, a + pad/2, a + span - pad/2)}"
+      fill="${spocColor(d.g, names)}" data-tip="${esc(d.g)} — <b>${d.n}</b> college${d.n>1?"s":""} (${Math.round(d.n/total*100)}%)"></path>`;
     if (d.n / total > 0.09) { // direct label inside the segment
       const mid = a + span / 2, lr = (rOut + rIn) / 2;
       svg += `<text x="${cx + lr * Math.cos(mid)}" y="${cy + lr * Math.sin(mid) + 4}" text-anchor="middle"
@@ -1229,9 +1239,9 @@ function cgChartHTML(rows) {
   svg += `<text x="${cx}" y="${cy - 2}" text-anchor="middle" font-size="22" font-weight="600" fill="var(--text-primary)">${total}</text>
     <text x="${cx}" y="${cy + 15}" text-anchor="middle" font-size="10" fill="var(--text-muted)">colleges</text></svg>`;
   const legend = counts.map(d => `
-    <div class="li${sel !== "All" && d.g !== sel ? " dim" : ""}" data-cg="${d.g}">
-      <span class="dot" style="background:${CAT[d.g]}"></span>
-      <span>${d.g === "NA" ? "NA (no CG priority)" : d.g}</span><span class="lval">${d.n}</span>
+    <div class="li${sel !== "All" && d.g !== sel ? " dim" : ""}" data-spoc="${esc(d.g)}">
+      <span class="dot" style="background:${spocColor(d.g, names)}"></span>
+      <span>${esc(d.g)}</span><span class="lval">${d.n}</span>
     </div>`).join("");
   return `<div class="donutwrap">${svg}<div class="legend">${legend}</div></div>`;
 }
@@ -1320,27 +1330,7 @@ function detailHTML(r) {
 }
 
 /* ================= catalogue view ================= */
-/* Tier cutoffs are the business's call — editable live in the toolbar. */
-const CUT_DEFAULTS = { c1: 70, c2: 55, c3: 40 };
-const ECON_DEFAULT = 8; // value-matrix "economical" median salary threshold, in lakhs
-const ECON_KEY = "westCollegeDashboard.econCutoff.v1";
-let econCut = ECON_DEFAULT;
-try { const v = parseFloat(localStorage.getItem(ECON_KEY)); if (isFinite(v) && v > 0) econCut = v; } catch (e) {}
-const CUT_KEY = "westCollegeDashboard.tierCutoffs.v1";
-let cutoffs = { ...CUT_DEFAULTS };
-try { cutoffs = { ...CUT_DEFAULTS, ...(JSON.parse(localStorage.getItem(CUT_KEY)) || {}) }; } catch (e) {}
-const saveCutoffs = () => { try { localStorage.setItem(CUT_KEY, JSON.stringify(cutoffs)); } catch (e) {} };
-
-function tiersFor({ c1, c2, c3 }) {
-  return [
-    { name: "Tier 1 — Invest",    range: `score ${c1}+`,        desc: "Flagship campuses: full engagement calendar", test: t => t >= c1 },
-    { name: "Tier 2 — Engage",    range: `score ${c2}–${c1}`,   desc: "Strong pipeline: targeted drives",            test: t => t >= c2 && t < c1 },
-    { name: "Tier 3 — Selective", range: `score ${c3}–${c2}`,   desc: "Specific roles and volumes only",             test: t => t >= c3 && t < c2 },
-    { name: "Tier 4 — Monitor",   range: `score <${c3}`,        desc: "Watch list: revisit next cycle",              test: t => t < c3 },
-  ];
-}
 const isTestCollege = n => /^test college/i.test(n.trim());
-const isEngaged = r => ["medium", "high"].includes(String(r.raw.eng || "").toLowerCase());
 const lakh = v => typeof v === "number" ? "₹" + (v / 100000).toFixed(1).replace(/\.0$/, "") + "L" : "—";
 
 /* Proposed salary-grade ladder (business proposal for the In-Demand channel):
@@ -1363,18 +1353,6 @@ function salaryGrade(med) {
   return best;
 }
 const gradeLabel = x => x ? `${x.g} (₹${x.lpa}L${x.jb ? ` + ₹${x.jb}L JB` : ""})` : "—";
-const shortName = n => n.split(",")[0].trim();
-
-function quadHTML(title, sub, list, hot) {
-  const MAXC = 8;
-  const chips = list.slice(0, MAXC).map(r =>
-    `<span class="q-chip" data-open="${r.i}" title="${esc(r.name)} — total ${fmt2(r.total)}">${esc(shortName(r.name))}</span>`).join("")
-    + (list.length > MAXC ? `<span class="q-chip more">+${list.length - MAXC} more</span>` : "");
-  return `<div class="quad${hot ? " hot" : ""}">
-    <div class="q-title">${title}<span class="q-n">${list.length}</span></div>
-    <div class="q-sub">${sub}</div><div class="q-chips">${chips}</div></div>`;
-}
-
 function catCardHTML(r) {
   const c = r.raw;
   const vintage = typeof c.year === "number"
@@ -1407,53 +1385,44 @@ function renderCatalogue(viewRows) {
   const rows = hideTest ? viewRows.filter(r => !isTestCollege(r.name)) : viewRows;
   const bonusState = `Engagement bonus ${els.eng.checked ? "on" : "off"} · Diversity bonus ${els.div.checked ? "on" : "off"}`;
   document.getElementById("printHead").innerHTML =
-    `<h1>West Zone College Priority Catalogue</h1>${rows.length} colleges · ${bonusState} · tier cutoffs ${cutoffs.c1}/${cutoffs.c2}/${cutoffs.c3} · economical ≤ ₹${econCut}L · generated ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`;
+    `<h1>West Zone College Priority Catalogue</h1>${rows.length} colleges · ${bonusState} · grouped by SPOC, then state · generated ${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`;
 
-  const tiers = tiersFor(cutoffs).map(t => ({ ...t, rows: rows.filter(r => t.test(r.total)) }));
-  const summary = `<div class="tiersum">` + tiers.map(t => `
-    <div class="visual kpi"><div class="klabel">${t.name}</div>
-      <div class="kvalue">${t.rows.length}</div><div class="ksub">${t.range} · ${t.desc}</div></div>`).join("") + `</div>`;
-
-  // matrices split on the Tier 2 lower bound: "high score" = Tier 1 + Tier 2
-  const hiCut = cutoffs.c2;
-  const hi = rows.filter(r => r.total >= hiCut), lo = rows.filter(r => r.total < hiCut);
   const byTotal = a => a.slice().sort((x, y) => y.total - x.total);
-  const lowSal = r => typeof r.raw.med === "number" && r.raw.med <= econCut * 100000;
-  const matrices = `<div class="matrices">
-    <div class="visual"><p class="vtitle">Opportunity matrix <span class="vhint">· score ≥${hiCut} = high (Tier 1–2) · Medium/High status = engaged</span></p>
-      <div class="quadgrid">
-        ${quadHTML("Opportunity", "high score · under-engaged — invest here", byTotal(hi.filter(r => !isEngaged(r))), true)}
-        ${quadHTML("Defend", "high score · already engaged", byTotal(hi.filter(isEngaged)))}
-        ${quadHTML("Maintain", "lower score · already engaged", byTotal(lo.filter(isEngaged)))}
-        ${quadHTML("Deprioritize", "lower score · under-engaged", byTotal(lo.filter(r => !isEngaged(r))))}
-      </div></div>
-    <div class="visual"><p class="vtitle">Value matrix <span class="vhint">· score ≥${hiCut} = high (Tier 1–2) · median salary ≤₹${econCut}L = economical</span></p>
-      <div class="quadgrid">
-        ${quadHTML("Hidden gems", "high score · economical talent", byTotal(hi.filter(lowSal)), true)}
-        ${quadHTML("Premium picks", "high score · premium salary bands", byTotal(hi.filter(r => !lowSal(r))))}
-        ${quadHTML("Economy", "lower score · economical", byTotal(lo.filter(lowSal)))}
-        ${quadHTML("Costly bets", "lower score · premium salary bands", byTotal(lo.filter(r => !lowSal(r))))}
-      </div></div>
-  </div>`;
+  const avg = list => list.length ? (list.reduce((a, r) => a + r.total, 0) / list.length).toFixed(1) : "—";
+  const names = [...new Set(rows.map(spocKey))].sort(spocOrder);
+  const portfolios = names.map(g => ({ g, rows: rows.filter(r => spocKey(r) === g) })).filter(p => p.rows.length);
 
-  const sections = tiers.map(t => {
-    if (!t.rows.length) return "";
-    const zones = new Map();
-    for (const r of byTotal(t.rows)) {
-      if (!zones.has(r.state)) zones.set(r.state, []);
-      zones.get(r.state).push(r);
+  /* one tile per SPOC portfolio, then one per state */
+  const summary = `<div class="tiersum">` + portfolios.map(p => `
+    <div class="visual kpi"><div class="klabel">${p.g === "Unassigned" ? "Unassigned" : "SPOC · " + esc(p.g)}</div>
+      <div class="kvalue">${p.rows.length}</div>
+      <div class="ksub">avg score ${avg(p.rows)} · ${p.rows.filter(r => r.cg === "P1").length} P1 · ${p.rows.filter(r => (r.raw.mou || "") === "MOU College").length} MOU</div></div>`).join("") + `</div>`;
+  const states = new Map();
+  for (const r of rows) states.set(r.state, (states.get(r.state) || 0) + 1);
+  const stateSummary = `<div class="tiersum">` + [...states.entries()].sort((a, b) => b[1] - a[1]).map(([s, n]) => `
+    <div class="visual kpi"><div class="klabel">${esc(s)}</div><div class="kvalue">${n}</div>
+      <div class="ksub">avg score ${avg(rows.filter(r => r.state === s))}</div></div>`).join("") + `</div>`;
+
+  const sections = portfolios.map(p => {
+    const grp = new Map();
+    for (const r of byTotal(p.rows)) {
+      if (!grp.has(r.state)) grp.set(r.state, []);
+      grp.get(r.state).push(r);
     }
-    const groups = [...zones.entries()].sort((a, b) => b[1].length - a[1].length).map(([zone, list]) => `
-      <div class="zonegrp"><div class="zlabel">${esc(zone)} · ${list.length}</div>
+    const groups = [...grp.entries()].sort((a, b) => b[1].length - a[1].length).map(([state, list]) => `
+      <div class="zonegrp"><div class="zlabel">${esc(state)} · ${list.length}</div>
         <div class="cardgrid">${list.map(catCardHTML).join("")}</div></div>`).join("");
+    const p1 = p.rows.filter(r => r.cg === "P1").length;
     return `<div class="visual tiersec">
-      <div class="tierhead"><h2>${t.name}</h2><span class="range">${t.range}</span>
-        <span class="tdesc">${t.desc}</span><span class="tcount">${t.rows.length} colleges</span></div>
+      <div class="tierhead"><h2>${p.g === "Unassigned" ? "Unassigned — needs a SPOC" : "SPOC · " + esc(p.g)}</h2>
+        <span class="range">avg score ${avg(p.rows)}</span>
+        <span class="tdesc">${p1} P1 college${p1 === 1 ? "" : "s"}</span>
+        <span class="tcount">${p.rows.length} colleges</span></div>
       ${groups}</div>`;
   }).join("");
 
   document.getElementById("catBody").innerHTML =
-    summary + matrices + sections +
+    summary + stateSummary + sections +
     (rows.length ? "" : `<div class="visual"><div class="empty">No colleges match this filter</div></div>`);
 }
 
@@ -1489,39 +1458,32 @@ function renderAddList(allRows) {
     </div>`).join("");
 }
 
-function tierBandHTML(view) {
-  const { c1, c2, c3 } = cutoffs;
+function spocBandHTML(view) {
   const rows = F("hideTest").checked ? view.filter(r => !isTestCollege(r.name)) : view;
-  const n = t => rows.filter(t).length;
-  const seg = (cls, name, meaning, range, count) => `
-    <div class="tseg ${cls}"><b>${name} · ${meaning}</b><span>score ${range} · ${count} college${count === 1 ? "" : "s"}</span></div>`;
-  const bound = (id, val, below, above) => `
-    <div class="tbound"><label for="${id}">boundary</label>
-      <input type="number" id="${id}" min="0" max="110" step="1" value="${val}"
-        title="Colleges scoring ${val} or more move up from ${below} into ${above}"></div>`;
-  const isDefault = c1 === CUT_DEFAULTS.c1 && c2 === CUT_DEFAULTS.c2 && c3 === CUT_DEFAULTS.c3;
+  const names = [...new Set(computeCurrent(userColleges).map(spocKey))].sort(spocOrder);
+  const sel = els.spoc.value;
+  const segs = names.map((g, i) => {
+    const mine = rows.filter(r => spocKey(r) === g);
+    const a = mine.length ? (mine.reduce((s, r) => s + r.total, 0) / mine.length).toFixed(1) : "—";
+    const p1 = mine.filter(r => r.cg === "P1").length;
+    const cls = g === "Unassigned" ? "t4" : "t" + (i % 3 + 1);
+    return `<div class="tseg ${cls}" data-spoc="${esc(g)}" role="button" tabindex="0"
+      style="cursor:pointer${sel === g ? ";outline:2px solid var(--accent)" : ""}">
+      <b>${g === "Unassigned" ? "Unassigned" : "SPOC · " + esc(g)}</b>
+      <span>${mine.length} in view · avg ${a} · ${p1} P1</span></div>`;
+  }).join("");
   return `
     <div class="tb-head">
-      <p class="vtitle">Catalogue tiers <span class="vhint">· set the score boundaries — colleges move between tiers instantly (used on the Catalogue tab)</span></p>
-      ${isDefault ? "" : `<button class="clearlink" id="cutReset" type="button">Reset to 70 / 55 / 40</button>`}
-      <span class="tb-econ" title="Used by the Catalogue's value matrix to spot hidden gems">“Economical” = median salary up to
-        ₹<input type="number" id="econCut" class="salbox" min="0" step="0.5" value="${econCut}">L</span>
+      <p class="vtitle">SPOC portfolios <span class="vhint">· click a SPOC to focus the whole page — the catalogue groups by SPOC, then state</span></p>
+      ${sel === "All" ? "" : `<button class="clearlink" data-spoc="${esc(sel)}" type="button">Show all SPOCs</button>`}
     </div>
-    <div class="tb-strip">
-      ${seg("t4", "Tier 4", "Monitor", `below ${c3}`, n(r => r.total < c3))}
-      ${bound("cut3", c3, "T4", "T3")}
-      ${seg("t3", "Tier 3", "Selective", `${c3} – ${c2}`, n(r => r.total >= c3 && r.total < c2))}
-      ${bound("cut2", c2, "T3", "T2")}
-      ${seg("t2", "Tier 2", "Engage", `${c2} – ${c1}`, n(r => r.total >= c2 && r.total < c1))}
-      ${bound("cut1", c1, "T2", "T1")}
-      ${seg("t1", "Tier 1", "Invest", `${c1} and above`, n(r => r.total >= c1))}
-    </div>`;
+    <div class="tb-strip">${segs}</div>`;
 }
 
 function render() {
   buildHead();
-  const { view, forZoneChart, forCgChart } = viewSets();
-  document.getElementById("tierBand").innerHTML = tierBandHTML(view);
+  const { view, forZoneChart, forSpocChart } = viewSets();
+  document.getElementById("tierBand").innerHTML = spocBandHTML(view);
   els.count.textContent = `${view.length} of ${COLLEGES.length + userColleges.length} colleges`;
   els.sync.className = "sync" + (sharedOn() ? (sharedError ? " on err" : " on") : "");
   els.sync.textContent = sharedOn()
@@ -1545,7 +1507,7 @@ function render() {
   if (activeView === "cat") { renderCatalogue(view); return; }
   els.kpis.innerHTML = kpiHTML(view);
   els.zoneChart.innerHTML = zoneChartHTML(forZoneChart);
-  els.cgChart.innerHTML = cgChartHTML(forCgChart);
+  els.cgChart.innerHTML = spocChartHTML(forSpocChart);
   els.topChart.innerHTML = topChartHTML(view);
   const rows = tableRows(view);
   if (!rows.length) {
@@ -1634,8 +1596,8 @@ document.addEventListener("click", e => {
     zoneSet.has(zn) ? zoneSet.delete(zn) : zoneSet.add(zn);
     render(); return;
   }
-  const g = e.target.closest("[data-cg]");
-  if (g) { els.cg.value = els.cg.value === g.dataset.cg ? "All" : g.dataset.cg; render(); return; }
+  const g = e.target.closest("[data-spoc]");
+  if (g) { els.spoc.value = els.spoc.value === g.dataset.spoc ? "All" : g.dataset.spoc; render(); return; }
   const o = e.target.closest("[data-open]");
   if (o) {
     openRow = Number(o.dataset.open);
@@ -1649,32 +1611,6 @@ document.addEventListener("click", e => {
 document.getElementById("printBtn").addEventListener("click", () => window.print());
 document.getElementById("hideTest").addEventListener("change", render);
 
-/* tier cutoff controls: keep c1 >= c2 >= c3 by dragging the neighbours along */
-function applyCutoffs(changed) {
-  const clamp = v => Math.max(0, Math.min(110, v));
-  const read = id => { const n = Number(F(id).value); return Number.isFinite(n) ? clamp(n) : null; };
-  const v1 = read("cut1"), v2 = read("cut2"), v3 = read("cut3");
-  if (v1 !== null) cutoffs.c1 = v1;
-  if (v2 !== null) cutoffs.c2 = v2;
-  if (v3 !== null) cutoffs.c3 = v3;
-  if (changed === "cut1") { cutoffs.c2 = Math.min(cutoffs.c2, cutoffs.c1); cutoffs.c3 = Math.min(cutoffs.c3, cutoffs.c2); }
-  else if (changed === "cut2") { cutoffs.c1 = Math.max(cutoffs.c1, cutoffs.c2); cutoffs.c3 = Math.min(cutoffs.c3, cutoffs.c2); }
-  else { cutoffs.c2 = Math.max(cutoffs.c2, cutoffs.c3); cutoffs.c1 = Math.max(cutoffs.c1, cutoffs.c2); }
-  saveCutoffs();
-  render();
-}
-const tierBandEl = document.getElementById("tierBand");
-tierBandEl.addEventListener("change", e => {
-  if (["cut1", "cut2", "cut3"].includes(e.target.id)) { applyCutoffs(e.target.id); return; }
-  if (e.target.id === "econCut") {
-    const v = parseFloat(e.target.value);
-    if (isFinite(v) && v > 0) { econCut = v; try { localStorage.setItem(ECON_KEY, String(v)); } catch (err) {} }
-    render();
-  }
-});
-tierBandEl.addEventListener("click", e => {
-  if (e.target.id === "cutReset") { cutoffs = { ...CUT_DEFAULTS }; saveCutoffs(); render(); }
-});
 els.clearBtn.addEventListener("click", () => {
   zoneSet.clear(); els.cg.value = "All"; els.spoc.value = "All"; els.search.value = "";
   els.salMin.value = ""; els.salMax.value = ""; render();

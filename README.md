@@ -39,12 +39,20 @@ no backend or external calls.
 - **State chips instead of zone chips** — every college here is West zone,
   so the slicer, the "Avg score by state" chart and the catalogue grouping
   work on Maharashtra / Gujarat / Goa instead.
+- **SPOC-driven, state-driven pages** — instead of the all-India engine's
+  priority tiers, the dashboard carries a clickable **SPOC portfolios band**
+  (count, avg score, P1s per owner — click to focus the whole page) and a
+  **Colleges by SPOC** donut, and the catalogue groups colleges **by SPOC,
+  then by state**, with per-SPOC and per-state summary tiles. Colleges
+  without an owner sit in an "Unassigned — needs a SPOC" section (also a
+  filter option). The tier cutoffs and opportunity/value matrices from the
+  all-India engine were removed.
 - **TPO & SPOC contact fields** on every college: TPO (name, email, phone)
   for the college side and SPOC (name, email, phone) for our team's owner
   of the relationship. They appear as table columns, in the row breakdown's
   Contacts card, on catalogue cards, in the Add/Edit form, and are
-  searchable — and there's a **SPOC slicer** on the dashboard to see one
-  owner's portfolio. Contacts never affect the score.
+  searchable — plus the SPOC slicer on the dashboard. Contacts never
+  affect the score.
 - **Programme fields** (group, HML, MOU status & type, WZ priority, phase,
   mode) imported from the SPOC workbook are reference-only: shown in the
   breakdown's Profile card and as catalogue tags, preserved across form
@@ -56,9 +64,9 @@ no backend or external calls.
   all-India one in the same browser or Supabase project.
 
 Everything else — the three-step workflow (Add College → Dashboard →
-Catalogue), cross-filtering visuals, tier cutoffs, matrices, NIRF
-directory auto-fill and the print layout — matches the all-India engine;
-see that repo's README for the full feature guide.
+Catalogue), cross-filtering visuals, NIRF directory auto-fill and the
+print layout — matches the all-India engine; see that repo's README for
+the full feature guide.
 
 ## Team-shared additions (Supabase)
 
