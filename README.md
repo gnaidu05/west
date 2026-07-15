@@ -7,16 +7,16 @@ dashboard (see the `engine` repo for the all-India original).
 
 `index.html` is a self-contained dashboard for the early-careers hiring team,
 scoped to West-zone campuses (Maharashtra, Gujarat, Goa). It uses the same
-scoring framework as the all-India engine — salary, NIRF, NAAC, NBA, brand
-perception and CG priority indices with adjusted weights and optional
-engagement/diversity bonuses — with all data and logic embedded in the file:
-no backend or external calls.
+scoring framework as the all-India engine minus the CG priority tag —
+salary (28.6%), NIRF (19%), NAAC (19%), NBA (19%) and brand perception
+(14.3%) indices with optional engagement/diversity bonuses — with all data
+and logic embedded in the file: no backend or external calls.
 
 ### Baseline data (163 colleges)
 
 - **17 fully-scored colleges** carried over from the all-India engine's
-  baseline (every West-zone college it had), with salaries, NAAC, NBA,
-  engagement and CG priority intact.
+  baseline (every West-zone college it had), with salaries, NAAC, NBA and
+  engagement intact.
 - **146 further West-zone colleges** from the team's worksheets, each
   with its **TPO name, email and contact number**. NIRF 2023–25 ranks
   were matched from the embedded official nirfindia.org directory (fuzzy
@@ -28,11 +28,10 @@ no backend or external calls.
   the meantime.
 - **84 colleges reconciled from the West Zone SPOC workbook**: each
   carries its team **SPOC** (Arthi / Nishil / Asmita / Ritika, from the
-  "Updated NEW SPOC" column), refreshed TPO contacts, CG priority mapped
-  from Priority-1/2, a diversity flag for Diversity / Div-Only types, and
-  the reference-only programme fields — college group, HML, MOU status &
-  type, WZ priority, phase and mode — shown in the row breakdown and as
-  catalogue tags.
+  "Updated NEW SPOC" column), refreshed TPO contacts, a diversity flag for
+  Diversity / Div-Only types, and the reference-only programme fields —
+  college group, HML, MOU status & type, WZ priority (Priority-1..4),
+  phase and mode — shown in the row breakdown and as catalogue tags.
 
 ### What's different from the all-India engine
 
@@ -41,12 +40,14 @@ no backend or external calls.
   work on Maharashtra / Gujarat / Goa instead.
 - **SPOC-driven, state-driven pages** — instead of the all-India engine's
   priority tiers, the dashboard carries a clickable **SPOC portfolios band**
-  (count, avg score, P1s per owner — click to focus the whole page) and a
+  (count, avg score, Priority-1s per owner — click to focus the page) and a
   **Colleges by SPOC** donut, and the catalogue groups colleges **by SPOC,
   then by state**, with per-SPOC and per-state summary tiles. Colleges
   without an owner sit in an "Unassigned — needs a SPOC" section (also a
-  filter option). The tier cutoffs and opportunity/value matrices from the
-  all-India engine were removed.
+  filter option). The tier cutoffs, opportunity/value matrices and the CG
+  priority tag (filter, column, scoring component) from the all-India
+  engine were removed — the worksheet's Priority-1..4 remains as a
+  reference field.
 - **TPO & SPOC contact fields** on every college: TPO (name, email, phone)
   for the college side and SPOC (name, email, phone) for our team's owner
   of the relationship. They appear as table columns, in the row breakdown's

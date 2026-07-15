@@ -27,7 +27,6 @@ create table if not exists public.shared_colleges_west (
   avg numeric,
   med numeric,
   eng text,
-  cg text not null default 'NA',
   -- reference-only contact fields (never affect the score)
   tpo text,
   tpoemail text,
