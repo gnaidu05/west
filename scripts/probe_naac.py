@@ -38,14 +38,18 @@ def probe(url, note, grab=None, post=None, data=None):
         out.append(f"ERROR {exc}")
         return None
 
-probe("https://www.naac.gov.in/index.php/en/2-uncategorised/32-accreditation-status",
-      "accreditation status page", grab="links")
-probe("https://www.naac.gov.in/index.php/en/19-quick-links/62-accreditationresults",
-      "accreditation results quick link", grab="links")
-probe("https://assessmentonline.naac.gov.in/public/index.php/accreditationresults",
-      "assessmentonline results (searchable)", grab="ajax")
-probe("https://assessmentonline.naac.gov.in/public/index.php/hei_dashboard",
-      "assessmentonline HEI dashboard", grab="ajax")
+probe("http://www.naac.gov.in/index.php/en/2-uncategorised/32-accreditation-status",
+      "accreditation status page (plain http)", grab="links")
+probe("http://assessmentonline.naac.gov.in/public/index.php/accreditationresults",
+      "assessmentonline results (plain http)", grab="ajax")
+probe("https://www.ugc.gov.in/pdfnews/0646280_State-wise-list--of-colleges-accredited-by-NAAC.pdf",
+      "UGC official state-wise NAAC list (pdf)")
+probe("https://www.data.gov.in/backend/dms/v1/ogdp/resource/search?query=naac%20accredited&size=10",
+      "data.gov.in resource search API", grab="raw")
+probe("https://www.data.gov.in/search?title=naac",
+      "data.gov.in search page", grab="links")
+probe("https://api.data.gov.in/lists?format=json&notfilters[source]=visualize.data.gov.in&filters[title]=naac",
+      "api.data.gov.in lists", grab="raw")
 
 os.makedirs("probe", exist_ok=True)
 with open("probe/naac_probe.txt", "w") as f:
