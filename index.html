@@ -425,7 +425,7 @@
         <input type="number" id="salMax" class="salbox" min="0" step="0.5" placeholder="max"></span>
       <span class="control"><label for="spocSel">SPOC</label>
         <select id="spocSel"><option>All</option></select></span>
-      <span class="control"><input type="search" id="search" placeholder="Search college / city / TPO / SPOC…" aria-label="Search"></span>
+      <span class="control"><input type="search" id="search" placeholder="Search college / group / city / TPO / SPOC…" aria-label="Search"></span>
       <button class="clearlink" id="howBtn" type="button">How is this scored?</button>
       <button class="clearlink" id="clearBtn" type="button" hidden>Clear filters</button>
       <span class="count" id="count"></span>
@@ -882,7 +882,7 @@ function computeAll(engOn, divOn, extra, baseList) {
     const total = core + (engOn ? engb : 0) + (divOn ? divb : 0);
     return { i, name: c.name, city: loc.city, state: loc.state, zone: loc.zone,
              sal, nirf, naac, nba, bp, core, engb, divb, total, raw: c,
-             tpo: c.tpo || "", spoc: c.spoc || "",
+             tpo: c.tpo || "", spoc: c.spoc || "", group: c.group || "",
              added: i >= base.length };
   });
   for (const r of rows) { // competition ranking, descending, over all colleges
@@ -939,9 +939,13 @@ const fmt1 = v => v === null || v === "" ? "—" : v.toFixed(1);
 const esc = s => String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const inr = v => "₹" + Number(v).toLocaleString("en-IN");
 
+/* a group identical to the college name is noise — show it only when it adds info */
+const dispGroup = r => r.group && nirfNorm(r.group) !== nirfNorm(r.name) ? r.group : "";
+
 const COLS = [
   { key:"rank",  label:"Rank",  num:true },
   { key:"name",  label:"College" },
+  { key:"group", label:"Group" },
   { key:"city",  label:"City" },
   { key:"state", label:"State" },
   { key:"tpo",   label:"TPO" },
@@ -1083,7 +1087,7 @@ function viewSets() {
   ordered.forEach((r, k) => r.rank = k + 1);
   const q = els.search.value.trim().toLowerCase();
   const bySearch = r => !q || r.name.toLowerCase().includes(q) || r.city.toLowerCase().includes(q) || r.state.toLowerCase().includes(q)
-    || r.tpo.toLowerCase().includes(q) || r.spoc.toLowerCase().includes(q);
+    || r.tpo.toLowerCase().includes(q) || r.spoc.toLowerCase().includes(q) || r.group.toLowerCase().includes(q);
   const byZone = r => zoneMatch(r.state);
   const bySpoc = r => els.spoc.value === "All"
     || (els.spoc.value === "Unassigned" ? !r.spoc : r.spoc === els.spoc.value);
@@ -1359,7 +1363,7 @@ function catCardHTML(r) {
   return `<div class="catcard" data-open="${r.i}">
     <div class="cc-head"><span class="cc-score">${r.total.toFixed(1)}</span>
       <div class="cc-name">${esc(r.name)}</div></div>
-    <div class="cc-sub">${esc(r.city || "—")}, ${esc(r.state)} · ${esc(r.zone)} zone · overall rank #${r.prank}</div>
+    <div class="cc-sub">${dispGroup(r) ? esc(dispGroup(r)) + " · " : ""}${esc(r.city || "—")}, ${esc(r.state)} · ${esc(r.zone)} zone · overall rank #${r.prank}</div>
     <div class="cc-tags">${tags}</div>
   </div>`;
 }
@@ -1419,7 +1423,7 @@ function renderAddList(allRows) {
     ((b.added || b.edited) - (a.added || a.edited)) || a.name.localeCompare(b.name));
   const shown = q ? list.filter(r =>
     r.name.toLowerCase().includes(q) || r.city.toLowerCase().includes(q) || r.state.toLowerCase().includes(q)
-    || r.tpo.toLowerCase().includes(q) || r.spoc.toLowerCase().includes(q)) : list;
+    || r.tpo.toLowerCase().includes(q) || r.spoc.toLowerCase().includes(q) || r.group.toLowerCase().includes(q)) : list;
   if (!shown.length) {
     els.addedList.innerHTML = `<div class="empty">No colleges match "${esc(q)}"</div>`;
     return;
@@ -1428,7 +1432,7 @@ function renderAddList(allRows) {
     <div class="added-row">
       <div class="ar-main"><b>${esc(r.name)}</b>
         ${r.added ? '<span class="chip added">added</span>' : ""}${r.edited ? '<span class="chip added">edited</span>' : ""}
-        <span class="ar-meta">${esc(r.city || "—")}, ${esc(r.state)} · ${esc(r.zone)} zone${r.raw.spoc ? " · SPOC: " + esc(r.raw.spoc) : ""}</span></div>
+        <span class="ar-meta">${dispGroup(r) ? esc(dispGroup(r)) + " · " : ""}${esc(r.city || "—")}, ${esc(r.state)} · ${esc(r.zone)} zone${r.raw.spoc ? " · SPOC: " + esc(r.raw.spoc) : ""}</span></div>
       <div class="ar-score">Total <b>${fmt2(r.total)}</b> · overall rank <b>#${r.prank}</b></div>
       <div class="ar-actions">
         <button type="button" class="btn" data-open="${r.i}">View in dashboard</button>
@@ -1502,6 +1506,7 @@ function render() {
     <tr class="data ${openRow === r.i ? "open" : ""}" data-i="${r.i}">
       <td class="num">${r.rank}</td>
       <td class="college">${esc(r.name)}${r.added ? '<span class="chip added">added</span>' : ""}${r.edited ? '<span class="chip added">edited</span>' : ""}</td>
+      <td>${dispGroup(r) ? esc(dispGroup(r)) : "—"}</td>
       <td>${esc(r.city)}</td><td>${esc(r.state)}</td><td title="${esc(r.raw.tpoEmail || "")}">${esc(r.tpo || "—")}</td>
       <td>${esc(r.spoc || "—")}</td>
       <td class="num">${fmt2(r.core)}</td>
