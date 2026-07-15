@@ -12,20 +12,27 @@ perception and CG priority indices with adjusted weights and optional
 engagement/diversity bonuses — with all data and logic embedded in the file:
 no backend or external calls.
 
-### Baseline data (148 colleges)
+### Baseline data (163 colleges)
 
 - **17 fully-scored colleges** carried over from the all-India engine's
   baseline (every West-zone college it had), with salaries, NAAC, NBA,
   engagement and CG priority intact.
-- **131 further West-zone colleges** from the team's West-zone worksheet,
-  each with its **TPO name, email and contact number**. Their NIRF 2023–25
-  ranks were matched from the embedded official nirfindia.org directory
-  (fuzzy name+city match, hand-reviewed — near-miss namesakes like
-  VIIT-vs-VIT Pune, the two Cummins campuses, PES Modern vs COEP, the
-  Bharati Vidyapeeth campuses and PCCOE&R vs PCCOE were kept separate).
-  Salary, NAAC, NBA, engagement and CG fields are blank until the team
-  fills them in via Edit — those colleges score on NIRF and brand
-  perception alone in the meantime.
+- **146 further West-zone colleges** from the team's worksheets, each
+  with its **TPO name, email and contact number**. NIRF 2023–25 ranks
+  were matched from the embedded official nirfindia.org directory (fuzzy
+  name+city match, hand-reviewed — near-miss namesakes like VIIT-vs-VIT
+  Pune, the two Cummins campuses, the DY Patil / Raisoni / Parul /
+  Walchand entities and PCCOE&R vs PCCOE were kept separate). Salary,
+  NAAC, NBA and engagement fields are blank until the team fills them in
+  via Edit — those colleges score on NIRF and brand perception alone in
+  the meantime.
+- **84 colleges reconciled from the West Zone SPOC workbook**: each
+  carries its team **SPOC** (Arthi / Nishil / Asmita / Ritika, from the
+  "Updated NEW SPOC" column), refreshed TPO contacts, CG priority mapped
+  from Priority-1/2, a diversity flag for Diversity / Div-Only types, and
+  the reference-only programme fields — college group, HML, MOU status &
+  type, WZ priority, phase and mode — shown in the row breakdown and as
+  catalogue tags.
 
 ### What's different from the all-India engine
 
@@ -34,9 +41,14 @@ no backend or external calls.
   work on Maharashtra / Gujarat / Goa instead.
 - **TPO & SPOC contact fields** on every college: TPO (name, email, phone)
   for the college side and SPOC (name, email, phone) for our team's owner
-  of the relationship. They appear as a table column, in the row breakdown's
+  of the relationship. They appear as table columns, in the row breakdown's
   Contacts card, on catalogue cards, in the Add/Edit form, and are
-  searchable — and they never affect the score.
+  searchable — and there's a **SPOC slicer** on the dashboard to see one
+  owner's portfolio. Contacts never affect the score.
+- **Programme fields** (group, HML, MOU status & type, WZ priority, phase,
+  mode) imported from the SPOC workbook are reference-only: shown in the
+  breakdown's Profile card and as catalogue tags, preserved across form
+  edits and synced through Supabase, never scored.
 - **West-zone guard** — the Add College form's live location preview flags
   a location that resolves outside the West zone.
 - Separate localStorage keys and a separate Supabase table
