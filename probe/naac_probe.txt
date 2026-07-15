@@ -1,16 +1,25 @@
 
-=== accreditation status page
-https://www.naac.gov.in/index.php/en/2-uncategorised/32-accreditation-status
-ERROR HTTPSConnectionPool(host='www.naac.gov.in', port=443): Max retries exceeded with url: /index.php/en/2-uncategorised/32-accreditation-status (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.naac.gov.in', port=443) at 0x7effccbe65a0>, 'Connection to www.naac.gov.in timed out. (connect timeout=60)'))
+=== accreditation status page (plain http)
+http://www.naac.gov.in/index.php/en/2-uncategorised/32-accreditation-status
+ERROR HTTPConnectionPool(host='www.naac.gov.in', port=80): Max retries exceeded with url: /index.php/en/2-uncategorised/32-accreditation-status (Caused by ConnectTimeoutError(<HTTPConnection(host='www.naac.gov.in', port=80) at 0x7fb7a6d53c50>, 'Connection to www.naac.gov.in timed out. (connect timeout=60)'))
 
-=== accreditation results quick link
-https://www.naac.gov.in/index.php/en/19-quick-links/62-accreditationresults
-ERROR HTTPSConnectionPool(host='www.naac.gov.in', port=443): Max retries exceeded with url: /index.php/en/19-quick-links/62-accreditationresults (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.naac.gov.in', port=443) at 0x7effcc7f04d0>, 'Connection to www.naac.gov.in timed out. (connect timeout=60)'))
+=== assessmentonline results (plain http)
+http://assessmentonline.naac.gov.in/public/index.php/accreditationresults
+ERROR HTTPConnectionPool(host='assessmentonline.naac.gov.in', port=80): Max retries exceeded with url: /public/index.php/accreditationresults (Caused by ConnectTimeoutError(<HTTPConnection(host='assessmentonline.naac.gov.in', port=80) at 0x7fb7a6d80680>, 'Connection to assessmentonline.naac.gov.in timed out. (connect timeout=60)'))
 
-=== assessmentonline results (searchable)
-https://assessmentonline.naac.gov.in/public/index.php/accreditationresults
-ERROR HTTPSConnectionPool(host='assessmentonline.naac.gov.in', port=443): Max retries exceeded with url: /public/index.php/accreditationresults (Caused by ConnectTimeoutError(<HTTPSConnection(host='assessmentonline.naac.gov.in', port=443) at 0x7effcc7f0bf0>, 'Connection to assessmentonline.naac.gov.in timed out. (connect timeout=60)'))
+=== UGC official state-wise NAAC list (pdf)
+https://www.ugc.gov.in/pdfnews/0646280_State-wise-list--of-colleges-accredited-by-NAAC.pdf
+HTTP 200 | application/pdf | 1550035 bytes
 
-=== assessmentonline HEI dashboard
-https://assessmentonline.naac.gov.in/public/index.php/hei_dashboard
-ERROR HTTPSConnectionPool(host='assessmentonline.naac.gov.in', port=443): Max retries exceeded with url: /public/index.php/hei_dashboard (Caused by ConnectTimeoutError(<HTTPSConnection(host='assessmentonline.naac.gov.in', port=443) at 0x7effccb684d0>, 'Connection to assessmentonline.naac.gov.in timed out. (connect timeout=60)'))
+=== data.gov.in resource search API
+https://www.data.gov.in/backend/dms/v1/ogdp/resource/search?query=naac%20accredited&size=10
+ERROR HTTPSConnectionPool(host='www.data.gov.in', port=443): Read timed out. (read timeout=60)
+
+=== data.gov.in search page
+https://www.data.gov.in/search?title=naac
+HTTP 200 | text/html; charset=utf-8 | 995637 bytes
+
+=== api.data.gov.in lists
+https://api.data.gov.in/lists?format=json&notfilters[source]=visualize.data.gov.in&filters[title]=naac
+HTTP 200 | application/json | 8270 bytes
+  EXCERPT: { "message": "Resource lists", "version": "2.2.0", "status": "ok", "total": 3, "count": 3, "limit": "10", "offset": "0", "records": [ { "index_name": "09a1742f-2979-40c7-9a7c-edb50a9acfdd", "title": "State-wise Universities Accredited by National Assessment and Accreditation Council (NAAC) during 2021", "desc": "State-wise Universities Accredited by National Assessment and Accreditation Council (NAAC) during 2021", "org_type": "Central", "org": [ "Rajya Sabha" ], "sector": [ "All" ], "source": "data.gov.in", "catalog_uuid": "c985f76a-bd31-4309-a6f3-917cfa5d0d78", "visualizable": "1", "active": "1", "created": 1659071885, "updated": 1659075349, "created_date": "2022-07-29T05:18:05Z", "updated_date": "2022-07-29T11:45:49Z", "external_ws": 0, "external_ws_url": "", "target_bucket": { "index": "api", "type": "c985f76a-bd31-4309-a6f3-917cfa5d0d78", "field": "09a1742f-2979-40c7-9a7c-edb50a9acfdd" }, "field": [ { "id": "document_id", "name": "document_id", "type": "double" }, { "id": "sl__no_", "name": "Sl. No.", "type": "keyword" }, { "id": "state_ut", "name": "State\/UT", "type": "keyword" }, { "id": "number_of_universities_accredited_by_naac", "name": "Number of Universities accredited by NAAC", "type": "double" }, { "id": "resource_uuid", "name": "resource_uuid", "type": "keyword" } ] }, { "index_name": "17ace3cf-d5f3-438c-aa71-15751c460a70", "title": "State\/UT-wise Details of the Number of Universities and Colleges Accredited by National Assessment and Accreditation Council (Naac) (In Reply to Unstarred Question on 13-12-2023)", "desc": "State\/UT-wise Details of the Number of U
