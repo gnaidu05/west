@@ -900,6 +900,7 @@ function computeAll(engOn, divOn, extra, baseList) {
     const total = core + (engOn ? engb : 0) + (divOn ? divb : 0);
     return { i, name: c.name, city: loc.city, state: loc.state, zone: loc.zone,
              sal, nirf, naac, nba, bp, core, engb, divb, total, raw: c,
+             nirfRank: rankUsed(c.nirf25),
              tpo: c.tpo || "", spoc: c.spoc || "", group: c.group || "",
              added: i >= base.length };
   });
@@ -968,6 +969,7 @@ const COLS = [
   { key:"group", label:"Group" },
   { key:"city",  label:"City" },
   { key:"state", label:"State" },
+  { key:"nirfRank", label:"NIRF '25", num:true },
   { key:"tpo",   label:"TPO" },
   { key:"spoc",  label:"SPOC" },
   { key:"core",  label:"Weighted Core", num:true },
@@ -1543,7 +1545,9 @@ function render() {
       <td class="num">${r.rank}</td>
       <td class="college">${esc(r.name)}${r.added ? '<span class="chip added">added</span>' : ""}${r.edited ? '<span class="chip added">edited</span>' : ""}</td>
       <td>${dispGroup(r) ? esc(dispGroup(r)) : "—"}</td>
-      <td>${esc(r.city)}</td><td>${esc(r.state)}</td><td title="${esc(r.raw.tpoEmail || "")}">${esc(r.tpo || "—")}</td>
+      <td>${esc(r.city)}</td><td>${esc(r.state)}</td>
+      <td class="num" title="counts as rank ${r.nirfRank} in scoring">${esc(r.raw.nirf25 ?? "—")}</td>
+      <td title="${esc(r.raw.tpoEmail || "")}">${esc(r.tpo || "—")}</td>
       <td>${esc(r.spoc || "—")}</td>
       <td class="num">${fmt2(r.core)}</td>
       <td class="num"><b>${fmt2(r.total)}</b><span class="scorebar"><i style="width:${Math.max(0, r.total/maxTotal*100)}%"></i></span></td>
