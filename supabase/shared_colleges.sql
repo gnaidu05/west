@@ -22,6 +22,9 @@ create table if not exists public.shared_colleges_west (
   nirf25 text,
   nirf24 text,
   nirf23 text,
+  -- official NIRF Perception (PR) survey score, published for ranks 1-100
+  pr numeric,
+  pryear int,
   naac text,
   nba text,
   avg numeric,

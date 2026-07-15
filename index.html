@@ -370,6 +370,9 @@
           <input id="f_n24" placeholder='number, band or "-"'></div>
         <div class="field"><label for="f_n23">NIRF rank 2023</label>
           <input id="f_n23" placeholder='number, band or "-"'></div>
+        <div class="field"><label for="f_pr">NIRF Perception (PR) score</label>
+          <input id="f_pr" type="number" min="0" max="100" step="0.01"
+            placeholder="official survey score (ranks 1–100 only)"></div>
         <div class="field"><label for="f_naac">NAAC grade</label>
           <select id="f_naac"><option value="">(none)</option><option>A++</option><option>A+</option><option>A</option>
             <option>B++</option><option>B+</option><option>B</option><option>C</option><option>D</option><option>-</option></select></div>
@@ -501,8 +504,10 @@
       <p class="note">How much of the college's teaching is independently accredited, relative to the
       best college in the list.</p>
       <div class="kv"><span class="k">⭐ Brand perception — <b>14.3%</b></span></div>
-      <p class="note">A reputation estimate combining how much employers want its graduates, the
-      strength of its alumni network, placement outcomes, student quality and public visibility.</p>
+      <p class="note">Where NIRF publishes its official <b>Perception (PR)</b> survey score for the
+      college (employers + academic peers, ranks 1–100 only), that score — rescaled onto this
+      dashboard's 0–100 scale — is used. For everyone else it is an indicative estimate combining
+      employer appeal, alumni strength, placement outcomes, student quality and visibility.</p>
       <p><b>Then two optional bonuses go on top</b> (the switches at the top of the page):</p>
       <p class="note">🤝 <b>Engagement bonus</b> — colleges where we currently do <em>little</em>
       engagement get the biggest boost (+10), because that's where extra effort pays off most.
@@ -523,7 +528,8 @@
 <footer>
   Every college is marked out of 100 in five areas, and each area contributes a fixed slice of the
   Core Score: graduate salaries 28.6%, national ranking 19%, quality grade 19%, programme
-  accreditation 19% and brand perception 14.3%. Optional bonus points for engagement opportunity
+  accreditation 19% and brand perception 14.3% (NIRF's official Perception survey score where
+  published, an indicative estimate otherwise). Optional bonus points for engagement opportunity
   and diversity are added on top when toggled, giving the Total Priority Score. “Rank” is the list
   position under the current filters; “Overall Rank” orders every college purely by total score.
   Click any row for its full breakdown, or “How is this scored?” above for the plain-language guide.
@@ -550,7 +556,7 @@
    Contacts and programme fields never affect the score. */
 const COLLEGES = [
 {"name":"Bharatiya Vidya Bhavan's Sardar Patel Institute of Technology","loc":"Mumbai, Maharashtra ","type":"Private (Autonomous)","year":1957,"div":"No","nirf25":"-","nirf24":"201-300","nirf23":"-","naac":"A","nba":null,"avg":1451000,"med":1366000,"eng":"Low","tpo":null,"tpoEmail":null,"tpoPhone":null,"spoc":null,"spocEmail":null,"spocPhone":null},
-{"name":"COEP Technological University","loc":"Pune, Maharashtra ","type":"Government (State University / Autonomous)","year":1854,"div":"No","nirf25":90,"nirf24":77,"nirf23":73,"naac":"A+","nba":null,"avg":1796000,"med":1620000,"eng":"Low","tpo":null,"tpoEmail":null,"tpoPhone":null,"spoc":null,"spocEmail":null,"spocPhone":null},
+{"name":"COEP Technological University","loc":"Pune, Maharashtra ","type":"Government (State University / Autonomous)","year":1854,"div":"No","nirf25":90,"nirf24":77,"nirf23":73,"pr":28.82,"prYear":2025,"naac":"A+","nba":null,"avg":1796000,"med":1620000,"eng":"Low","tpo":null,"tpoEmail":null,"tpoPhone":null,"spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"Dhirubhai Ambani Institute of Information and Communication Technology","loc":"Gandhinagar, Gujarat","type":"Private (State Private University","year":2001,"div":"No","nirf25":"201-300","nirf24":"201-300","nirf23":"-","naac":"A","nba":null,"avg":1400000,"med":1600000,"eng":"Low","tpo":"Anuradha Srivastava","tpoEmail":"placement@daiict.ac.in","tpoPhone":"9328994143","spoc":"Nishil","spocEmail":null,"spocPhone":null,"hml":"T3","mou":"Non MOU College","phase":"Phase-3","mode":"VV","wzPriority":"Priority-2"},
 {"name":"Goa College of Engineering, Farmagudi, Ponda","loc":"Goa","type":"Affiliated College","year":1967,"div":null,"nirf25":"-","nirf24":"-","nirf23":"-","naac":"N/A","nba":null,"avg":600000,"med":425000,"eng":null,"tpo":null,"tpoEmail":null,"tpoPhone":null,"spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"K. J. Somaiya College of Engineering","loc":"Mumbai, Maharashtra ","type":"Private (Autonomous)","year":1983,"div":"No","nirf25":null,"nirf24":"201-300","nirf23":null,"naac":"A","nba":null,"avg":1000000,"med":750000,"eng":"Low","tpo":"Vikrant Waghmare","tpoEmail":"tpo.engg@somaiya.edu","tpoPhone":"9359372699","spoc":"Arthi","spocEmail":null,"spocPhone":null,"hml":"Low","mou":"Non MOU College","phase":"Phase-1","mode":"PV","wzPriority":"Priority-1"},
@@ -558,7 +564,7 @@ const COLLEGES = [
 {"name":"Maharshi Karve Stree Shikshan Samstha's Cummins College of Engineering for Women","loc":"Pune, Maharashtra ","type":"Private (Autonomous)","year":1991,"div":"Yes","nirf25":"201-300","nirf24":"201-300","nirf23":"-","naac":"A+","nba":null,"avg":1600000,"med":900000,"eng":"Low","tpo":"Amit Rajurkar","tpoEmail":"placements@cumminscollege.in","tpoPhone":"9822493920","spoc":"Ritika","spocEmail":null,"spocPhone":null,"group":"MKSSS","hml":"T3","mou":"Non MOU College","mouType":"Diversity","phase":"Phase-1","mode":"VV","wzPriority":"Priority-1"},
 {"name":"Nilkamal School of Mathematics, Applied Statistics & Analytics","loc":"Mumbai, Maharashtra ","type":"Private","year":2007,"div":"No","nirf25":"-","nirf24":"-","nirf23":"-","naac":"A++","nba":null,"avg":1100000,"med":1000000,"eng":"Medium","tpo":null,"tpoEmail":null,"tpoPhone":null,"spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"Nirma University","loc":"Ahmedabad, Gujarat","type":"Private (University)","year":2003,"div":"No","nirf25":"101-150","nirf24":"101-150","nirf23":"101-150","naac":"A+","nba":null,"avg":928000,"med":1000000,"eng":"Low","tpo":"Sunil Pandi","tpoEmail":"iiicell@nirmauni.ac.in","tpoPhone":"9265040273","spoc":"Nishil","spocEmail":null,"spocPhone":null,"hml":"T3","mou":"Non MOU College","phase":"Phase-3","mode":"VV","wzPriority":"Priority-2"},
-{"name":"Pandit Deendayal Energy University","loc":"Gandhinagar, Gujarat","type":"State  University","year":2007,"div":null,"nirf25":98,"nirf24":"101-150","nirf23":"101-150","naac":"A++","nba":200,"avg":705000,"med":642000,"eng":null,"tpo":"Vineet Bagaria","tpoEmail":"vineet.bagaria@pdpu.ac.in","tpoPhone":"98253 26191","spoc":"Nishil","spocEmail":null,"spocPhone":null,"hml":"T3","mou":"Former MOU","mouType":"Former MOU","phase":"Phase-3","mode":"VV","wzPriority":"Priority-2"},
+{"name":"Pandit Deendayal Energy University","loc":"Gandhinagar, Gujarat","type":"State  University","year":2007,"div":null,"nirf25":98,"nirf24":"101-150","nirf23":"101-150","pr":4.12,"prYear":2025,"naac":"A++","nba":200,"avg":705000,"med":642000,"eng":null,"tpo":"Vineet Bagaria","tpoEmail":"vineet.bagaria@pdpu.ac.in","tpoPhone":"98253 26191","spoc":"Nishil","spocEmail":null,"spocPhone":null,"hml":"T3","mou":"Former MOU","mouType":"Former MOU","phase":"Phase-3","mode":"VV","wzPriority":"Priority-2"},
 {"name":"Pune Institute of Computer Technology (PICT), Pune","loc":"Pune, Maharashtra ","type":"Private (Non-Autonomous / Affiliated)","year":1983,"div":"No","nirf25":"-","nirf24":"-","nirf23":"-","naac":"A","nba":null,"avg":969000,"med":700000,"eng":"Low","tpo":"Satish","tpoEmail":"placement@pict.edu","tpoPhone":"8275284977","spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"Sardar Patel College of Engineering, Mumbai","loc":"Mumbai, Maharashtra ","type":"Government-Aided (Autonomous)","year":1962,"div":"No","nirf25":"101-150","nirf24":"201-300","nirf23":"201-300","naac":"A","nba":null,"avg":544000,"med":500000,"eng":"Low","tpo":null,"tpoEmail":null,"tpoPhone":null,"spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"SVKM's Narsee Monjee Institute of Management Studies","loc":"Mumbai, Maharashtra ","type":"Private Deemed University","year":1981,"div":"No","nirf25":"101-150","nirf24":"101-150","nirf23":"101-150","naac":"A+","nba":null,"avg":1300000,"med":1000000,"eng":"Medium","tpo":null,"tpoEmail":null,"tpoPhone":null,"spoc":null,"spocEmail":null,"spocPhone":null,"group":"SVKM"},
@@ -589,7 +595,7 @@ const COLLEGES = [
 {"name":"College of Engineering and Technology, Akola","loc":"Akola, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Prof. S. K. Agrawal","tpoEmail":"tpocoetakola@gmail.com","tpoPhone":"9960590205","spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"CSMSS CHH Shahu College of Engineering, Aurangabad","loc":"Aurangabad, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Prof. Deepak Pawar","tpoEmail":"deepakpawar01@gmail.com","tpoPhone":"86000 12515","spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"Datta Meghe College of Engineering, Navi Mumbai","loc":"Mumbai, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dr. Atulya Patil","tpoEmail":"placement@dmce.ac.in","tpoPhone":"8291727235","spoc":"Asmita","spocEmail":null,"spocPhone":null,"group":"Datta Meghe College of Engineering, Navi Mumbai","hml":"Medium","mou":"Non MOU College","phase":"Phase-1","mode":"PV","wzPriority":"Priority-1"},
-{"name":"Defence Institute of Advanced Technology","loc":"Pune, Maharashtra","type":null,"year":null,"div":null,"nirf25":92,"nirf24":63,"nirf23":57,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Pankaj Sharma","tpoEmail":"pankaj_sharma@diat.ac.in","tpoPhone":"9540625523","spoc":null,"spocEmail":null,"spocPhone":null},
+{"name":"Defence Institute of Advanced Technology","loc":"Pune, Maharashtra","type":null,"year":null,"div":null,"nirf25":92,"nirf24":63,"nirf23":57,"pr":4.45,"prYear":2025,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Pankaj Sharma","tpoEmail":"pankaj_sharma@diat.ac.in","tpoPhone":"9540625523","spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"Dharmsinh Desai University - Engineering Department","loc":"Nadiad, Gujarat","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dr. S.S. Khandelwal","tpoEmail":"tpo@ddu.ac.in","tpoPhone":"9824311422","spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"DKTE Society's Textile and Engineering Institute, Ichalkaranji","loc":"Ichalkaranji, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dr. G S Joshi","tpoEmail":"dktetpo@gmail.com","tpoPhone":"9890863988","spoc":"Nishil","spocEmail":null,"spocPhone":null,"hml":"T3","mou":"Non MOU College","phase":"Phase-2","mode":"VV","wzPriority":"Priority-3"},
 {"name":"Don Bosco College of Engineering, Goa","loc":"Goa, Goa","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Avila Naik","tpoEmail":"tpo@dbcegoa.ac.in","tpoPhone":"08322744111/08322741045","spoc":null,"spocEmail":null,"spocPhone":null},
@@ -694,7 +700,7 @@ const COLLEGES = [
 {"name":"St Francis Institute of Technology, Mumbai","loc":"Mumbai, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Mr. Wilson Pinto","tpoEmail":"wilsonpinto@sfit.ac.in","tpoPhone":"9820784678","spoc":"Arthi","spocEmail":null,"spocPhone":null,"hml":"Medium","mou":"Non MOU College","phase":"Phase-1","mode":"PV","wzPriority":"Priority-1"},
 {"name":"St Vincent Pallotti College of Engineering and Technology, Nagpur","loc":"Nagpur, Maharashtra","type":null,"year":null,"div":"Yes","nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dr. Kishor Borakhade","tpoEmail":"tpo@stvincentngp.edu.in","tpoPhone":"9422572353","spoc":"Asmita","spocEmail":null,"spocPhone":null,"hml":"T3","mou":"Non MOU College","mouType":"Div Only","phase":"Phase-2","mode":"VV","wzPriority":"Priority-4"},
 {"name":"SVKM's NMIMS Navi Mumbai Campus","loc":"Mumbai, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Anshul Sharma","tpoEmail":"anshul.sharma@nmims.edu","tpoPhone":"9619404170","spoc":null,"spocEmail":null,"spocPhone":null,"group":"SVKM"},
-{"name":"Symbiosis Institute of Technology","loc":"Pune, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Rahul Digge","tpoEmail":"tpo@sitpune.edu.in","tpoPhone":"9623477077","spoc":"Ritika","spocEmail":null,"spocPhone":null,"group":"Symbiosis International University, Pune","hml":"Low","mou":"Non MOU College","phase":"Phase-1","mode":"PV","wzPriority":"Priority-1"},
+{"name":"Symbiosis Institute of Technology","loc":"Pune, Maharashtra","type":null,"year":null,"div":null,"nirf25":46,"nirf24":null,"nirf23":null,"pr":12.13,"prYear":2025,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Rahul Digge","tpoEmail":"tpo@sitpune.edu.in","tpoPhone":"9623477077","spoc":"Ritika","spocEmail":null,"spocPhone":null,"group":"Symbiosis International University, Pune","hml":"Low","mou":"Non MOU College","phase":"Phase-1","mode":"PV","wzPriority":"Priority-1"},
 {"name":"Tatyasaheb Kore Institute of Engineering & Technology, Warananagar","loc":"Waranangar, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Mr. Patil","tpoEmail":"tpo@tkietwarana.ac.in","tpoPhone":"9960415412","spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"Terna Public Charitable Trust's Terna Engineering College, Navi Mumbai","loc":"Mumbai, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Sushant Gandhi","tpoEmail":"sushantgandhi@ternaengg.ac.in","tpoPhone":"9773140028","spoc":null,"spocEmail":null,"spocPhone":null},
 {"name":"Thadomal Shahani Engineering College, Mumbai","loc":"Mumbai, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Monica G. Tolani/Mudita dixit","tpoEmail":"tsec.placement@gmail.com","tpoPhone":"8329288015/9664854079","spoc":"Nishil","spocEmail":null,"spocPhone":null,"hml":"Medium","mou":"Non MOU College","phase":"Phase-1","mode":"PV","wzPriority":"Priority-1"},
@@ -863,6 +869,16 @@ function bpScores(c) {
   };
   const vals = Object.values(sub);
   sub.index = xlround(vals.reduce((a,v,i)=>a+v*CONFIG_W[i],0) / CONFIG_W.reduce((a,b)=>a+b,0));
+  /* NIRF's ranking framework carries an official Perception (PR) parameter —
+     an employer + academic-peer survey — published for ranks 1-100. Where a
+     college has one, it replaces the synthetic composite as the index. Raw PR
+     is heavily skewed toward the IITs (IIT-B 85, COEP 28.8, PDEU 4.1), so it
+     is rescaled onto this dashboard's 0-100 brand scale monotonically:
+     30 + 70·(PR/100)^0.4. */
+  if (isNum(c.pr)) {
+    sub.official = true;
+    sub.index = xlround(median3(0, 30 + 70 * Math.pow(c.pr / 100, 0.4), 100));
+  }
   return sub;
 }
 /* ---- ranking assembly ----
@@ -1014,6 +1030,8 @@ const fromRow = row => ({ _id: row.id, name: row.name, loc: row.loc,
   nirf24: row.nirf24 === null ? null : numish(row.nirf24),
   nirf23: row.nirf23 === null ? null : numish(row.nirf23),
   naac: row.naac ?? null, nba: row.nba === null ? null : numish(row.nba),
+  pr: row.pr === null || row.pr === undefined ? null : Number(row.pr),
+  prYear: row.pryear ?? null,
   avg: row.avg === null ? null : Number(row.avg),
   med: row.med === null ? null : Number(row.med),
   eng: row.eng ?? null,
@@ -1027,6 +1045,7 @@ function toRow(c, kind) {
   return { kind, name: c.name, loc: c.loc, type: c.type, year: c.year, div: c.div,
     nirf25: t(c.nirf25), nirf24: t(c.nirf24), nirf23: t(c.nirf23),
     naac: c.naac, nba: t(c.nba), avg: c.avg, med: c.med, eng: c.eng,
+    pr: c.pr ?? null, pryear: c.prYear ?? null,
     tpo: c.tpo ?? null, tpoemail: c.tpoEmail ?? null, tpophone: c.tpoPhone ?? null,
     spoc: c.spoc ?? null, spocemail: c.spocEmail ?? null, spocphone: c.spocPhone ?? null,
     grp: c.group ?? null, hml: c.hml ?? null, mou: c.mou ?? null,
@@ -1301,8 +1320,18 @@ function detailHTML(r) {
       <div class="kv"><span class="k">Placement Outcomes</span><span class="v">${fmt1(bpAll.placement)}</span></div>
       <div class="kv"><span class="k">Talent Quality</span><span class="v">${fmt1(bpAll.talent)}</span></div>
       <div class="kv"><span class="k">Media Visibility</span><span class="v">${fmt1(bpAll.media)}</span></div>
+      ${bpAll.official ? `
+      <div class="kv total"><span class="k">Official NIRF Perception (PR) survey score${c.prYear ? ` — ${c.prYear}` : ""}</span><span class="v">${fmt2(c.pr)} / 100</span></div>
+      <div class="kv total"><span class="k">Brand Perception Index (official PR, rescaled — used in core score)</span><span class="v">${fmt1(r.bp)}</span></div>
+      <p class="note">NIRF surveys employers and academic peers for its Perception (PR) parameter.
+      The official score is rescaled onto this dashboard's 0–100 brand scale (raw PR is heavily
+      skewed toward the IITs) and used as the index. The six sub-factors above remain indicative
+      model estimates.</p>` : `
       <div class="kv total"><span class="k">Brand Perception Index (used in core score)</span><span class="v">${fmt1(r.bp)}</span></div>
-      <p class="note">Weighted composite of the six sub-factors, built from NIRF standing, salary outcomes and institutional vintage.</p>
+      <p class="note">Indicative estimate — a weighted composite of the six sub-factors, built from NIRF
+      standing, salary outcomes and institutional vintage. NIRF publishes its official Perception (PR)
+      survey score only for ranks 1–100; none is available for this college — enter one via Edit if
+      NIRF publishes it.</p>`}
     </div>
     <div class="card"><h3>Score assembly</h3>
       <p class="note" style="margin:0 0 8px">Marks out of 100 in six areas; each contributes its
@@ -1646,6 +1675,7 @@ function formCollege() {
     nirf25: parseNirf(F("f_n25").value),
     nirf24: parseNirf(F("f_n24").value),
     nirf23: parseNirf(F("f_n23").value),
+    pr: parseNum(F("f_pr").value),
     naac: F("f_naac").value || null,
     nba: parseNba(F("f_nba").value),
     avg: parseNum(F("f_avg").value),
@@ -1699,7 +1729,7 @@ function updatePreview() {
     <div class="kv"><span class="k">NIRF Index</span><span class="v">${fmt2(r.nirf)}</span></div>
     <div class="kv"><span class="k">NAAC Index</span><span class="v">${fmt2(r.naac)}</span></div>
     <div class="kv"><span class="k">NBA Score %</span><span class="v">${fmt2(r.nba)}</span></div>
-    <div class="kv"><span class="k">Brand Perception</span><span class="v">${r.bp === null ? "—" : fmt1(r.bp)}</span></div>
+    <div class="kv"><span class="k">Brand Perception${isNum(formCollege().pr) ? " (official PR, rescaled)" : ""}</span><span class="v">${r.bp === null ? "—" : fmt1(r.bp)}</span></div>
     <div class="kv total"><span class="k">Weighted Core Score</span><span class="v">${fmt2(r.core)}</span></div>
     <div class="kv"><span class="k">Bonuses (current toggles)</span><span class="v">+${(els.eng.checked ? r.engb : 0) + (els.div.checked ? r.divb : 0)}</span></div>
     <div class="kv total"><span class="k">Total Priority Score</span><span class="v">${fmt2(r.total)}</span></div>
@@ -1735,6 +1765,7 @@ function fillForm(c, lockName) {
   F("f_n25").value = c && c.nirf25 !== null ? c.nirf25 : "";
   F("f_n24").value = c && c.nirf24 !== null ? c.nirf24 : "";
   F("f_n23").value = c && c.nirf23 !== null ? c.nirf23 : "";
+  F("f_pr").value = c && c.pr !== null && c.pr !== undefined ? c.pr : "";
   F("f_naac").value = c && c.naac !== null ? c.naac : "";
   F("f_nba").value = c && c.nba !== null ? String(c.nba) : "";
   F("f_eng").value = c && c.eng !== null ? c.eng : "";
@@ -1860,7 +1891,7 @@ els.form.addEventListener("submit", async e => {
   const prevSrc = editBaseName !== null
     ? (baseEdits[editBaseName] || COLLEGES.find(x => x.name === editBaseName))
     : (editIndex !== null ? userColleges[editIndex] : null);
-  if (prevSrc) for (const k of ["group","hml","mou","mouType","phase","mode","wzPriority"])
+  if (prevSrc) for (const k of ["group","hml","mou","mouType","phase","mode","wzPriority","prYear"])
     if (prevSrc[k] !== undefined && prevSrc[k] !== null) c[k] = prevSrc[k];
   const err = validateForm(c);
   if (err) { els.formError.textContent = err; els.formError.classList.remove("ok"); return; }

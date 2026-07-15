@@ -10,7 +10,13 @@ scoped to West-zone campuses (Maharashtra, Gujarat, Goa). It uses the same
 scoring framework as the all-India engine minus the CG priority tag —
 salary (28.6%), NIRF (19%), NAAC (19%), NBA (19%) and brand perception
 (14.3%) indices with optional engagement/diversity bonuses — with all data
-and logic embedded in the file: no backend or external calls.
+and logic embedded in the file: no backend or external calls. Brand
+perception uses **NIRF's official Perception (PR) survey score** (employer
++ academic peers; published for ranks 1–100, captured by the directory
+workflow and rescaled onto the dashboard's 0–100 scale) where available —
+currently COEP, PDEU, DIAT and Symbiosis — and an indicative model
+estimate (NIRF standing + salary + vintage) for everyone else; each
+college's breakdown states which one it is.
 
 ### Baseline data (163 colleges)
 
