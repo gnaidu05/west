@@ -120,7 +120,16 @@ def main():
             total_rows = 0
             while True:
                 for cells in data:
-                    records.append({"st": st, "ty": typ, "cells": cells})
+                    if len(cells) < 5 or not cells[0].strip().isdigit():
+                        continue
+                    status = cells[2].split()
+                    dates = re.findall(r"\d{2}/\d{2}/\d{4}", cells[3])
+                    records.append({
+                        "n": cells[1], "s": st, "ty": typ,
+                        "g": status[-1] if status else None,
+                        "d": dates[-1] if dates else None,
+                        "hist": (cells[2] + " | " + cells[4]).strip(),
+                    })
                 total_rows += len(data)
                 targets = [t for t in pager_targets(html)
                            if int(t[1].split("$")[1]) == page + 1]
@@ -134,8 +143,8 @@ def main():
                 headers, data = parse_grid(html)
             log(f"{st} / {typ}: {total_rows} rows over {page} page(s)")
             if total_rows:
-                for cells in records[-min(3, total_rows):]:
-                    log(f"  SAMPLE: {cells['cells'][:9]}")
+                for rec in records[-min(3, total_rows):]:
+                    log(f"  SAMPLE: {rec}")
 
     log(f"total raw rows: {len(records)}")
     os.makedirs("probe", exist_ok=True)
@@ -148,10 +157,13 @@ def main():
 
     payload = json.dumps(records, ensure_ascii=False, separators=(",", ":"))
     stamp = datetime.date.today().isoformat()
+    ec_dates = sorted((r["d"] for r in records if r["d"]),
+                      key=lambda d: d[-4:] + d[3:5] + d[:2])
+    span = f"EC dates {ec_dates[0]} to {ec_dates[-1]}" if ec_dates else "no EC dates"
     with open("index.html", encoding="utf-8") as f:
         src = f.read()
     block = (f"/* NAAC_DIRECTORY_START */\n"
-             f"const NAAC_META = \"official NAAC EC all-cycles accreditation list, fetched {stamp}\";\n"
+             f"const NAAC_META = \"official NAAC EC all-cycles accreditation list ({span}), fetched {stamp}\";\n"
              f"const NAAC_DIRECTORY = {payload};\n"
              f"/* NAAC_DIRECTORY_END */")
     if "/* NAAC_DIRECTORY_START */" in src:
