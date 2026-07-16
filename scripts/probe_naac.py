@@ -1,37 +1,37 @@
 #!/usr/bin/env python3
-"""Download the UGC-hosted official NAAC-accredited colleges list (PDF) and
-commit a text extract so its vintage/columns can be reviewed."""
+"""Probe NAAC's EC all-cycles accreditation list page (raw-IP server the
+team can reach) and report its form/table structure."""
 import os
 import re
 import requests
-from pypdf import PdfReader
 
 UA = {"User-Agent": "Mozilla/5.0 (college-priority-dashboard NAAC probe)"}
-URL = "https://www.ugc.gov.in/pdfnews/0646280_State-wise-list--of-colleges-accredited-by-NAAC.pdf"
-
-r = requests.get(URL, headers=UA, timeout=120)
-r.raise_for_status()
-open("/tmp/naac.pdf", "wb").write(r.content)
-reader = PdfReader("/tmp/naac.pdf")
-out = [f"pages: {len(reader.pages)} | bytes: {len(r.content)}", ""]
-
-out.append("== first page ==")
-out.append(reader.pages[0].extract_text()[:2500])
-
-# find pages mentioning the West-zone states and sample them
-hits = {"Maharashtra": None, "Gujarat": None, "Goa": None}
-for i, page in enumerate(reader.pages):
-    t = page.extract_text() or ""
-    for st in hits:
-        if hits[st] is None and re.search(st, t, re.I):
-            hits[st] = i
-    if all(v is not None for v in hits.values()):
-        break
-for st, i in hits.items():
-    out.append(f"\n== first page mentioning {st}: {i} ==")
-    if i is not None:
-        out.append((reader.pages[i].extract_text() or "")[:2500])
+URL = "http://218.248.45.212/naac_EC/NAAC_allcycles_accrlist.aspx"
+out = [f"URL: {URL}"]
+try:
+    r = requests.get(URL, headers=UA, timeout=90)
+    out.append(f"HTTP {r.status_code} | {r.headers.get('content-type','?')} | {len(r.content)} bytes")
+    t = r.text
+    out.append("TITLE: " + "".join(re.findall(r"<title>(.*?)</title>", t, re.S))[:120])
+    out.append("FORM actions: " + str(re.findall(r'<form[^>]*action="([^"]*)"', t)[:3]))
+    out.append("VIEWSTATE present: " + str("__VIEWSTATE" in t)
+               + " | EVENTVALIDATION: " + str("__EVENTVALIDATION" in t))
+    for name, sel in re.findall(r'<select[^>]*name="([^"]+)"[^>]*>(.*?)</select>', t, re.S)[:6]:
+        opts = re.findall(r'<option[^>]*value="([^"]*)"[^>]*>([^<]*)', sel)
+        out.append(f"SELECT {name}: {len(opts)} options; first: {opts[:8]}")
+    inputs = re.findall(r'<input[^>]*name="([^"]+)"[^>]*type="([^"]+)"', t)[:20]
+    out.append("INPUTS: " + str(inputs))
+    ths = re.findall(r"<th[^>]*>\s*(.*?)\s*</th>", t, re.S)[:20]
+    out.append("TABLE HEADERS: " + str([re.sub(r"<[^>]+>|\s+", " ", h).strip() for h in ths]))
+    rows = re.findall(r"<tr[^>]*>(.*?)</tr>", t, re.S)
+    out.append(f"TR count: {len(rows)}")
+    for row in rows[1:4]:
+        tds = [re.sub(r"<[^>]+>|\s+", " ", td).strip() for td in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)]
+        out.append("  ROW: " + str(tds[:10]))
+    out.append("HEAD EXCERPT: " + re.sub(r"\s+", " ", t[:1500]))
+except Exception as exc:
+    out.append(f"ERROR {exc}")
 
 os.makedirs("probe", exist_ok=True)
 open("probe/naac_probe.txt", "w").write("\n".join(out) + "\n")
-print("\n".join(out[:6]))
+print("\n".join(out[:8]))
