@@ -1,0 +1,26 @@
+landing ok (9958 bytes); states parsed: 37
+submit buttons: {'btn_Search': {'type': 'submit', 'value': 'Search'}, 'btnResetSearch': {'type': 'submit', 'value': 'Reset Search'}}
+GRID HEADERS (Maharashtra/College): ['Slno.', 'Name of the College/Location', 'Accredited Status', 'EC Date', 'Cycles', '&nbsp;']
+Maharashtra / College: 1548 rows over 1 page(s)
+  SAMPLE: ['1546', "Zeal Education Society's Zeal College of Engineering and Research Survey No. 39, Narhe-Dhayari Raod, Narhe Pune 411041", 'A', '27/11/2017', 'Cycle1', 'Cycle1Report']
+  SAMPLE: ['1547', "Zeal Education Society's Zeal Institute of Business Administration, Computer Application and Research S. No. 39, Behind Bhairavnath Temple, Narhe - Dhayari Road Narhe gaon Tal- Haveli Pune 411041", 'B', '02/11/2018', 'Cycle1', '']
+  SAMPLE: ['1548', 'Zulekha College of Commerce, Science and Technology Plot No.38/39 Main Road, Shantinagar Nagpur 440002', 'C', '02/11/2018', 'Cycle1', '']
+GRID HEADERS (Maharashtra/University): ['Slno.', 'Name of the University/Location', 'Accredited Status', 'EC Date', 'Cycles', '&nbsp;']
+Maharashtra / University: 32 rows over 1 page(s)
+  SAMPLE: ['30', 'Tata Institute of Social Sciences (Deemed-to-be-University u/s 3 of the UGC Act 1956) V. N. Purav Marg, Deonar Mumbai 400088', '5 A A', '12/02/2002 31/12/2009 19/02/2016', 'Cycle1 Cycle2 Cycle3', 'Cycle1Report Cycle2Report Cycle3Report']
+  SAMPLE: ['31', 'Tilak Maharashtra Vidyapeeth (Deemed-to-be-University u/s 3 of the UGC Act 1956) (Re-assessment) Vidyapeeth Bhavan, Mukundnagar, Gultekdi Pune 411037', 'B+ B++', '29/04/2003 02/11/2018', 'Cycle1 Cycle2', 'Cycle1Report Cycle2Report']
+  SAMPLE: ['32', 'University of Mumbai M. G. Road, Fort Mumbai 400032', '5 A', '22/03/2001 21/04/2012', 'Cycle1 Cycle2', 'Cycle1Report Cycle2Report']
+Gujarat / College: 468 rows over 1 page(s)
+  SAMPLE: ['466', 'Waymade College of Education Near GCET Engineering College, Bakrol Road Vallabh Vidyanagar 388120', 'B B+', '27/03/2011 12/09/2017', 'Cycle1 Cycle2', 'Cycle1Report']
+  SAMPLE: ['467', 'Y. S. Arts and K. S. Shah Commerce College P. B. No. 5, Dist. Dahod Devgadh Baria 389380', 'B', '16/09/2008', 'Cycle1', 'Cycle1Report']
+  SAMPLE: ['468', 'Yogi Divine Society Prerit Sarvoday Kelavani Samaj Sanchalit Atmiya Institute of Technology and Science Yogidham Gurukul, Kalawad Road Rajkot 360005', 'B', '16/09/2008', 'Cycle1', 'Cycle1Report']
+Gujarat / University: 19 rows over 1 page(s)
+  SAMPLE: ['17', 'Sumandeep Vidyapeeth At. & P.O. Pipariya, Tal. Waghodia District Vadodara 391760', 'A', '16/11/2015', 'Cycle1', 'Cycle1Report']
+  SAMPLE: ['18', 'The Maharaja Sayajirao University of Baroda Opp. Drug Lab, Fatehganj Vadodara 390002', '4 B A', '22/03/2001 28/03/2010 16/12/2016', 'Cycle1 Cycle2 Cycle3', 'Cycle1Report Cycle2Report Cycle3Report']
+  SAMPLE: ['19', 'Veer Narmad South Gujarat University Udhna-Magdalla Road Surat 395007', 'B++ B A', '16/09/2004 08/01/2011 22/02/2017', 'Cycle1 Cycle2 Cycle3', 'Cycle1Report Cycle2Report Cycle3Report']
+Goa / College: 26 rows over 1 page(s)
+  SAMPLE: ['24', 'Vidya Prabodhini College of Commerce, Education, Computer and Management Vidya Nagar, Alto Porvorim Bardez 403521', 'B+', '26/09/2018', 'Cycle1', '']
+  SAMPLE: ['25', 'Vidya Vikas Mandal’s Shree Damodar College of Commerce & Economics P.O. Box No. 347. G.R. Kare Road, Tansor Comba Marmagao 403601', '3 B++ B', '09/10/1999 17/10/2006 01/05/2015', 'Cycle1 Cycle2 Cycle3', 'Cycle2Report Cycle3Report']
+  SAMPLE: ['26', "Vidya Vikas Mandal's Govind Ramnath Kare College of law V.V.M.Campus, G.R. Kare Road,Tansor, Comba Margao 403601", 'B', '05/01/2013', 'Cycle1', 'Cycle1Report']
+Goa / University: 0 rows over 1 page(s)
+total raw rows: 2093
