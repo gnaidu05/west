@@ -405,8 +405,10 @@
     </div>
     <div class="visual">
       <div class="slicers" style="margin-bottom:6px">
-        <p class="vtitle" style="margin:0">College directory <span class="vhint">· every college — edit any of them</span></p>
-        <span class="control" style="margin-left:auto">
+        <p class="vtitle" style="margin:0">College directory <span class="vhint">· pick your name to see and edit your colleges</span></p>
+        <span class="control" style="margin-left:auto"><label for="dirSpoc">SPOC</label>
+          <select id="dirSpoc"><option>All</option></select></span>
+        <span class="control">
           <input type="search" id="dirSearch" placeholder="Find a college…" aria-label="Find a college"></span>
         <button type="button" class="sync" id="syncState"></button>
       </div>
@@ -1100,9 +1102,12 @@ let zoneSet = new Set();   // empty = all states
 function populateFilters() {
   els.zoneChips.innerHTML = ZONES.map(z =>
     `<button type="button" class="zchip${zoneSet.has(z) ? " on" : ""}" data-zone="${z}" aria-pressed="${zoneSet.has(z)}">${z}</button>`).join("");
-  for (const s of [...new Set(COLLEGES.map(c => c.spoc).filter(Boolean))].sort())
+  for (const s of [...new Set(COLLEGES.map(c => c.spoc).filter(Boolean))].sort()) {
     els.spoc.add(new Option(s));
+    F("dirSpoc").add(new Option(s));
+  }
   els.spoc.add(new Option("Unassigned"));
+  F("dirSpoc").add(new Option("Unassigned"));
   for (const g of [...new Set(COLLEGES.map(c => realGroup(c.group, c.name)).filter(Boolean))].sort())
     els.grp.add(new Option(g));
 }
@@ -1461,14 +1466,17 @@ function renderCatalogue(viewRows) {
 let activeView = "dash";
 function renderAddList(allRows) {
   const q = F("dirSearch").value.trim().toLowerCase();
+  const sv = F("dirSpoc").value;
+  const mine = sv === "All" ? allRows
+    : allRows.filter(r => sv === "Unassigned" ? !r.spoc : r.spoc === sv);
   // touched colleges first, then the rest, each group alphabetical
-  const list = allRows.slice().sort((a, b) =>
+  const list = mine.slice().sort((a, b) =>
     ((b.added || b.edited) - (a.added || a.edited)) || a.name.localeCompare(b.name));
   const shown = q ? list.filter(r =>
     r.name.toLowerCase().includes(q) || r.city.toLowerCase().includes(q) || r.state.toLowerCase().includes(q)
     || r.tpo.toLowerCase().includes(q) || r.spoc.toLowerCase().includes(q) || r.group.toLowerCase().includes(q)) : list;
   if (!shown.length) {
-    els.addedList.innerHTML = `<div class="empty">No colleges match "${esc(q)}"</div>`;
+    els.addedList.innerHTML = `<div class="empty">No colleges match${sv === "All" ? "" : ` SPOC ${esc(sv)}`}${q ? ` "${esc(q)}"` : ""}</div>`;
     return;
   }
   els.addedList.innerHTML = shown.map(r => `
@@ -1890,6 +1898,7 @@ els.form.addEventListener("input", e => {
   updatePreview();
 });
 F("dirSearch").addEventListener("input", render);
+F("dirSpoc").addEventListener("change", render);
 els.form.addEventListener("change", updatePreview);
 els.form.addEventListener("submit", async e => {
   e.preventDefault();
