@@ -35,8 +35,6 @@ create table if not exists public.shared_colleges_west (
   tpoemail text,
   tpophone text,
   spoc text,
-  spocemail text,
-  spocphone text,
   -- reference-only West-zone programme fields from the team's worksheet
   grp text,
   hml text,

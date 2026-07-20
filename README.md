@@ -54,9 +54,9 @@ college's breakdown states which one it is.
   priority tag (filter, column, scoring component) from the all-India
   engine were removed — the worksheet's Priority-1..4 remains as a
   reference field.
-- **TPO & SPOC contact fields** on every college: TPO (name, email, phone)
-  for the college side and SPOC (name, email, phone) for our team's owner
-  of the relationship. They appear as table columns, in the row breakdown's
+- **TPO & SPOC fields** on every college: TPO (name, email, phone) for
+  the college side and the SPOC name for our team's owner of the
+  relationship. They appear as table columns, in the row breakdown's
   Contacts card, on catalogue cards, in the Add/Edit form, and are
   searchable — plus the SPOC slicer on the dashboard. Contacts never
   affect the score.
