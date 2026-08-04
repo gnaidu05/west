@@ -1276,8 +1276,8 @@ const saveUser = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(us
    each browser's localStorage. The table + row-level-security policies
    are created by supabase/shared_colleges.sql in this repo. */
 const SHARED = {
-  url: "",       // e.g. "https://abcdefgh.supabase.co"
-  anonKey: "",   // the project's public anon key (safe to embed; RLS applies)
+  url: "https://dfgrsveweslvvehtwdgg.supabase.co",
+  anonKey: "sb_publishable_h6TJSa_-Ds92qll5XJzemg_-fxjRkYj",  // publishable key — safe to embed; RLS applies
   table: "shared_colleges_west",
 };
 const sharedOn = () => !!(SHARED.url && SHARED.anonKey);
@@ -1301,7 +1301,7 @@ const AUTH = {
   //              RLS-enforced. Set to "supabase" AND fill in SHARED below,
   //              then run supabase/auth_and_approvals.sql. Users sign in with
   //              their EMAIL + password.
-  mode: "local",
+  mode: "supabase",
 };
 const A_SESSION = "westCollegeDashboard.session.v1";
 const A_USERS   = "westCollegeDashboard.users.v1";
