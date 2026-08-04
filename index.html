@@ -168,12 +168,17 @@
     padding: 16px; background: var(--surface-1); border-top: 1px dashed var(--border-strong);
     display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;
   }
-  .card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+  .card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; min-width: 0; }
   .card h3 { margin: 0 0 8px; font-size: 12.5px; color: var(--text-secondary); font-weight: 600; }
   .kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; padding: 2px 0; }
   .kv .k { color: var(--text-muted); min-width: 0; overflow-wrap: anywhere; }
   .kv .v { font-variant-numeric: tabular-nums; text-align: right; min-width: 0; overflow-wrap: anywhere; }
   .kv.total { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 6px; font-weight: 600; }
+  .kv.stack { display: block; }
+  .kv.stack .k { display: block; }
+  .kv.stack .v { display: block; text-align: left; margin-top: 1px; font-weight: 500;
+    white-space: normal; overflow-wrap: anywhere; }
+  .kv.stack .v a { display: inline-block; margin: 0 10px 2px 0; }
   .comp { margin: 6px 0; }
   .comp .lbl { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-secondary); }
   .comp .lbl b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
@@ -1288,9 +1293,9 @@ function profileCardHTML(c) {
   const media = Array.isArray(c.media) ? c.media : [];
   if (!rows.length && !media.length) return "";
   const body = rows.map(([k, v]) =>
-    `<div class="kv"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`).join("");
-  const mediaHTML = media.length ? `<div class="kv"><span class="k">Media</span><span class="v">` +
-    media.map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join("<br>") +
+    `<div class="kv stack"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`).join("");
+  const mediaHTML = media.length ? `<div class="kv stack"><span class="k">Media</span><span class="v">` +
+    media.map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join("") +
     `</span></div>` : "";
   return `<div class="card"><h3>Institution profile</h3>${body}${mediaHTML}
     <p class="note">Reference only — programme, recruiter and media detail; never affects the score.</p></div>`;
