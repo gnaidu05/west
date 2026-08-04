@@ -68,6 +68,14 @@ college's breakdown states which one it is.
   full-width panel of titled mini-tables + chips below the score cards;
   it persists per-browser and syncs via Supabase. Populate any college
   through the UI (see Rashtriya Raksha University for a worked example).
+- **NIRF 2025 institute data** — for the NIRF-ranked West colleges (COEP,
+  PDEU, DIAT, Symbiosis) the `scripts/probe_nirf_detail.py` workflow pulls
+  each institute's official self-declared NIRF data PDF and fills a
+  sanctioned-intake table and a "Placement (NIRF 2025)" block (UG/PG
+  median salary + placed/graduating counts) into its Institution profile;
+  where a college's median salary was blank it's filled from the official
+  NIRF figure (DIAT, Symbiosis), which does feed the score. Only ranked
+  institutes publish this data — unranked colleges have none.
 - **Programme fields** (group, HML, MOU status & type, WZ priority, phase,
   mode) imported from the SPOC workbook are reference-only: shown in the
   breakdown's Profile card and as catalogue tags, preserved across form
