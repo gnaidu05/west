@@ -76,6 +76,21 @@ college's breakdown states which one it is.
   where a college's median salary was blank it's filled from the official
   NIRF figure (DIAT, Symbiosis), which does feed the score. Only ranked
   institutes publish this data — unranked colleges have none.
+- **AICTE approved-intake seed** — for 102 of the AICTE-approved colleges the
+  `scripts/build_aicte_profiles.py` job fills the **Programmes** (course +
+  level) and **Batch Size / Intake** (course + sanctioned seats) profile
+  tables straight from AICTE's official 2025-26 approved-course data
+  (`facilities.aicte-india.org` approved-course endpoint, via the open
+  per-state mirror). Each seeded table is captioned *"AICTE approved intake
+  2025-26"*. Because the dashboard drives real hiring decisions, matches are
+  hand-reviewed: a BLOCK list drops high-scoring but wrong namesakes / wrong
+  sub-entities (a Polytechnic wing, an Institute of Management, a different
+  campus), an ALLOW list restores correct matches diluted by a long trust
+  prefix, split/duplicate AICTE listings are excluded, and a college is never
+  overwritten if it already has a profile (the NIRF-ranked colleges and the
+  hand-built Rashtriya Raksha University profile are left intact). The other
+  profile fields (Overview, Campuses, Hot skills, Top recruiters) still come
+  from the form or a team import — AICTE only publishes programmes and intake.
 - **Programme fields** (group, HML, MOU status & type, WZ priority, phase,
   mode) imported from the SPOC workbook are reference-only: shown in the
   breakdown's Profile card and as catalogue tags, preserved across form
