@@ -1294,17 +1294,31 @@ let sharedError = null;
    Supabase Auth + Row-Level Security and the shared_pending_west table —
    see supabase/auth_and_approvals.sql and the README. When SHARED is
    configured, the request queue below already syncs through that table. */
-const AUTH = { enabled: true };
+const AUTH = {
+  enabled: true,
+  // "local"    — client-side demo gate (localStorage users); NOT real security
+  // "supabase" — real auth: sign in via Supabase Auth, roles from profiles,
+  //              RLS-enforced. Set to "supabase" AND fill in SHARED below,
+  //              then run supabase/auth_and_approvals.sql. Users sign in with
+  //              their EMAIL + password.
+  mode: "local",
+};
 const A_SESSION = "westCollegeDashboard.session.v1";
 const A_USERS   = "westCollegeDashboard.users.v1";
 const A_PENDING = "westCollegeDashboard.pending.v1";
 const PENDING_TABLE = "shared_pending_west";
 
+/* under Supabase Auth (mode "supabase") authenticated calls carry the signed-in
+   user's access token so Row-Level Security sees who they are; otherwise the
+   public anon key is used (mode "local" / open sharing). */
+const sbAuthToken = () => (AUTH.mode === "supabase" && typeof session !== "undefined"
+  && session && session.token) ? session.token : SHARED.anonKey;
+
 async function sbFetch(query, opts = {}) {
   const res = await fetch(`${SHARED.url}/rest/v1/${SHARED.table}${query}`, {
     ...opts,
     headers: {
-      apikey: SHARED.anonKey, Authorization: `Bearer ${SHARED.anonKey}`,
+      apikey: SHARED.anonKey, Authorization: `Bearer ${sbAuthToken()}`,
       "Content-Type": "application/json", Prefer: "return=representation",
       ...(opts.headers || {}),
     },
@@ -2569,14 +2583,38 @@ function seedUsers() {
 let USERS = seedUsers();
 const saveUsers = () => lsSet(A_USERS, USERS);
 let session = lsGet(A_SESSION, null);
-const currentUser = () => session && USERS.find(u => u.u === session.u) || session;
+const currentUser = () => {
+  if (!session) return null;
+  if (AUTH.mode === "supabase") return session;         // session carries role/scope/name
+  return USERS.find(u => u.u === session.u) || session;
+};
 const role = () => (currentUser() || {}).role || null;
+
+/* Supabase Auth sign-in: authenticate, then read this user's role from the
+   profiles table. Returns { session } or { error }. */
+async function supaLogin(email, password) {
+  let res;
+  try {
+    res = await fetch(`${SHARED.url}/auth/v1/token?grant_type=password`, {
+      method: "POST", headers: { apikey: SHARED.anonKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ email: (email || "").trim(), password }) });
+  } catch (e) { return { error: "network" }; }
+  if (!res.ok) return { error: "bad" };
+  const d = await res.json();
+  let role = "tpo", scope = "", name = email;
+  try {
+    const prof = await fetch(`${SHARED.url}/rest/v1/profiles?id=eq.${d.user.id}&select=role,scope,name`,
+      { headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${d.access_token}` } }).then(r => r.json());
+    if (prof && prof[0]) { role = prof[0].role || "tpo"; scope = prof[0].scope || ""; name = prof[0].name || email; }
+  } catch (e) { /* no profile row yet → default tpo */ }
+  return { session: { u: email, token: d.access_token, refresh: d.refresh_token, role, scope, name } };
+}
 
 let PENDING = lsGet(A_PENDING, []);
 const savePending = () => lsSet(A_PENDING, PENDING);
 async function sbPending(query, opts = {}) {
   const res = await fetch(`${SHARED.url}/rest/v1/${PENDING_TABLE}${query}`, {
-    ...opts, headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${SHARED.anonKey}`,
+    ...opts, headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${sbAuthToken()}`,
       "Content-Type": "application/json", Prefer: "return=representation", ...(opts.headers || {}) } });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.status === 204 ? null : res.json();
@@ -2674,7 +2712,8 @@ function renderAuthChip() {
   $("authWho").textContent = u.name + (u.role === "tpo" ? ` · ${u.scope}` : "");
   const rl = $("authRole"); rl.textContent = u.role; rl.className = "role" + (u.role === "admin" ? " admin" : "");
   const admin = u.role === "admin";
-  $("apprBtn").hidden = !admin; $("usersBtn").hidden = !admin;
+  $("apprBtn").hidden = !admin;
+  $("usersBtn").hidden = !admin || AUTH.mode === "supabase";  // users managed in Supabase when real auth
   $("myReqBtn").hidden = admin;
   updateReqCounts();
 }
@@ -2736,14 +2775,29 @@ function renderUsers() {
 }
 
 /* ---- wire events ---- */
-$("loginForm").addEventListener("submit", e => {
+$("loginForm").addEventListener("submit", async e => {
   e.preventDefault();
+  if (AUTH.mode === "supabase") {
+    $("lg_err").textContent = "Signing in…";
+    const r = await supaLogin($("lg_user").value, $("lg_pass").value);
+    if (r.error) { $("lg_err").textContent = r.error === "network" ? "Network error — check your connection." : "Invalid email or password."; return; }
+    session = r.session; lsSet(A_SESSION, session);
+    $("lg_err").textContent = ""; showGate(false); renderAuthChip();
+    try { userColleges = []; baseEdits = {}; await loadShared(); await loadPending(); } catch (e2) {}
+    render(); return;
+  }
   if (doLogin($("lg_user").value, $("lg_pass").value)) {
     $("lg_err").textContent = ""; showGate(false); renderAuthChip(); render();
   } else $("lg_err").textContent = "Invalid username or password.";
 });
+if (AUTH.mode === "supabase") {
+  const lbl = document.querySelector('label[for="lg_user"]'); if (lbl) lbl.textContent = "Email";
+  $("lg_user").type = "email"; $("lg_user").setAttribute("autocomplete", "email");
+}
 $("logoutBtn").addEventListener("click", logout);
-$("lg_demo").innerHTML = `Demo sign-ins — Admin <code data-fill="admin|admin">admin / admin</code>` +
+if (AUTH.mode === "supabase")
+  $("lg_demo").textContent = "Sign in with your Supabase account email and password.";
+else $("lg_demo").innerHTML = `Demo sign-ins — Admin <code data-fill="admin|admin">admin / admin</code>` +
   (USERS.find(u => u.role === "spoc") ? ` · SPOC <code data-fill="${USERS.find(u=>u.role==='spoc').u}|west">${USERS.find(u=>u.role==='spoc').u} / west</code>` : "") +
   (USERS.find(u => u.role === "tpo") ? ` · TPO <code data-fill="tpo|west">tpo / west</code>` : "");
 $("lg_demo").addEventListener("click", e => {
@@ -2784,8 +2838,14 @@ for (const id of ["apprOverlay", "usersOverlay", "myReqOverlay"])
 
 populateFilters();
 (async () => {
-  if (sharedOn()) { userColleges = []; baseEdits = {}; await loadShared(); await loadPending(); }
-  if (AUTH.enabled && !currentUser()) showGate(true);
+  const loggedIn = !!currentUser();
+  // in Supabase-auth mode the shared data is RLS-protected, so only load it
+  // once we have a signed-in session (otherwise wait for the login handler)
+  if (sharedOn() && (AUTH.mode !== "supabase" || loggedIn)) {
+    userColleges = []; baseEdits = {};
+    try { await loadShared(); await loadPending(); } catch (e) {}
+  }
+  if (AUTH.enabled && !loggedIn) showGate(true);
   else { showGate(false); renderAuthChip(); }
   render();
 })();

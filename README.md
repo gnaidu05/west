@@ -152,11 +152,18 @@ approves them; submitters track status under **My requests**.
 sessions and the request queue live in `localStorage`) — a convenient UI gate,
 but *not* real security: anyone can read the page source, and approvals stay
 per-browser. Seeded demo sign-ins are shown on the login screen
-(`admin / admin`, each SPOC as `<firstname> / west`, `tpo / west`). For real,
-team-wide enforcement, run `supabase/auth_and_approvals.sql` (Supabase Auth +
-Row-Level Security + the shared `shared_pending_west` queue) and configure
-`SHARED`; the request queue then syncs across the team and only admins can
-write applied changes.
+(`admin / admin`, each SPOC as `<firstname> / west`, `tpo / west`).
+
+For real, team-wide enforcement: create a Supabase project, run
+`supabase/shared_colleges.sql` then `supabase/auth_and_approvals.sql`
+(Supabase Auth + Row-Level Security + the shared `shared_pending_west` queue),
+create your users in Supabase Auth and give each a row in `profiles`
+(`role` = admin/spoc/tpo, `scope` = the SPOC name or the college name), fill in
+the `SHARED` config, and set `AUTH.mode = "supabase"` near the `AUTH` config.
+Users then sign in with their **email + password**, roles come from `profiles`,
+the request queue syncs across the team, and only admins can write applied
+changes. The client already carries each signed-in user's token on its calls,
+so RLS is what actually enforces the rules.
 
 ## Updating the NIRF directory
 

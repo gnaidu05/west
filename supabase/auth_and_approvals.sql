@@ -55,13 +55,16 @@ create policy "admin updates status" on public.shared_pending_west
 
 -- 3) Lock down the college table so only admins write the applied changes.
 --    (Approved requests are applied by the admin who clicks Approve.)
---    Replace any permissive write policy from shared_colleges.sql with these:
+--    This replaces the open anon policies created by shared_colleges.sql.
 alter table public.shared_colleges_west enable row level security;
-drop policy if exists "anon can write" on public.shared_colleges_west;
-create policy "anyone signed in can read" on public.shared_colleges_west
-  for select using (auth.role() = 'authenticated');
+drop policy if exists "anon read"   on public.shared_colleges_west;
+drop policy if exists "anon insert" on public.shared_colleges_west;
+drop policy if exists "anon update" on public.shared_colleges_west;
+drop policy if exists "anon delete" on public.shared_colleges_west;
+create policy "signed-in can read" on public.shared_colleges_west
+  for select to authenticated using (true);
 create policy "admins can write" on public.shared_colleges_west
-  for all using (public.is_admin()) with check (public.is_admin());
+  for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 -- Seed an admin after creating the user in Auth:
 --   insert into public.profiles (id, role, name)
