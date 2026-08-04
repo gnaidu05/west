@@ -670,7 +670,7 @@ const COLLEGES = [
 {"name":"Prof Ram Meghe Institute of Technology and Research, Badnera","loc":"Amravati, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dr. Nikkoo N.Khalsa","tpoEmail":"tpomitech@mitra.ac.in","tpoPhone":"9823793943","spoc":null},
 {"name":"Rajarambapu Institute of Technology, Sangli","loc":"Sangli, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dr. A. P. Shah","tpoEmail":"abhijeet.shah@ritindia.edu","tpoPhone":"7757000780","spoc":null},
 {"name":"Ramrao Adik Institute of Technology","loc":"Mumbai, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":"151-200","naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dr. Amarsinha Vidhate","tpoEmail":"stpo@rait.ac.in","tpoPhone":"9869629072","spoc":"Asmita","hml":"Medium","mou":"MOU College","mouType":"MOU - PBS (P)","phase":"Phase-1","mode":"PV","wzPriority":"Priority-1"},
-{"name":"Rashtriya Raksha University","loc":"Gandhinagar, Gujarat","type":"Central University (Institution of National Importance)","year":2009,"div":"No","nirf25":"-","nirf24":"-","nirf23":"-","naac":"A","nba":null,"avg":550000,"med":null,"eng":null,"tpo":"Internship & Placement Branch (I&PB)","tpoEmail":null,"tpoPhone":null,"spoc":null},
+{"name":"Rashtriya Raksha University","loc":"Gandhinagar, Gujarat","type":"Institute of National Importance (MHA, Govt. of India); recognized by UGC & MoE","year":2010,"div":"No","nirf25":"-","nirf24":"-","nirf23":"-","naac":null,"nba":null,"avg":550000,"med":null,"eng":null,"tpo":"Internship & Placement Branch (I&PB)","tpoEmail":null,"tpoPhone":null,"spoc":null,"school":"School of Information Technology, Artificial Intelligence & Cyber Security (SITAICS)","programs":"B.Tech CSE (Cyber Security); M.Tech Cyber Security; M.Tech Data Science & ML; M.Sc Cyber Security & Digital Forensics; PG Diploma Cyber Security & Digital Forensics; PhD (IT/AI/Cyber & allied)","skills":"Cyber Security (VAPT, SOC, REM, GRC), Network Security, AI, Data Science, ML, Digital Forensics, Data Analytics, Cloud & IoT Security","specializations":"Cyber Security · Digital Forensics · Data Science & ML","batch":"~170/yr — B.Tech CSE-Cyber 60, M.Tech Cyber 20, M.Tech DS&ML 20, M.Sc Cyber&DF 60, PG Dip 10","recruiters":"Deloitte, PwC, EY, KPMG, TCS, Salesforce, ZScaler, NPCI, ICICI Bank, BSE India, Adani, Nexdigm, INDMoney, C3iHub, Quick Heal, Trend Micro, Colgate, GMR (Gramax)","mous":"129+ (CAPFs, NSPO, State Police, corporates & international orgs)","campuses":"Gandhinagar (main), Pasighat, Lucknow, Shivamogga, Puducherry, Bhopal, J&K; upcoming Haryana & Odisha","media":[["Bharat NCX 2025 (PIB)","https://www.pib.gov.in/PressReleasePage.aspx?PRID=2146338"],["Bharat NCX 2024 (PIB)","https://www.pib.gov.in/PressReleasePage.aspx?PRID=2079609"],["CII SECEX 2024","https://rru.ac.in/cii-secex-2024/"],["Bharat CISO's Conclave (PIB)","https://www.pib.gov.in/PressReleasePage.aspx?PRID=2150319"],["Recognised as INI, expands across states (ET)","https://economictimes.indiatimes.com/news/defence/rashtriya-raksha-university-recognised-as-institution-of-national-importance-expands-across-states/articleshow/123420595.cms"]]},
 {"name":"RC Patel Institute of Technology, Shirpur","loc":"Shirpur, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Prof. Milkesh Jain","tpoEmail":"milkesh.rcpit@yahoo.com","tpoPhone":"9403560548","spoc":null},
 {"name":"RH Sapat College of Engineering, Management Studies and Research, Nashik","loc":"Nashik, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dhanraj Deshpande","tpoEmail":"dhanraj.deshpande@ges-coengg.org","tpoPhone":"9422312097","spoc":null},
 {"name":"Rizvi College of Engineering","loc":"Mumbai, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Aarefa Faridoon","tpoEmail":"tpo@eng.rizvi.edu.in","tpoPhone":"9821901352","spoc":null},
@@ -1121,7 +1121,8 @@ function viewSets() {
   ordered.forEach((r, k) => r.rank = k + 1);
   const q = els.search.value.trim().toLowerCase();
   const bySearch = r => !q || r.name.toLowerCase().includes(q) || r.city.toLowerCase().includes(q) || r.state.toLowerCase().includes(q)
-    || r.tpo.toLowerCase().includes(q) || r.spoc.toLowerCase().includes(q) || r.group.toLowerCase().includes(q);
+    || r.tpo.toLowerCase().includes(q) || r.spoc.toLowerCase().includes(q) || r.group.toLowerCase().includes(q)
+    || [r.raw.school, r.raw.programs, r.raw.skills, r.raw.recruiters].some(v => v && v.toLowerCase().includes(q));
   const byZone = r => zoneMatch(r.state);
   const bySpoc = r => els.spoc.value === "All"
     || (els.spoc.value === "Unassigned" ? !r.spoc : r.spoc === els.spoc.value);
@@ -1272,6 +1273,29 @@ function spocChartHTML(rows) {
   return `<div class="donutwrap">${svg}<div class="legend">${legend}</div></div>`;
 }
 
+/* ---- reference-only institution profile (never scored) ---- */
+function profileCardHTML(c) {
+  const rows = [
+    ["School / department", c.school],
+    ["Programmes", c.programs],
+    ["Hot skills", c.skills],
+    ["Super-specializations", c.specializations],
+    ["Batch size", c.batch],
+    ["Top recruiters", c.recruiters],
+    ["MoUs", c.mous],
+    ["Campuses", c.campuses],
+  ].filter(([, v]) => v);
+  const media = Array.isArray(c.media) ? c.media : [];
+  if (!rows.length && !media.length) return "";
+  const body = rows.map(([k, v]) =>
+    `<div class="kv"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`).join("");
+  const mediaHTML = media.length ? `<div class="kv"><span class="k">Media</span><span class="v">` +
+    media.map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join("<br>") +
+    `</span></div>` : "";
+  return `<div class="card"><h3>Institution profile</h3>${body}${mediaHTML}
+    <p class="note">Reference only — programme, recruiter and media detail; never affects the score.</p></div>`;
+}
+
 /* ================= detail breakdown (unchanged logic) ================= */
 function detailHTML(r) {
   const c = r.raw;
@@ -1312,6 +1336,7 @@ function detailHTML(r) {
       <div class="kv"><span class="k">SPOC (our team)</span><span class="v">${esc(c.spoc || "—")}</span></div>
       <p class="note">Reference only — contacts never affect the score.</p>
     </div>
+    ${profileCardHTML(c)}
     <div class="card"><h3>Index inputs</h3>
       ${ranks.map(([y, raw, used]) => `<div class="kv"><span class="k">NIRF ${y}</span><span class="v">${esc(raw ?? "—")} → ${used}</span></div>`).join("")}
       <div class="kv"><span class="k">Weighted rank (0.5/0.3/0.2)</span><span class="v">${fmt2(rankUsed(c.nirf25)*0.5 + rankUsed(c.nirf24)*0.3 + rankUsed(c.nirf23)*0.2)}</span></div>
@@ -1900,7 +1925,8 @@ els.form.addEventListener("submit", async e => {
   const prevSrc = editBaseName !== null
     ? (baseEdits[editBaseName] || COLLEGES.find(x => x.name === editBaseName))
     : (editIndex !== null ? userColleges[editIndex] : null);
-  if (prevSrc) for (const k of ["group","hml","mou","mouType","phase","mode","wzPriority","prYear"])
+  if (prevSrc) for (const k of ["group","hml","mou","mouType","phase","mode","wzPriority","prYear",
+       "school","programs","skills","specializations","batch","recruiters","mous","campuses","media"])
     if (prevSrc[k] !== undefined && prevSrc[k] !== null) c[k] = prevSrc[k];
   const err = validateForm(c);
   if (err) { els.formError.textContent = err; els.formError.classList.remove("ok"); return; }
