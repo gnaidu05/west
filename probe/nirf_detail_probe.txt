@@ -1,0 +1,47 @@
+ranking page: HTTP 200 | 110459 bytes
+IR IDs found: 100; sample: ['IR-E-C-1331', 'IR-E-C-16604', 'IR-E-C-19754', 'IR-E-C-24004', 'IR-E-C-30045', 'IR-E-C-36995']
+candidate detail links: 200
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-1331.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-16604.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-19754.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-24004.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-30045.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-36995.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-37013.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-6379.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-7252.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-I-1074.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-I-1075.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-I-1441.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-I-1480.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0013.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0014.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0017.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0020.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0025.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0042.jpg
+  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0043.jpg
+
+sample IR for detail probe: IR-E-C-1331
+
+TRY https://www.nirfindia.org/nirfpdfcdn/2025/pdf/Engineering/IR-E-C-1331.pdf
+  HTTP 200 | application/pdf | 8812 bytes
+    [Intake] Sanctioned (Approved) Intake | students intake in the
+    [Sanctioned] Sanctioned (Approved) Intake
+    [Median salary] Median salary of | Median salary of
+    [Median Salary] Median salary of | Median salary of
+    [Placement] Placement & Higher Studies | UG [4 Years Program(s)]: Placement & higher studies for previous 3 years
+    [Total Students] Total Students Within State | Total Students
+    [salary] Median salary of | Median salary of
+
+TRY https://www.nirfindia.org/Rankings/2025/Report/IR-E-C-1331.pdf
+  HTTP 404 | text/html; charset=utf-8 | 4969 bytes
+
+TRY https://www.nirfindia.org/2025/Institutions/IR-E-C-1331
+  HTTP 404 | text/html; charset=utf-8 | 4969 bytes
+
+TRY https://www.nirfindia.org/DataCapture/Report/IR-E-C-1331
+  HTTP 404 | text/html; charset=utf-8 | 4969 bytes
+
+TRY https://www.nirfindia.org/Rankings/2025/Institutions/Institution.html?ID=IR-E-C-1331
+  HTTP 404 | text/html; charset=utf-8 | 4969 bytes
