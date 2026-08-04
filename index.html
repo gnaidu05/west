@@ -418,6 +418,53 @@
   .added-row .ar-score { font-size: 12.5px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
   .added-row .ar-actions { display: flex; gap: 6px; }
   @media (prefers-color-scheme: dark) { .form-error { color: #e66767; } }
+  /* ---- auth: login gate, user chip, approvals ---- */
+  #loginGate { position: fixed; inset: 0; z-index: 100; display: none;
+    align-items: center; justify-content: center; padding: 5vh 16px;
+    background: var(--bg, #f4f4f5); overflow: auto; }
+  #loginGate.show { display: flex; }
+  body.locked { overflow: hidden; }
+  .login-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+    box-shadow: var(--shadow); width: 100%; max-width: 380px; padding: 26px 26px 22px; }
+  .login-card h1 { font-size: 18px; margin: 0 0 2px; }
+  .login-card .sub { color: var(--text-muted); font-size: 12.5px; margin: 0 0 18px; }
+  .login-card label { display: block; font-size: 12px; color: var(--text-secondary); margin: 12px 0 4px; }
+  .login-card input { width: 100%; box-sizing: border-box; padding: 9px 10px; font-size: 13px;
+    border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface-1); color: var(--text-primary); }
+  .login-card .btn.primary { width: 100%; margin-top: 16px; justify-content: center; padding: 9px; }
+  .login-err { color: #b3261e; font-size: 12px; margin-top: 10px; min-height: 14px; }
+  @media (prefers-color-scheme: dark) { .login-err { color: #e66767; } }
+  .login-demo { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);
+    font-size: 11.5px; color: var(--text-muted); line-height: 1.7; }
+  .login-demo code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; cursor: pointer; }
+  .auth-chip { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; }
+  .auth-chip .who { color: var(--text-secondary); }
+  .auth-chip .role { text-transform: uppercase; letter-spacing: .04em; font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); }
+  .auth-chip .role.admin { background: rgba(180,60,60,.16); color: #c0392b; }
+  @media (prefers-color-scheme: dark) { .auth-chip .role.admin { color: #f0908a; } }
+  .pill-btn { border: 1px solid var(--border-strong); background: var(--surface-1); color: var(--text-primary);
+    border-radius: 999px; padding: 3px 11px; font-size: 12px; cursor: pointer; }
+  .pill-btn .n { background: var(--accent); color: #fff; border-radius: 999px; padding: 0 6px; margin-left: 5px; font-size: 11px; }
+  .req-badge { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+    padding: 2px 7px; border-radius: 9px; }
+  .req-badge.pending { background: rgba(210,150,20,.18); color: #b07d10; }
+  .req-badge.approved { background: rgba(34,160,90,.16); color: #1c9455; }
+  .req-badge.rejected { background: rgba(180,60,60,.16); color: #c0392b; }
+  .appr-row { border-bottom: 1px solid var(--border); padding: 12px 2px; }
+  .appr-row .ar-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .appr-row .ar-head b { font-size: 13px; }
+  .appr-row .ar-sub { color: var(--text-muted); font-size: 11.5px; margin: 3px 0 8px; }
+  .appr-diff { font-size: 12px; border-collapse: collapse; width: 100%; }
+  .appr-diff td { padding: 3px 8px 3px 0; vertical-align: top; border-bottom: 1px dashed var(--border); }
+  .appr-diff .k { color: var(--text-secondary); white-space: nowrap; }
+  .appr-diff .old { color: #b3261e; text-decoration: line-through; }
+  .appr-diff .new { color: #0b6b4a; font-weight: 600; }
+  @media (prefers-color-scheme: dark){ .appr-diff .old{color:#e66767} .appr-diff .new{color:#7fd9b4} }
+  .appr-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+  .users-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 8px; }
+  .users-tbl th, .users-tbl td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  .perm-note { color: var(--text-muted); font-size: 12px; margin: 0 0 10px; }
 </style>
 </head>
 <body>
@@ -429,6 +476,28 @@
     <button type="button" class="tab active" data-view="dash">2 · Dashboard</button>
     <button type="button" class="tab" data-view="cat">3 · Catalogue</button>
   </nav>
+  <div class="auth-chip" id="authChip" style="margin-left:auto" hidden>
+    <button type="button" class="pill-btn" id="myReqBtn" hidden>My requests<span class="n" id="myReqN" hidden></span></button>
+    <button type="button" class="pill-btn" id="apprBtn" hidden>Approvals<span class="n" id="apprN" hidden></span></button>
+    <button type="button" class="pill-btn" id="usersBtn" hidden>Users</button>
+    <span class="who" id="authWho"></span>
+    <span class="role" id="authRole"></span>
+    <button type="button" class="clearlink" id="logoutBtn">Log out</button>
+  </div>
+</div>
+
+<div id="loginGate">
+  <form class="login-card" id="loginForm" autocomplete="off">
+    <h1>West Zone Portal</h1>
+    <p class="sub">Sign in to access the college priority portal.</p>
+    <label for="lg_user">Username</label>
+    <input id="lg_user" type="text" autocomplete="username" required>
+    <label for="lg_pass">Password</label>
+    <input id="lg_pass" type="password" autocomplete="current-password" required>
+    <button type="submit" class="btn primary">Sign in</button>
+    <div class="login-err" id="lg_err"></div>
+    <div class="login-demo" id="lg_demo"></div>
+  </form>
 </div>
 
 <div class="canvas">
@@ -678,6 +747,43 @@
       </table>
     </div>
     <div class="form-actions"><button type="button" class="btn primary" id="naacClose">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="apprOverlay">
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="apprTitle">
+    <h2 id="apprTitle">Pending change requests</h2>
+    <p class="hint">Edits submitted by SPOCs and TPOs. Approving applies the change to the portal; rejecting discards it.</p>
+    <div id="apprBody"></div>
+    <div class="form-actions"><button type="button" class="btn primary" id="apprClose">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="usersOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="usersTitle">
+    <h2 id="usersTitle">Manage users</h2>
+    <p class="perm-note">Client-side accounts (this browser). Roles: <b>admin</b> full rights · <b>spoc</b> edits their own colleges · <b>tpo</b> edits one college — both via approval.</p>
+    <form id="userForm" class="naac-tools" autocomplete="off">
+      <input id="uf_user" type="text" placeholder="username" required style="width:120px">
+      <input id="uf_pass" type="text" placeholder="password" required style="width:110px">
+      <select id="uf_role"><option value="spoc">SPOC</option><option value="tpo">TPO</option><option value="admin">Admin</option></select>
+      <select id="uf_scope"><option value="">— scope —</option></select>
+      <button type="submit" class="btn primary">Add / update</button>
+    </form>
+    <div class="naac-scroll" style="max-height:48vh">
+      <table class="users-tbl"><thead><tr><th>User</th><th>Role</th><th>Scope</th><th></th></tr></thead>
+        <tbody id="usersBody"></tbody></table>
+    </div>
+    <div class="form-actions"><button type="button" class="btn primary" id="usersClose">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="myReqOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="myReqTitle">
+    <h2 id="myReqTitle">My change requests</h2>
+    <p class="hint">Edits you submitted and their approval status.</p>
+    <div id="myReqBody"></div>
+    <div class="form-actions"><button type="button" class="btn primary" id="myReqClose">Close</button></div>
   </div>
 </div>
 
@@ -1176,6 +1282,23 @@ const SHARED = {
 };
 const sharedOn = () => !!(SHARED.url && SHARED.anonKey);
 let sharedError = null;
+
+/* ---- access control (login + roles + approval workflow) ------------------
+   Roles: admin (full rights), spoc (edit only colleges they own, via approval),
+   tpo (edit only their own college, via approval). SPOC/TPO edits become
+   pending change-requests the admin approves before they apply.
+
+   CLIENT-SIDE by default: users, sessions and the request queue live in this
+   browser's localStorage, so it gates the UI but is NOT real security
+   (anyone can read the page source). For real, team-wide enforcement, wire
+   Supabase Auth + Row-Level Security and the shared_pending_west table —
+   see supabase/auth_and_approvals.sql and the README. When SHARED is
+   configured, the request queue below already syncs through that table. */
+const AUTH = { enabled: true };
+const A_SESSION = "westCollegeDashboard.session.v1";
+const A_USERS   = "westCollegeDashboard.users.v1";
+const A_PENDING = "westCollegeDashboard.pending.v1";
+const PENDING_TABLE = "shared_pending_west";
 
 async function sbFetch(query, opts = {}) {
   const res = await fetch(`${SHARED.url}/rest/v1/${SHARED.table}${query}`, {
@@ -1681,11 +1804,11 @@ function detailHTML(r) {
       <div class="kv"><span class="k">Overall rank (by total score)</span><span class="v">${r.prank}</span></div>
       <div class="kv"><span class="k">Base Rank (core only)</span><span class="v">${r.brank}</span></div>
       <div class="form-actions" style="margin-top:12px">
-        ${r.added
+        ${canEditName(r.name) ? (r.added
           ? `<button type="button" class="btn" data-edit="${r.i - COLLEGES.length}">Edit</button>
-             <button type="button" class="btn danger" data-remove="${r.i - COLLEGES.length}">Remove</button>`
+             ${isAdmin() ? `<button type="button" class="btn danger" data-remove="${r.i - COLLEGES.length}">Remove</button>` : ""}`
           : `<button type="button" class="btn" data-editbase="${esc(r.name)}">Edit</button>
-             ${r.edited ? `<button type="button" class="btn danger" data-resetbase="${esc(r.name)}">Reset to original</button>` : ""}`}
+             ${isAdmin() && r.edited ? `<button type="button" class="btn danger" data-resetbase="${esc(r.name)}">Reset to original</button>` : ""}`) : ""}
       </div>
     </div>
   </div>${profileSectionHTML(c)}`;
@@ -1813,11 +1936,11 @@ function renderAddList(allRows) {
       <div class="ar-score">Total <b>${fmt2(r.total)}</b> · overall rank <b>#${r.prank}</b></div>
       <div class="ar-actions">
         <button type="button" class="btn" data-open="${r.i}">View in dashboard</button>
-        ${r.added
+        ${canEditName(r.name) ? (r.added
           ? `<button type="button" class="btn" data-edit="${r.i - COLLEGES.length}">Edit</button>
-             <button type="button" class="btn danger" data-remove="${r.i - COLLEGES.length}">Remove</button>`
+             ${isAdmin() ? `<button type="button" class="btn danger" data-remove="${r.i - COLLEGES.length}">Remove</button>` : ""}`
           : `<button type="button" class="btn" data-editbase="${esc(r.name)}">Edit</button>
-             ${r.edited ? `<button type="button" class="btn danger" data-resetbase="${esc(r.name)}">Reset to original</button>` : ""}`}
+             ${isAdmin() && r.edited ? `<button type="button" class="btn danger" data-resetbase="${esc(r.name)}">Reset to original</button>` : ""}`) : ""}
       </div>
     </div>`).join("");
 }
@@ -1846,6 +1969,7 @@ function spocBandHTML(view) {
 
 function render() {
   buildHead();
+  if (typeof currentUser === "function" && currentUser()) updateReqCounts();
   const { view, forZoneChart, forSpocChart } = viewSets();
   document.getElementById("tierBand").innerHTML = spocBandHTML(view);
   els.count.textContent = `${view.length} of ${COLLEGES.length + userColleges.length} colleges`;
@@ -2274,8 +2398,8 @@ function renderDupWarn() {
     <span class="dw-text">${hard ? "⚠ Already in the list:" : "⚠ Similar college already in the list:"}
       <b>${esc(r.name)}</b> — total ${fmt2(r.total)}, rank #${r.prank}</span>
     <button type="button" class="btn" data-open="${r.i}">View</button>
-    <button type="button" class="btn" ${r.added
-      ? `data-edit="${r.i - COLLEGES.length}"` : `data-editbase="${esc(r.name)}"`}>Edit instead</button>`
+    ${canEditName(r.name) ? `<button type="button" class="btn" ${r.added
+      ? `data-edit="${r.i - COLLEGES.length}"` : `data-editbase="${esc(r.name)}"`}>Edit instead</button>` : ""}`
   ).join("<span style='flex-basis:100%'></span>") +
     (hard ? "" : `<span class="dw-text" style="color:var(--text-muted)">— different college? just continue.</span>`);
 }
@@ -2348,6 +2472,21 @@ els.form.addEventListener("submit", async e => {
     if (prevSrc[k] !== undefined && prevSrc[k] !== null) c[k] = prevSrc[k];
   const err = validateForm(c);
   if (err) { els.formError.textContent = err; els.formError.classList.remove("ok"); return; }
+  /* non-admins can't write directly — their edits become change requests */
+  if (currentUser() && !isAdmin()) {
+    if (editBaseName === null && editIndex === null) {
+      els.formError.textContent = "Only admins can add new colleges — you can edit the college(s) you own."; els.formError.classList.remove("ok"); return; }
+    const tname = editBaseName !== null ? editBaseName : userColleges[editIndex].name;
+    if (!canEditName(tname)) {
+      els.formError.textContent = role() === "tpo" ? "You can only edit your own college." : "You can only edit colleges assigned to you."; els.formError.classList.remove("ok"); return; }
+    const isBase = editBaseName !== null;
+    const base = isBase ? (baseEdits[tname] || COLLEGES.find(x => x.name === tname)) : userColleges[editIndex];
+    await submitRequest(tname, isBase, c, base);
+    editBaseName = null; editIndex = null; openEditor(null);
+    els.formError.textContent = `Change request for “${tname}” submitted for admin approval.`;
+    els.formError.classList.add("ok"); updateReqCounts();
+    return;
+  }
   if (editBaseName !== null) {
     const name = editBaseName;
     if (sharedOn()) {
@@ -2410,9 +2549,246 @@ els.form.addEventListener("submit", async e => {
 
 els.sync.addEventListener("click", () => { if (sharedOn()) loadShared(); });
 
+/* ================== access control (login / roles / approvals) ============= */
+const lsGet = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+
+function seedUsers() {
+  let users = lsGet(A_USERS, null);
+  if (users && users.length) return users;
+  const spocs = [...new Set(COLLEGES.map(c => c.spoc).filter(Boolean))].sort();
+  const demoTpo = COLLEGES.find(c => c.tpo && c.spoc);   // a real college with a TPO
+  users = [{ u: "admin", p: "admin", role: "admin", scope: "", name: "Administrator" }];
+  for (const s of spocs)
+    users.push({ u: s.toLowerCase().replace(/[^a-z0-9]/g, ""), p: "west", role: "spoc", scope: s, name: s });
+  if (demoTpo)
+    users.push({ u: "tpo", p: "west", role: "tpo", scope: demoTpo.name, name: demoTpo.tpo });
+  lsSet(A_USERS, users);
+  return users;
+}
+let USERS = seedUsers();
+const saveUsers = () => lsSet(A_USERS, USERS);
+let session = lsGet(A_SESSION, null);
+const currentUser = () => session && USERS.find(u => u.u === session.u) || session;
+const role = () => (currentUser() || {}).role || null;
+
+let PENDING = lsGet(A_PENDING, []);
+const savePending = () => lsSet(A_PENDING, PENDING);
+async function sbPending(query, opts = {}) {
+  const res = await fetch(`${SHARED.url}/rest/v1/${PENDING_TABLE}${query}`, {
+    ...opts, headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${SHARED.anonKey}`,
+      "Content-Type": "application/json", Prefer: "return=representation", ...(opts.headers || {}) } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.status === 204 ? null : res.json();
+}
+async function loadPending() {
+  if (!sharedOn()) { PENDING = lsGet(A_PENDING, []); return; }
+  try { PENDING = (await sbPending("?select=*&order=ts.asc")).map(r => r.payload ? { ...r.payload, id: r.id, status: r.status } : r); }
+  catch (e) { /* keep local */ }
+}
+
+/* who can edit a given college (by name) */
+function canEditName(name) {
+  const u = currentUser(); if (!u) return false;
+  if (u.role === "admin") return true;
+  const c = (baseEdits[name]) || COLLEGES.find(x => x.name === name) || userColleges.find(x => x.name === name);
+  if (!c) return false;
+  if (u.role === "spoc") return (c.spoc || "") === u.scope;
+  if (u.role === "tpo") return c.name === u.scope;
+  return false;
+}
+const isAdmin = () => role() === "admin";
+
+/* ---- change-request queue ---- */
+const FIELD_LABEL = { loc:"Location", type:"Type", year:"Year", div:"Diversity", nirf25:"NIRF 2025",
+  nirf24:"NIRF 2024", nirf23:"NIRF 2023", naac:"NAAC", nba:"NBA", avg:"Avg salary", med:"Median salary",
+  eng:"Engagement", tpo:"TPO", tpoEmail:"TPO email", tpoPhone:"TPO phone", spoc:"SPOC", group:"Group",
+  hml:"HML", mou:"MOU", mouType:"MOU type", phase:"Phase", mode:"Mode", wzPriority:"WZ priority",
+  school:"School", programs:"Programmes", batch:"Batch", skills:"Hot skills", specializations:"Specializations",
+  recruiters:"Recruiters", mous:"MoUs", campuses:"Campuses", media:"Media" };
+const cellStr = v => v == null || v === "" ? "—" : (Array.isArray(v) || typeof v === "object" ? JSON.stringify(v) : String(v));
+function diffFields(base, next) {
+  const out = [];
+  for (const k of new Set([...Object.keys(base || {}), ...Object.keys(next || {})])) {
+    if (k === "_id") continue;
+    const a = JSON.stringify(base ? base[k] ?? null : null), b = JSON.stringify(next[k] ?? null);
+    if (a !== b) out.push({ k, label: FIELD_LABEL[k] || k, old: cellStr(base ? base[k] : null), new: cellStr(next[k]) });
+  }
+  return out;
+}
+async function submitRequest(name, isBase, payload, base) {
+  const u = currentUser();
+  const item = { id: "r" + Date.now() + Math.floor(performance.now() % 1000), name, isBase,
+    payload, diff: diffFields(base, payload), by: u.name, byRole: u.role, ts: new Date().toISOString(),
+    status: "pending", reviewedBy: null, reason: null };
+  PENDING.push(item); savePending();
+  if (sharedOn()) { try { await sbPending("", { method: "POST", body: JSON.stringify({
+    id: item.id, name, status: "pending", ts: item.ts, by: u.name, payload: item }) }); } catch (e) {} }
+  return item;
+}
+async function applyApproved(item) {
+  const c = item.payload;
+  if (item.isBase) {
+    if (sharedOn()) {
+      const existing = baseEdits[item.name] && baseEdits[item.name]._id;
+      const rows = existing ? await sbFetch(`?id=eq.${existing}`, { method: "PATCH", body: JSON.stringify(toRow(c, "edited")) })
+                            : await sbFetch("", { method: "POST", body: JSON.stringify(toRow(c, "edited")) });
+      baseEdits[item.name] = fromRow(rows[0]);
+    } else { baseEdits[item.name] = c; saveBaseEdits(); }
+  } else {
+    const i = userColleges.findIndex(x => x.name === item.name);
+    if (i >= 0) { if (sharedOn() && userColleges[i]._id) {
+        const rows = await sbFetch(`?id=eq.${userColleges[i]._id}`, { method: "PATCH", body: JSON.stringify(toRow(c, "added")) });
+        userColleges[i] = fromRow(rows[0]);
+      } else { userColleges[i] = c; saveUser(); } }
+  }
+}
+async function reviewRequest(id, decision, reason) {
+  const item = PENDING.find(p => p.id === id); if (!item || item.status !== "pending") return;
+  if (decision === "approve") { try { await applyApproved(item); } catch (e) { alert("Could not apply: " + e.message); return; } }
+  item.status = decision === "approve" ? "approved" : "rejected";
+  item.reviewedBy = currentUser().name; item.reason = reason || null;
+  savePending();
+  if (sharedOn()) { try { await sbPending(`?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ status: item.status }) }); } catch (e) {} }
+  renderApprovals(); render();
+}
+
+/* ---- login / gate ---- */
+const $ = id => document.getElementById(id);
+function showGate(show) {
+  $("loginGate").classList.toggle("show", show);
+  document.body.classList.toggle("locked", show);
+  $("authChip").hidden = show;
+}
+function doLogin(u, p) {
+  const found = USERS.find(x => x.u === (u || "").trim().toLowerCase() && x.p === p);
+  if (!found) return false;
+  session = { u: found.u }; lsSet(A_SESSION, session);
+  return true;
+}
+function logout() { session = null; localStorage.removeItem(A_SESSION); location.reload(); }
+
+function renderAuthChip() {
+  const u = currentUser();
+  if (!u) return;
+  $("authWho").textContent = u.name + (u.role === "tpo" ? ` · ${u.scope}` : "");
+  const rl = $("authRole"); rl.textContent = u.role; rl.className = "role" + (u.role === "admin" ? " admin" : "");
+  const admin = u.role === "admin";
+  $("apprBtn").hidden = !admin; $("usersBtn").hidden = !admin;
+  $("myReqBtn").hidden = admin;
+  updateReqCounts();
+}
+function updateReqCounts() {
+  const pend = PENDING.filter(p => p.status === "pending").length;
+  const an = $("apprN"); an.textContent = pend; an.hidden = !pend;
+  const u = currentUser();
+  if (u && u.role !== "admin") {
+    const mine = PENDING.filter(p => p.by === u.name).length;
+    const mn = $("myReqN"); mn.textContent = mine; mn.hidden = !mine;
+  }
+}
+
+/* ---- admin: approvals modal ---- */
+function requestRowHTML(p, forAdmin) {
+  const diff = (p.diff || []).map(d =>
+    `<tr><td class="k">${esc(d.label)}</td><td><span class="old">${esc(d.old)}</span> → <span class="new">${esc(d.new)}</span></td></tr>`).join("")
+    || `<tr><td colspan="2" style="color:var(--text-muted)">No field changes.</td></tr>`;
+  const when = (p.ts || "").slice(0, 16).replace("T", " ");
+  const actions = forAdmin && p.status === "pending"
+    ? `<div class="appr-actions">
+         <button type="button" class="btn primary" data-approve="${p.id}">Approve</button>
+         <button type="button" class="btn danger" data-reject="${p.id}">Reject</button></div>`
+    : `<div class="appr-actions"><span class="req-badge ${p.status}">${p.status}</span>${p.reviewedBy ? `<span class="ar-sub" style="margin:0">by ${esc(p.reviewedBy)}${p.reason ? " · " + esc(p.reason) : ""}</span>` : ""}</div>`;
+  return `<div class="appr-row">
+    <div class="ar-head"><b>${esc(p.name)}</b> <span class="req-badge ${p.status}">${p.status}</span></div>
+    <div class="ar-sub">${esc(p.by)} (${esc(p.byRole)}) · ${when}</div>
+    <table class="appr-diff"><tbody>${diff}</tbody></table>
+    ${actions}</div>`;
+}
+function renderApprovals() {
+  const pend = PENDING.filter(p => p.status === "pending");
+  const done = PENDING.filter(p => p.status !== "pending").slice(-20).reverse();
+  $("apprBody").innerHTML =
+    (pend.length ? pend.map(p => requestRowHTML(p, true)).join("")
+      : `<p class="perm-note">No pending requests.</p>`)
+    + (done.length ? `<h2 style="font-size:13px;margin:18px 0 6px">Recently reviewed</h2>` + done.map(p => requestRowHTML(p, false)).join("") : "");
+}
+function renderMyReq() {
+  const u = currentUser();
+  const mine = PENDING.filter(p => p.by === u.name).slice().reverse();
+  $("myReqBody").innerHTML = mine.length ? mine.map(p => requestRowHTML(p, false)).join("")
+    : `<p class="perm-note">You haven't submitted any change requests yet.</p>`;
+}
+
+/* ---- admin: user management ---- */
+function fillScopeOptions() {
+  const r = $("uf_role").value, sel = $("uf_scope");
+  sel.innerHTML = '<option value="">— scope —</option>';
+  if (r === "spoc") for (const s of [...new Set(COLLEGES.map(c => c.spoc).filter(Boolean))].sort()) sel.add(new Option(s, s));
+  else if (r === "tpo") for (const c of [...COLLEGES].sort((a, b) => a.name.localeCompare(b.name))) sel.add(new Option(c.name, c.name));
+  sel.disabled = r === "admin";
+}
+function renderUsers() {
+  $("usersBody").innerHTML = USERS.map(u => `<tr>
+      <td><b>${esc(u.u)}</b></td><td>${esc(u.role)}</td><td>${esc(u.scope || "—")}</td>
+      <td>${u.u === "admin" ? "" : `<button type="button" class="btn danger" data-deluser="${esc(u.u)}">Remove</button>`}</td>
+    </tr>`).join("");
+}
+
+/* ---- wire events ---- */
+$("loginForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if (doLogin($("lg_user").value, $("lg_pass").value)) {
+    $("lg_err").textContent = ""; showGate(false); renderAuthChip(); render();
+  } else $("lg_err").textContent = "Invalid username or password.";
+});
+$("logoutBtn").addEventListener("click", logout);
+$("lg_demo").innerHTML = `Demo sign-ins — Admin <code data-fill="admin|admin">admin / admin</code>` +
+  (USERS.find(u => u.role === "spoc") ? ` · SPOC <code data-fill="${USERS.find(u=>u.role==='spoc').u}|west">${USERS.find(u=>u.role==='spoc').u} / west</code>` : "") +
+  (USERS.find(u => u.role === "tpo") ? ` · TPO <code data-fill="tpo|west">tpo / west</code>` : "");
+$("lg_demo").addEventListener("click", e => {
+  const c = e.target.closest("[data-fill]"); if (!c) return;
+  const [u, p] = c.dataset.fill.split("|"); $("lg_user").value = u; $("lg_pass").value = p;
+});
+const openModal = id => $(id).classList.add("open");
+const closeModal = id => $(id).classList.remove("open");
+$("apprBtn").addEventListener("click", () => { renderApprovals(); openModal("apprOverlay"); });
+$("apprClose").addEventListener("click", () => closeModal("apprOverlay"));
+$("apprBody").addEventListener("click", e => {
+  const ap = e.target.closest("[data-approve]"), rj = e.target.closest("[data-reject]");
+  if (ap) reviewRequest(ap.dataset.approve, "approve");
+  else if (rj) { const why = prompt("Reason for rejection (optional):") || ""; reviewRequest(rj.dataset.reject, "reject", why); }
+});
+$("myReqBtn").addEventListener("click", () => { renderMyReq(); openModal("myReqOverlay"); });
+$("myReqClose").addEventListener("click", () => closeModal("myReqOverlay"));
+$("usersBtn").addEventListener("click", () => { fillScopeOptions(); renderUsers(); openModal("usersOverlay"); });
+$("usersClose").addEventListener("click", () => closeModal("usersOverlay"));
+$("uf_role").addEventListener("change", fillScopeOptions);
+$("userForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const u = $("uf_user").value.trim().toLowerCase(), p = $("uf_pass").value, r = $("uf_role").value, sc = $("uf_scope").value;
+  if (!u || !p) return;
+  if (r !== "admin" && !sc) { alert("Pick a scope (SPOC name or college) for this role."); return; }
+  const name = r === "spoc" ? sc : r === "tpo" ? ((COLLEGES.find(c => c.name === sc) || {}).tpo || sc) : u;
+  const existing = USERS.find(x => x.u === u);
+  if (existing) Object.assign(existing, { p, role: r, scope: r === "admin" ? "" : sc, name });
+  else USERS.push({ u, p, role: r, scope: r === "admin" ? "" : sc, name });
+  saveUsers(); renderUsers(); $("uf_user").value = ""; $("uf_pass").value = "";
+});
+$("usersBody").addEventListener("click", e => {
+  const d = e.target.closest("[data-deluser]"); if (!d) return;
+  USERS = USERS.filter(u => u.u !== d.dataset.deluser); saveUsers(); renderUsers();
+});
+for (const id of ["apprOverlay", "usersOverlay", "myReqOverlay"])
+  $(id).addEventListener("click", e => { if (e.target === $(id)) closeModal(id); });
+
 populateFilters();
-if (sharedOn()) { userColleges = []; baseEdits = {}; loadShared(); }  // shared mode ignores localStorage
-render();
+(async () => {
+  if (sharedOn()) { userColleges = []; baseEdits = {}; await loadShared(); await loadPending(); }
+  if (AUTH.enabled && !currentUser()) showGate(true);
+  else { showGate(false); renderAuthChip(); }
+  render();
+})();
 </script>
 </body>
 </html>

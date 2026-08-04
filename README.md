@@ -132,6 +132,32 @@ To share them live across the team:
    script block with your project URL and public anon key.
 4. Commit and push to `main` — the site republishes automatically.
 
+## Sign-in, roles & change approval
+
+The portal opens behind a **login gate** with three roles:
+
+- **Admin** — full rights; edits apply immediately, and the admin sees an
+  **Approvals** queue (with a field-level diff of every requested change) to
+  approve or reject, plus a **Users** panel to add/remove accounts.
+- **SPOC** — can view everything but only *edit the colleges they own*
+  (`spoc` = their name). Edits are submitted as **change requests**, not
+  applied directly.
+- **TPO** — can view everything but only *edit their own college*. Edits are
+  also submitted as change requests.
+
+SPOC/TPO edits land in a queue and only reflect on the portal once an admin
+approves them; submitters track status under **My requests**.
+
+**Security model.** Out of the box this runs **client-side** (accounts,
+sessions and the request queue live in `localStorage`) — a convenient UI gate,
+but *not* real security: anyone can read the page source, and approvals stay
+per-browser. Seeded demo sign-ins are shown on the login screen
+(`admin / admin`, each SPOC as `<firstname> / west`, `tpo / west`). For real,
+team-wide enforcement, run `supabase/auth_and_approvals.sql` (Supabase Auth +
+Row-Level Security + the shared `shared_pending_west` queue) and configure
+`SHARED`; the request queue then syncs across the team and only admins can
+write applied changes.
+
 ## Updating the NIRF directory
 
 The "Update NIRF directory" workflow (Actions tab) runs
