@@ -1,47 +1,56 @@
-ranking page: HTTP 200 | 110459 bytes
-IR IDs found: 100; sample: ['IR-E-C-1331', 'IR-E-C-16604', 'IR-E-C-19754', 'IR-E-C-24004', 'IR-E-C-30045', 'IR-E-C-36995']
-candidate detail links: 200
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-1331.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-16604.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-19754.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-24004.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-30045.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-36995.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-37013.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-6379.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-C-7252.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-I-1074.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-I-1075.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-I-1441.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-I-1480.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0013.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0014.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0017.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0020.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0025.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0042.jpg
-  LINK https://www.nirfindia.org/nirfpdfcdn/2025/graph/Engineering/IR-E-U-0043.jpg
+ranked institutes: 100 | West: 9
+    3  IR-E-U-0306  Indian Institute of Technology Bombay  (Mumbai, Maharashtra)
+   25  IR-E-U-0139  Indian Institute of Technology Gandhinagar  (Gandhinagar, Gujarat)
+   41  IR-E-U-0308  Institute of Chemical Technology  (Mumbai, Maharashtra)
+   44  IR-E-U-0334  Visvesvaraya National Institute of Technology, N  (Nagpur, Maharashtra)
+   46  IR-E-U-0329  Symbiosis International  (Pune, Maharashtra)
+   66  IR-E-U-0149  Sardar Vallabhbhai National Institute of Technol  (SURAT, Gujarat)
+   90  IR-E-U-1257  COEP Technological University  (Pune, Maharashtra)
+   92  IR-E-U-0297  Defence Institute of Advanced Technology  (Pune, Maharashtra)
+   98  IR-E-U-0147  Pandit Deendayal Energy University  (Gandhinagar, Gujarat)
 
-sample IR for detail probe: IR-E-C-1331
+===== #3 Indian Institute of Technology Bombay [IR-E-U-0306] =====
+pdf HTTP 200 application/pdf 10258B
+  L5: Sanctioned (Approved) Intake ⏎ Academic Year 2023-24 2022-23 2021-22 2020-21 2019-20 2018-19 ⏎ UG [4 Years Program(s)] 1161 1059 1039 1030 - -
+  L17: Total Students Within State ⏎ (Including male ⏎ & female)
+  L69: Placement & Higher Studies ⏎ UG [4 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year
+  L70: UG [4 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
+  L72: students intake in the ⏎ year ⏎ No. of first year
+  L81: graduating in ⏎ minimum stipulated ⏎ time
+  L86: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
+  L87: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
+  L105: UG [5 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
+  L107: students intake in the ⏎ year ⏎ No. of first year
+  L116: graduating in ⏎ minimum stipulated ⏎ time
+  L121: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
+  L122: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
+  L139: PG [2 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
+  L141: students intake in the ⏎ year ⏎ No. of first year
+  L146: Academic Year No. of students graduating in minimum ⏎ stipulated time ⏎ No. of students
+  L150: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
+  L151: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
+  L170: Total Students ⏎ Full Time 3523 ⏎ Part Time 466
+  L173: No. of Ph.D students graduated (including Integrated Ph.D) ⏎ 2023-24 2022-23 2021-22 ⏎ Full Time 451 382 416
 
-TRY https://www.nirfindia.org/nirfpdfcdn/2025/pdf/Engineering/IR-E-C-1331.pdf
-  HTTP 200 | application/pdf | 8812 bytes
-    [Intake] Sanctioned (Approved) Intake | students intake in the
-    [Sanctioned] Sanctioned (Approved) Intake
-    [Median salary] Median salary of | Median salary of
-    [Median Salary] Median salary of | Median salary of
-    [Placement] Placement & Higher Studies | UG [4 Years Program(s)]: Placement & higher studies for previous 3 years
-    [Total Students] Total Students Within State | Total Students
-    [salary] Median salary of | Median salary of
-
-TRY https://www.nirfindia.org/Rankings/2025/Report/IR-E-C-1331.pdf
-  HTTP 404 | text/html; charset=utf-8 | 4969 bytes
-
-TRY https://www.nirfindia.org/2025/Institutions/IR-E-C-1331
-  HTTP 404 | text/html; charset=utf-8 | 4969 bytes
-
-TRY https://www.nirfindia.org/DataCapture/Report/IR-E-C-1331
-  HTTP 404 | text/html; charset=utf-8 | 4969 bytes
-
-TRY https://www.nirfindia.org/Rankings/2025/Institutions/Institution.html?ID=IR-E-C-1331
-  HTTP 404 | text/html; charset=utf-8 | 4969 bytes
+===== #25 Indian Institute of Technology Gandhinagar [IR-E-U-0139] =====
+pdf HTTP 200 application/pdf 10021B
+  L5: Sanctioned (Approved) Intake ⏎ Academic Year 2023-24 2022-23 2021-22 2020-21 2019-20 2018-19 ⏎ UG [4 Years Program(s)] 310 225 225 225 - -
+  L17: Total Students Within State ⏎ (Including male ⏎ & female)
+  L69: Placement & Higher Studies ⏎ UG [4 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year
+  L70: UG [4 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
+  L72: students intake in the ⏎ year ⏎ No. of first year
+  L81: graduating in ⏎ minimum stipulated ⏎ time
+  L86: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
+  L87: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
+  L101: UG [5 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
+  L103: students intake in the ⏎ year ⏎ No. of first year
+  L112: graduating in ⏎ minimum stipulated ⏎ time
+  L117: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
+  L118: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
+  L127: PG [2 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
+  L129: students intake in the ⏎ year ⏎ No. of first year
+  L134: Academic Year No. of students graduating in minimum ⏎ stipulated time ⏎ No. of students
+  L138: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
+  L139: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
+  L157: Total Students ⏎ Full Time 590 ⏎ Part Time 5
+  L160: No. of Ph.D students graduated (including Integrated Ph.D) ⏎ 2023-24 2022-23 2021-22 ⏎ Full Time 73 40 37
