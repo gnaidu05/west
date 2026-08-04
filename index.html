@@ -163,6 +163,7 @@
   .chip.P2 { background: var(--chip-p2-bg); color: var(--chip-p2-fg); }
   .chip.NA { background: var(--chip-na-bg); color: var(--chip-na-fg); }
   .chip.added { background: var(--accent-soft); color: var(--accent); margin-left: 6px; }
+  .chip.prof { background: var(--chip-p2-bg); color: var(--chip-p2-fg); margin-left: 6px; }
   tr.detail td { padding: 0; }
   .detail-inner {
     padding: 16px; background: var(--surface-1); border-top: 1px dashed var(--border-strong);
@@ -1029,6 +1030,11 @@ const inr = v => "₹" + Number(v).toLocaleString("en-IN");
    case where the group is exactly the college's own name */
 const realGroup = (group, name) => group && nirfNorm(group) !== nirfNorm(name) ? group : "";
 const dispGroup = r => realGroup(r.group, r.name);
+/* does this college carry a reference-only institution profile? */
+const hasLen = v => Array.isArray(v) ? v.length > 0 : !!v;
+const hasProfile = c => !!c && (hasLen(c.school) || hasLen(c.programs) || hasLen(c.skills)
+  || hasLen(c.specializations) || hasLen(c.batch) || hasLen(c.recruiters)
+  || hasLen(c.campuses) || hasLen(c.mous) || hasLen(c.media));
 
 const COLS = [
   { key:"rank",  label:"Rank",  num:true },
@@ -1553,6 +1559,7 @@ function catCardHTML(r) {
     c.spoc ? `<span class="tag">SPOC: ${esc(c.spoc)}</span>` : "",
     c.mou && c.mou !== "Non MOU College" ? `<span class="tag"${c.mouType ? ` title="${esc(c.mouType)}"` : ""}>${esc(c.mou)}</span>` : "",
     c.hml ? `<span class="tag">HML: ${esc(c.hml)}</span>` : "",
+    hasProfile(c) ? `<span class="chip prof">📄 profile</span>` : "",
     r.added ? `<span class="chip added">added</span>` : "",
     r.edited ? `<span class="chip added">edited</span>` : "",
   ].filter(Boolean).join("");
@@ -1630,7 +1637,7 @@ function renderAddList(allRows) {
   els.addedList.innerHTML = shown.map(r => `
     <div class="added-row">
       <div class="ar-main"><b>${esc(r.name)}</b>
-        ${r.added ? '<span class="chip added">added</span>' : ""}${r.edited ? '<span class="chip added">edited</span>' : ""}
+        ${r.added ? '<span class="chip added">added</span>' : ""}${r.edited ? '<span class="chip added">edited</span>' : ""}${hasProfile(r.raw) ? '<span class="chip prof">📄 profile</span>' : ""}
         <span class="ar-meta">${dispGroup(r) ? esc(dispGroup(r)) + " · " : ""}${esc(r.city || "—")}, ${esc(r.state)} · ${esc(r.zone)} zone${r.raw.spoc ? " · SPOC: " + esc(r.raw.spoc) : ""}</span></div>
       <div class="ar-score">Total <b>${fmt2(r.total)}</b> · overall rank <b>#${r.prank}</b></div>
       <div class="ar-actions">
@@ -1704,7 +1711,7 @@ function render() {
   els.tbody.innerHTML = rows.map(r => `
     <tr class="data ${openRow === r.i ? "open" : ""}" data-i="${r.i}">
       <td class="num">${r.rank}</td>
-      <td class="college">${esc(r.name)}${r.added ? '<span class="chip added">added</span>' : ""}${r.edited ? '<span class="chip added">edited</span>' : ""}</td>
+      <td class="college">${esc(r.name)}${r.added ? '<span class="chip added">added</span>' : ""}${r.edited ? '<span class="chip added">edited</span>' : ""}${hasProfile(r.raw) ? '<span class="chip prof" title="Has an institution profile — click the row to view">📄 profile</span>' : ""}</td>
       <td>${dispGroup(r) ? esc(dispGroup(r)) : "—"}</td>
       <td>${esc(r.city)}</td><td>${esc(r.state)}</td>
       <td class="num" title="counts as rank ${r.nirfRank} in scoring">${esc(r.raw.nirf25 ?? "—")}</td>
