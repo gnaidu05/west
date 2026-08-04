@@ -174,11 +174,21 @@
   .kv .k { color: var(--text-muted); min-width: 0; overflow-wrap: anywhere; }
   .kv .v { font-variant-numeric: tabular-nums; text-align: right; min-width: 0; overflow-wrap: anywhere; }
   .kv.total { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 6px; font-weight: 600; }
-  .kv.stack { display: block; }
-  .kv.stack .k { display: block; }
-  .kv.stack .v { display: block; text-align: left; margin-top: 1px; font-weight: 500;
-    white-space: normal; overflow-wrap: anywhere; }
-  .kv.stack .v a { display: inline-block; margin: 0 10px 2px 0; }
+  /* full-width institution profile section (below the score cards) */
+  .profile-section { margin-top: 4px; }
+  .profile-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px 24px; margin-top: 4px;
+  }
+  .pf { display: flex; flex-direction: column; min-width: 0; gap: 3px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .pf-wide { grid-column: 1 / -1; }
+  .pf-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--text-muted); font-weight: 600; }
+  .pf-val { font-size: 13px; color: var(--text-primary); line-height: 1.5; overflow-wrap: anywhere; }
+  .pf-media a { display: inline-block; margin: 2px 14px 2px 0; color: var(--accent);
+    text-decoration: none; font-weight: 500; }
+  .pf-media a:hover { text-decoration: underline; }
   .comp { margin: 6px 0; }
   .comp .lbl { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-secondary); }
   .comp .lbl b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
@@ -1278,27 +1288,34 @@ function spocChartHTML(rows) {
   return `<div class="donutwrap">${svg}<div class="legend">${legend}</div></div>`;
 }
 
-/* ---- reference-only institution profile (never scored) ---- */
-function profileCardHTML(c) {
-  const rows = [
-    ["School / department", c.school],
-    ["Programmes", c.programs],
-    ["Hot skills", c.skills],
-    ["Super-specializations", c.specializations],
-    ["Batch size", c.batch],
-    ["Top recruiters", c.recruiters],
-    ["MoUs", c.mous],
-    ["Campuses", c.campuses],
+/* ---- reference-only institution profile (never scored) ----
+   Rendered full-width below the score cards as its own section: each
+   sub-topic is a labelled block; long-form ones span the full row. */
+function profileSectionHTML(c) {
+  // [label, value, wide?] — wide fields get a full-width row of their own
+  const fields = [
+    ["School / Department", c.school, true],
+    ["Programmes", c.programs, true],
+    ["Hot Skills", c.skills, true],
+    ["Super-specializations", c.specializations, false],
+    ["Batch Size", c.batch, true],
+    ["MoUs", c.mous, false],
+    ["Campuses", c.campuses, true],
+    ["Top Recruiters", c.recruiters, true],
   ].filter(([, v]) => v);
   const media = Array.isArray(c.media) ? c.media : [];
-  if (!rows.length && !media.length) return "";
-  const body = rows.map(([k, v]) =>
-    `<div class="kv stack"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`).join("");
-  const mediaHTML = media.length ? `<div class="kv stack"><span class="k">Media</span><span class="v">` +
-    media.map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join("") +
+  if (!fields.length && !media.length) return "";
+  const blocks = fields.map(([k, v, wide]) =>
+    `<div class="pf${wide ? " pf-wide" : ""}"><span class="pf-label">${k}</span>
+      <span class="pf-val">${esc(v)}</span></div>`).join("");
+  const mediaBlock = media.length ? `<div class="pf pf-wide"><span class="pf-label">Media &amp; recognition</span>
+      <span class="pf-val pf-media">` +
+      media.map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join("") +
     `</span></div>` : "";
-  return `<div class="card"><h3>Institution profile</h3>${body}${mediaHTML}
-    <p class="note">Reference only — programme, recruiter and media detail; never affects the score.</p></div>`;
+  return `<div class="visual profile-section">
+    <p class="vtitle">Institution profile <span class="vhint">· reference only — programmes, recruiters &amp; recognition, never scored</span></p>
+    <div class="profile-grid">${blocks}${mediaBlock}</div>
+  </div>`;
 }
 
 /* ================= detail breakdown (unchanged logic) ================= */
@@ -1341,7 +1358,6 @@ function detailHTML(r) {
       <div class="kv"><span class="k">SPOC (our team)</span><span class="v">${esc(c.spoc || "—")}</span></div>
       <p class="note">Reference only — contacts never affect the score.</p>
     </div>
-    ${profileCardHTML(c)}
     <div class="card"><h3>Index inputs</h3>
       ${ranks.map(([y, raw, used]) => `<div class="kv"><span class="k">NIRF ${y}</span><span class="v">${esc(raw ?? "—")} → ${used}</span></div>`).join("")}
       <div class="kv"><span class="k">Weighted rank (0.5/0.3/0.2)</span><span class="v">${fmt2(rankUsed(c.nirf25)*0.5 + rankUsed(c.nirf24)*0.3 + rankUsed(c.nirf23)*0.2)}</span></div>
@@ -1388,7 +1404,7 @@ function detailHTML(r) {
              ${r.edited ? `<button type="button" class="btn danger" data-resetbase="${esc(r.name)}">Reset to original</button>` : ""}`}
       </div>
     </div>
-  </div>`;
+  </div>${profileSectionHTML(c)}`;
 }
 
 /* ================= catalogue view ================= */
