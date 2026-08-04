@@ -480,6 +480,7 @@
     <button type="button" class="pill-btn" id="myReqBtn" hidden>My requests<span class="n" id="myReqN" hidden></span></button>
     <button type="button" class="pill-btn" id="apprBtn" hidden>Approvals<span class="n" id="apprN" hidden></span></button>
     <button type="button" class="pill-btn" id="usersBtn" hidden>Users</button>
+    <button type="button" class="pill-btn" id="inviteBtn" hidden>Invite user</button>
     <button type="button" class="pill-btn" id="pwBtn" hidden>Password</button>
     <span class="who" id="authWho"></span>
     <span class="role" id="authRole"></span>
@@ -785,6 +786,24 @@
     <p class="hint">Edits you submitted and their approval status.</p>
     <div id="myReqBody"></div>
     <div class="form-actions"><button type="button" class="btn primary" id="myReqClose">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="inviteOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="inviteTitle" style="max-width:440px">
+    <h2 id="inviteTitle">Invite a user</h2>
+    <p class="hint">Creates their account with a temporary password and emails it. They sign in and change it on first login. SPOC/TPO edits still go through your approval.</p>
+    <form id="inviteForm" class="naac-tools" autocomplete="off" style="flex-direction:column;align-items:stretch;gap:10px">
+      <input id="inv_email" type="email" placeholder="Email address" required style="width:100%;box-sizing:border-box">
+      <div style="display:flex;gap:10px">
+        <select id="inv_role" style="flex:0 0 120px"><option value="tpo">TPO</option><option value="spoc">SPOC</option><option value="admin">Admin</option></select>
+        <select id="inv_scope" style="flex:1"><option value="">— scope —</option></select>
+      </div>
+      <input id="inv_name" type="text" placeholder="Display name (optional)" style="width:100%;box-sizing:border-box">
+      <div class="login-err" id="inv_err"></div>
+      <div class="form-actions"><button type="button" class="btn" id="inviteCancel">Cancel</button><button type="submit" class="btn primary" id="inviteSend">Create &amp; email</button></div>
+    </form>
+    <div id="inv_result" class="perm-note"></div>
   </div>
 </div>
 
@@ -2731,6 +2750,7 @@ function renderAuthChip() {
   $("apprBtn").hidden = !admin;
   $("usersBtn").hidden = !admin || AUTH.mode === "supabase";  // users managed in Supabase when real auth
   $("pwBtn").hidden = AUTH.mode !== "supabase";               // change own password (real auth only)
+  $("inviteBtn").hidden = !(admin && AUTH.mode === "supabase"); // admin creates users via Edge Function
   $("myReqBtn").hidden = admin;
   updateReqCounts();
 }
@@ -2850,8 +2870,41 @@ $("usersBody").addEventListener("click", e => {
   const d = e.target.closest("[data-deluser]"); if (!d) return;
   USERS = USERS.filter(u => u.u !== d.dataset.deluser); saveUsers(); renderUsers();
 });
-for (const id of ["apprOverlay", "usersOverlay", "myReqOverlay", "pwOverlay"])
+for (const id of ["apprOverlay", "usersOverlay", "myReqOverlay", "pwOverlay", "inviteOverlay"])
   $(id).addEventListener("click", e => { if (e.target === $(id)) closeModal(id); });
+
+/* admin: invite a user (calls the invite-user Edge Function) */
+function fillInviteScope() {
+  const r = $("inv_role").value, sel = $("inv_scope");
+  sel.innerHTML = '<option value="">— scope —</option>';
+  if (r === "spoc") for (const s of [...new Set(COLLEGES.map(c => c.spoc).filter(Boolean))].sort()) sel.add(new Option(s, s));
+  else if (r === "tpo") for (const c of [...COLLEGES].sort((a, b) => a.name.localeCompare(b.name))) sel.add(new Option(c.name, c.name));
+  sel.disabled = r === "admin";
+}
+$("inv_role").addEventListener("change", fillInviteScope);
+$("inviteBtn").addEventListener("click", () => {
+  $("inviteForm").reset(); $("inv_err").textContent = ""; $("inv_result").textContent = "";
+  fillInviteScope(); openModal("inviteOverlay");
+});
+$("inviteCancel").addEventListener("click", () => closeModal("inviteOverlay"));
+$("inviteForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const email = $("inv_email").value.trim(), r = $("inv_role").value, scope = $("inv_scope").value, name = $("inv_name").value.trim();
+  if (r !== "admin" && !scope) { $("inv_err").textContent = "Pick a scope (SPOC name or college)."; return; }
+  if (!(session && session.token)) { $("inv_err").textContent = "Not signed in."; return; }
+  $("inv_err").textContent = ""; $("inv_result").textContent = ""; $("inviteSend").disabled = true;
+  $("inviteSend").textContent = "Creating…";
+  try {
+    const res = await fetch(`${SHARED.url}/functions/v1/invite-user`, {
+      method: "POST", headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${session.token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ email, role: r, scope: scope || null, name: name || null }) });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok || d.error) { $("inv_err").textContent = d.error || `Failed (HTTP ${res.status})`; }
+    else if (d.emailed) { $("inv_result").innerHTML = `✅ Account created — a temporary password was emailed to <b>${esc(email)}</b>.`; $("inviteForm").reset(); fillInviteScope(); }
+    else { $("inv_result").innerHTML = `⚠️ Account created, but the email didn't send${d.emailError ? ` (${esc(d.emailError)})` : ""}.<br>Temporary password for <b>${esc(email)}</b>: <code>${esc(d.tempPassword || "")}</code> — send it to them manually.`; }
+  } catch (e2) { $("inv_err").textContent = "Network error — try again."; }
+  $("inviteSend").disabled = false; $("inviteSend").textContent = "Create & email";
+});
 
 /* change own password (Supabase Auth: PUT /auth/v1/user with the user's token) */
 $("pwBtn").addEventListener("click", () => { $("pw_err").textContent = ""; $("pwForm").reset(); openModal("pwOverlay"); });

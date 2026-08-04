@@ -163,7 +163,32 @@ the `SHARED` config, and set `AUTH.mode = "supabase"` near the `AUTH` config.
 Users then sign in with their **email + password**, roles come from `profiles`,
 the request queue syncs across the team, and only admins can write applied
 changes. The client already carries each signed-in user's token on its calls,
-so RLS is what actually enforces the rules.
+so RLS is what actually enforces the rules. Signed-in users can rotate their
+own password from the **Password** button in the top bar.
+
+### Inviting users (auto-create + emailed temp password)
+
+Instead of creating each user by hand, an admin can use the **Invite user**
+button (top bar) to create an account and email a temporary password. Because
+creating a login-ready user needs the Supabase **service_role** key — which
+must never sit in the static page — this runs through an Edge Function:
+
+1. Deploy `supabase/functions/invite-user`:
+   `supabase functions deploy invite-user` (or paste it in the dashboard).
+2. Create a [Resend](https://resend.com) account, verify a sending domain, and
+   set the function secrets (Project Settings → Edge Functions →
+   Secrets, or `supabase secrets set`):
+   - `RESEND_API_KEY` — your Resend key
+   - `INVITE_FROM` — a verified sender, e.g. `West Zone Portal <invites@yourdomain>`
+   - `PORTAL_URL` — your portal URL (e.g. `https://gnaidu05.github.io/west/`)
+
+   (`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically.)
+
+The function verifies the caller is an admin, generates a temp password,
+creates the **confirmed** user, upserts their `profiles` row (role + scope),
+and emails the password. If email isn't configured it returns the temp
+password to the admin instead so it can be shared manually. Invited users sign
+in and immediately change their password via the **Password** button.
 
 ## Updating the NIRF directory
 
