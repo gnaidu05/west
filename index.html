@@ -177,24 +177,23 @@
   /* full-width institution profile section (below the score cards) */
   .profile-section { margin-top: 4px; }
   .profile-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 12px 24px; margin-top: 4px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px 24px; margin-top: 6px; align-items: start;
   }
-  .pf { display: flex; flex-direction: column; min-width: 0; gap: 3px;
-    padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-  .pf-wide { grid-column: 1 / -1; }
-  .pf-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
+  .pf-block { min-width: 0; }
+  .pf-block.wide { grid-column: 1 / -1; }
+  .pf-block-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--text-muted); font-weight: 700; margin-bottom: 4px; }
+  .pf-table-wrap { overflow-x: auto; }
+  .pf-table { border-collapse: collapse; font-size: 12.5px; width: 100%; }
+  .pf-table th, .pf-table td { text-align: left; padding: 6px 14px 6px 0;
+    border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere; }
+  .pf-table th { font-size: 10px; text-transform: uppercase; letter-spacing: .04em;
     color: var(--text-muted); font-weight: 600; }
-  .pf-val { font-size: 13px; color: var(--text-primary); line-height: 1.5; overflow-wrap: anywhere; }
-  .pf-media a { display: inline-block; margin: 2px 14px 2px 0; color: var(--accent);
-    text-decoration: none; font-weight: 500; }
-  .pf-media a:hover { text-decoration: underline; }
-  .pf-table-wrap { overflow-x: auto; margin-top: 2px; }
-  .pf-table { border-collapse: collapse; font-size: 12.5px; min-width: 320px; max-width: 640px; }
-  .pf-table th, .pf-table td { text-align: left; padding: 5px 12px 5px 0; border-bottom: 1px solid var(--border); }
-  .pf-table th { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); font-weight: 600; }
-  .pf-table td.num, .pf-table th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 0; }
-  .pf-table tfoot td { font-weight: 600; border-bottom: none; border-top: 1px solid var(--border-strong); }
+  .pf-table td.num, .pf-table th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 8px; white-space: nowrap; }
+  .pf-table tfoot td { font-weight: 700; border-bottom: none; border-top: 1px solid var(--border-strong); }
+  .pf-table a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .pf-table a:hover { text-decoration: underline; }
   .comp { margin: 6px 0; }
   .comp .lbl { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-secondary); }
   .comp .lbl b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
@@ -691,7 +690,7 @@ const COLLEGES = [
 {"name":"Prof Ram Meghe Institute of Technology and Research, Badnera","loc":"Amravati, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dr. Nikkoo N.Khalsa","tpoEmail":"tpomitech@mitra.ac.in","tpoPhone":"9823793943","spoc":null},
 {"name":"Rajarambapu Institute of Technology, Sangli","loc":"Sangli, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dr. A. P. Shah","tpoEmail":"abhijeet.shah@ritindia.edu","tpoPhone":"7757000780","spoc":null},
 {"name":"Ramrao Adik Institute of Technology","loc":"Mumbai, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":"151-200","naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dr. Amarsinha Vidhate","tpoEmail":"stpo@rait.ac.in","tpoPhone":"9869629072","spoc":"Asmita","hml":"Medium","mou":"MOU College","mouType":"MOU - PBS (P)","phase":"Phase-1","mode":"PV","wzPriority":"Priority-1"},
-{"name":"Rashtriya Raksha University","loc":"Gandhinagar, Gujarat","type":"Institute of National Importance (MHA, Govt. of India); recognized by UGC & MoE","year":2010,"div":"No","nirf25":"-","nirf24":"-","nirf23":"-","naac":null,"nba":null,"avg":550000,"med":null,"eng":null,"tpo":"Internship & Placement Branch (I&PB)","tpoEmail":null,"tpoPhone":null,"spoc":null,"school":"School of Information Technology, Artificial Intelligence & Cyber Security (SITAICS)","programs":"B.Tech CSE (Cyber Security); M.Tech Cyber Security; M.Tech Data Science & ML; M.Sc Cyber Security & Digital Forensics; PG Diploma Cyber Security & Digital Forensics; PhD (IT/AI/Cyber & allied)","skills":"Cyber Security (VAPT, SOC, REM, GRC), Network Security, AI, Data Science, ML, Digital Forensics, Data Analytics, Cloud & IoT Security","specializations":"Cyber Security · Digital Forensics · Data Science & ML","batch":[["B.Tech CSE (Cyber Security)",60],["M.Tech Cyber Security",20],["M.Tech Data Science & ML",20],["M.Sc Cyber Security & Digital Forensics",60],["PG Diploma Cyber Security & Digital Forensics",10]],"recruiters":"Deloitte, PwC, EY, KPMG, TCS, Salesforce, ZScaler, NPCI, ICICI Bank, BSE India, Adani, Nexdigm, INDMoney, C3iHub, Quick Heal, Trend Micro, Colgate, GMR (Gramax)","mous":"129+ (CAPFs, NSPO, State Police, corporates & international orgs)","campuses":"Gandhinagar (main), Pasighat, Lucknow, Shivamogga, Puducherry, Bhopal, J&K; upcoming Haryana & Odisha","media":[["Bharat NCX 2025 (PIB)","https://www.pib.gov.in/PressReleasePage.aspx?PRID=2146338"],["Bharat NCX 2024 (PIB)","https://www.pib.gov.in/PressReleasePage.aspx?PRID=2079609"],["CII SECEX 2024","https://rru.ac.in/cii-secex-2024/"],["Bharat CISO's Conclave (PIB)","https://www.pib.gov.in/PressReleasePage.aspx?PRID=2150319"],["Recognised as INI, expands across states (ET)","https://economictimes.indiatimes.com/news/defence/rashtriya-raksha-university-recognised-as-institution-of-national-importance-expands-across-states/articleshow/123420595.cms"]]},
+{"name":"Rashtriya Raksha University","loc":"Gandhinagar, Gujarat","type":"Institute of National Importance (MHA, Govt. of India); recognized by UGC & MoE","year":2010,"div":"No","nirf25":"-","nirf24":"-","nirf23":"-","naac":null,"nba":null,"avg":550000,"med":null,"eng":null,"tpo":"Internship & Placement Branch (I&PB)","tpoEmail":null,"tpoPhone":null,"spoc":null,"school":"School of Information Technology, Artificial Intelligence & Cyber Security (SITAICS)","programs":[["B.Tech CSE (Cyber Security)","UG"],["M.Tech Cyber Security","PG"],["M.Tech Data Science & ML","PG"],["M.Sc Cyber Security & Digital Forensics","PG"],["PG Diploma Cyber Security & Digital Forensics","PG Diploma"],["PhD (IT/AI/Cyber & allied)","Doctoral"]],"skills":["Cyber Security (VAPT, SOC, REM, GRC)","Network Security","Artificial Intelligence","Data Science","Machine Learning","Digital Forensics","Data Analytics","Cloud & IoT Security"],"specializations":["Cyber Security","Digital Forensics","Data Science & ML"],"batch":[["B.Tech CSE (Cyber Security)",60],["M.Tech Cyber Security",20],["M.Tech Data Science & ML",20],["M.Sc Cyber Security & Digital Forensics",60],["PG Diploma Cyber Security & Digital Forensics",10]],"recruiters":["Deloitte","PwC","EY","KPMG","TCS","Salesforce","ZScaler","NPCI","ICICI Bank","BSE India","Adani","Nexdigm","INDMoney","C3iHub","Quick Heal","Trend Micro","Colgate","GMR (Gramax)"],"mous":"129+ (CAPFs, NSPO, State Police, corporates & international orgs)","campuses":[["Gandhinagar","Main campus (Lavad-Dehgam)"],["Pasighat","Arunachal Pradesh"],["Lucknow","Uttar Pradesh"],["Shivamogga","Karnataka"],["Puducherry","Puducherry"],["Bhopal","Madhya Pradesh"],["Jammu & Kashmir","J&K"],["Haryana","Upcoming"],["Odisha","Upcoming"]],"media":[["Bharat NCX 2025 (PIB)","https://www.pib.gov.in/PressReleasePage.aspx?PRID=2146338"],["Bharat NCX 2024 (PIB)","https://www.pib.gov.in/PressReleasePage.aspx?PRID=2079609"],["CII SECEX 2024","https://rru.ac.in/cii-secex-2024/"],["Bharat CISO's Conclave (PIB)","https://www.pib.gov.in/PressReleasePage.aspx?PRID=2150319"],["Recognised as INI, expands across states (ET)","https://economictimes.indiatimes.com/news/defence/rashtriya-raksha-university-recognised-as-institution-of-national-importance-expands-across-states/articleshow/123420595.cms"]]},
 {"name":"RC Patel Institute of Technology, Shirpur","loc":"Shirpur, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Prof. Milkesh Jain","tpoEmail":"milkesh.rcpit@yahoo.com","tpoPhone":"9403560548","spoc":null},
 {"name":"RH Sapat College of Engineering, Management Studies and Research, Nashik","loc":"Nashik, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Dhanraj Deshpande","tpoEmail":"dhanraj.deshpande@ges-coengg.org","tpoPhone":"9422312097","spoc":null},
 {"name":"Rizvi College of Engineering","loc":"Mumbai, Maharashtra","type":null,"year":null,"div":null,"nirf25":null,"nirf24":null,"nirf23":null,"naac":null,"nba":null,"avg":null,"med":null,"eng":null,"tpo":"Aarefa Faridoon","tpoEmail":"tpo@eng.rizvi.edu.in","tpoPhone":"9821901352","spoc":null},
@@ -1143,7 +1142,7 @@ function viewSets() {
   const q = els.search.value.trim().toLowerCase();
   const bySearch = r => !q || r.name.toLowerCase().includes(q) || r.city.toLowerCase().includes(q) || r.state.toLowerCase().includes(q)
     || r.tpo.toLowerCase().includes(q) || r.spoc.toLowerCase().includes(q) || r.group.toLowerCase().includes(q)
-    || [r.raw.school, r.raw.programs, r.raw.skills, r.raw.recruiters].some(v => v && v.toLowerCase().includes(q));
+    || [r.raw.school, r.raw.programs, r.raw.skills, r.raw.recruiters].some(v => v && (Array.isArray(v) ? JSON.stringify(v) : v).toLowerCase().includes(q));
   const byZone = r => zoneMatch(r.state);
   const bySpoc = r => els.spoc.value === "All"
     || (els.spoc.value === "Unassigned" ? !r.spoc : r.spoc === els.spoc.value);
@@ -1295,47 +1294,79 @@ function spocChartHTML(rows) {
 }
 
 /* ---- reference-only institution profile (never scored) ----
-   Rendered full-width below the score cards as its own section: each
-   sub-topic is a labelled block; long-form ones span the full row. */
+   Rendered full-width below the score cards: every sub-topic is its own
+   titled table. Accepts structured arrays (preferred) or plain strings. */
+function profTable(title, headers, rows, opts) {
+  if (!rows.length) return "";
+  const wide = opts && opts.wide ? " wide" : "";
+  const thead = headers ? `<thead><tr>${headers.map(h =>
+    `<th${/^#|intake|seats/i.test(h) ? ' class="num"' : ''}>${esc(h)}</th>`).join("")}</tr></thead>` : "";
+  const foot = opts && opts.foot ? `<tfoot><tr>${opts.foot.map((c, i) =>
+    `<td${i > 0 ? ' class="num"' : ''}>${esc(c)}</td>`).join("")}</tr></tfoot>` : "";
+  const body = rows.map(cells => `<tr>${cells.map((c, i) =>
+    `<td${(opts && opts.numCols && opts.numCols.includes(i)) ? ' class="num"' : ''}>${c}</td>`).join("")}</tr>`).join("");
+  return `<div class="pf-block${wide}"><div class="pf-block-title">${esc(title)}</div>
+    <div class="pf-table-wrap"><table class="pf-table">${thead}<tbody>${body}</tbody>${foot}</table></div></div>`;
+}
+function chunk(a, n) { const o = []; for (let i = 0; i < a.length; i += n) o.push(a.slice(i, i + n)); return o; }
+const asList = v => Array.isArray(v) ? v : (typeof v === "string" && v ? v.split(/[;,·]/).map(s => s.trim()).filter(Boolean) : []);
+
 function profileSectionHTML(c) {
-  // [label, value, wide?] — wide fields get a full-width row of their own
-  const fields = [
-    ["School / Department", c.school, true],
-    ["Programmes", c.programs, true],
-    ["Hot Skills", c.skills, true],
-    ["Super-specializations", c.specializations, false],
-    ["MoUs", c.mous, false],
-    ["Campuses", c.campuses, true],
-    ["Top Recruiters", c.recruiters, true],
-  ].filter(([, v]) => v);
-  const batch = Array.isArray(c.batch) ? c.batch : null;
-  const media = Array.isArray(c.media) ? c.media : [];
-  if (!fields.length && !batch && !c.batch && !media.length) return "";
-  const blocks = fields.map(([k, v, wide]) =>
-    `<div class="pf${wide ? " pf-wide" : ""}"><span class="pf-label">${k}</span>
-      <span class="pf-val">${esc(v)}</span></div>`).join("");
-  // Batch size as a table when structured; plain text otherwise
-  let batchBlock = "";
-  if (batch) {
-    const total = batch.reduce((s, [, n]) => s + (Number(n) || 0), 0);
-    batchBlock = `<div class="pf pf-wide"><span class="pf-label">Batch Size / Intake</span>
-      <div class="pf-table-wrap"><table class="pf-table">
-        <thead><tr><th>Programme</th><th class="num">Intake</th></tr></thead>
-        <tbody>${batch.map(([p, n]) =>
-          `<tr><td>${esc(p)}</td><td class="num">${esc(n)}</td></tr>`).join("")}</tbody>
-        <tfoot><tr><td>Total</td><td class="num">${total}</td></tr></tfoot>
-      </table></div></div>`;
+  const blocks = [];
+
+  // Overview — single-value facts as a label/detail table
+  const ov = [
+    ["School / Department", c.school],
+    ["Super-specializations", Array.isArray(c.specializations) ? c.specializations.join(" · ") : c.specializations],
+    ["MoUs", c.mous],
+  ].filter(([, v]) => v).map(([k, v]) => [`<b>${esc(k)}</b>`, esc(v)]);
+  blocks.push(profTable("Overview", null, ov, { wide: true }));
+
+  // Programmes — [name, level]
+  if (Array.isArray(c.programs) && c.programs.length)
+    blocks.push(profTable("Programmes", ["Programme", "Level"],
+      c.programs.map(p => Array.isArray(p) ? [esc(p[0]), esc(p[1] || "—")] : [esc(p), "—"]), { wide: true }));
+  else if (typeof c.programs === "string" && c.programs)
+    blocks.push(profTable("Programmes", null, asList(c.programs).map(p => [esc(p)]), { wide: true }));
+
+  // Batch size / intake — [programme, seats] with a Total row
+  if (Array.isArray(c.batch) && c.batch.length) {
+    const total = c.batch.reduce((s, [, n]) => s + (Number(n) || 0), 0);
+    blocks.push(profTable("Batch Size / Intake", ["Programme", "Intake"],
+      c.batch.map(([p, n]) => [esc(p), esc(n)]), { wide: true, numCols: [1], foot: ["Total", total] }));
   } else if (c.batch) {
-    batchBlock = `<div class="pf pf-wide"><span class="pf-label">Batch Size</span>
-      <span class="pf-val">${esc(c.batch)}</span></div>`;
+    blocks.push(profTable("Batch Size", null, [[esc(c.batch)]], { wide: true }));
   }
-  const mediaBlock = media.length ? `<div class="pf pf-wide"><span class="pf-label">Media &amp; recognition</span>
-      <span class="pf-val pf-media">` +
-      media.map(([t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`).join("") +
-    `</span></div>` : "";
+
+  // Campuses — [name, location/status]
+  if (Array.isArray(c.campuses) && c.campuses.length)
+    blocks.push(profTable("Campuses", ["Campus", "Location / status"],
+      c.campuses.map(x => Array.isArray(x) ? [esc(x[0]), esc(x[1] || "—")] : [esc(x), "—"]), { wide: true }));
+  else if (typeof c.campuses === "string" && c.campuses)
+    blocks.push(profTable("Campuses", null, asList(c.campuses).map(x => [esc(x)]), { wide: true }));
+
+  // Hot skills — flat list laid into a 2-wide grid table
+  const skills = asList(c.skills);
+  if (skills.length)
+    blocks.push(profTable("Hot Skills", null, chunk(skills.map(esc), 2).map(r => r.concat(r.length < 2 ? [""] : []))));
+
+  // Top recruiters — flat list in a 3-wide grid table
+  const recs = asList(c.recruiters);
+  if (recs.length)
+    blocks.push(profTable("Top Recruiters", null,
+      chunk(recs.map(esc), 3).map(r => r.concat(Array(3 - r.length).fill(""))), { wide: true }));
+
+  // Media & recognition — links, one per row
+  const media = Array.isArray(c.media) ? c.media : [];
+  if (media.length)
+    blocks.push(profTable("Media & recognition", null,
+      media.map(([t, u]) => [`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`]), { wide: true }));
+
+  const out = blocks.filter(Boolean).join("");
+  if (!out) return "";
   return `<div class="visual profile-section">
     <p class="vtitle">Institution profile <span class="vhint">· reference only — programmes, recruiters &amp; recognition, never scored</span></p>
-    <div class="profile-grid">${blocks}${batchBlock}${mediaBlock}</div>
+    <div class="profile-grid">${out}</div>
   </div>`;
 }
 
