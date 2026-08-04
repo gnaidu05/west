@@ -1,0 +1,245 @@
+{
+ "Indian Institute of Technology Bombay": {
+  "ir": "IR-E-U-0306",
+  "name": "Indian Institute of Technology Bombay",
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "rank": 3,
+  "intake": [
+   [
+    "UG [4 Years Program(s)]",
+    1161
+   ],
+   [
+    "UG [5 Years Program(s)]",
+    80
+   ],
+   [
+    "PG [2 Year Program(s)]",
+    1406
+   ]
+  ],
+  "ug": {
+   "grad": 182,
+   "placed": 156,
+   "median": 1925000
+  },
+  "pg": {
+   "grad": 851,
+   "placed": 552,
+   "median": 1540000
+  }
+ },
+ "Indian Institute of Technology Gandhinagar": {
+  "ir": "IR-E-U-0139",
+  "name": "Indian Institute of Technology Gandhinagar",
+  "city": "Gandhinagar",
+  "state": "Gujarat",
+  "rank": 25,
+  "intake": [
+   [
+    "UG [4 Years Program(s)]",
+    310
+   ],
+   [
+    "UG [5 Years Program(s)]",
+    60
+   ],
+   [
+    "PG [2 Year Program(s)]",
+    275
+   ]
+  ],
+  "ug": {
+   "grad": 214,
+   "placed": 160,
+   "median": 1400000
+  },
+  "pg": {
+   "grad": 73,
+   "placed": 52,
+   "median": 1350000
+  }
+ },
+ "Institute of Chemical Technology": {
+  "ir": "IR-E-U-0308",
+  "name": "Institute of Chemical Technology",
+  "city": "Mumbai",
+  "state": "Maharashtra",
+  "rank": 41,
+  "intake": [
+   [
+    "UG [4 Years Program(s)]",
+    211
+   ],
+   [
+    "PG [2 Year Program(s)]",
+    385
+   ]
+  ],
+  "ug": {
+   "grad": 233,
+   "placed": 121,
+   "median": 900000
+  },
+  "pg": {
+   "grad": 116,
+   "placed": 31,
+   "median": 750000
+  }
+ },
+ "Visvesvaraya National Institute of Technology, Nagpur": {
+  "ir": "IR-E-U-0334",
+  "name": "Visvesvaraya National Institute of Technology, Nagpur",
+  "city": "Nagpur",
+  "state": "Maharashtra",
+  "rank": 44,
+  "intake": [
+   [
+    "UG [4 Years Program(s)]",
+    855
+   ],
+   [
+    "PG [2 Year Program(s)]",
+    434
+   ]
+  ],
+  "ug": {
+   "grad": 756,
+   "placed": 575,
+   "median": 900000
+  },
+  "pg": {
+   "grad": 239,
+   "placed": 170,
+   "median": 750000
+  }
+ },
+ "Symbiosis International": {
+  "ir": "IR-E-U-0329",
+  "name": "Symbiosis International",
+  "city": "Pune",
+  "state": "Maharashtra",
+  "rank": 46,
+  "intake": [
+   [
+    "UG [4 Years Program(s)]",
+    600
+   ],
+   [
+    "PG [2 Year Program(s)]",
+    126
+   ]
+  ],
+  "ug": {
+   "grad": 452,
+   "placed": 406,
+   "median": 950000
+  },
+  "pg": {
+   "grad": 63,
+   "placed": 56,
+   "median": 860000
+  }
+ },
+ "Sardar Vallabhbhai National Institute of Technology": {
+  "ir": "IR-E-U-0149",
+  "name": "Sardar Vallabhbhai National Institute of Technology",
+  "city": "SURAT",
+  "state": "Gujarat",
+  "rank": 66,
+  "intake": [
+   [
+    "UG [4 Years Program(s)]",
+    1100
+   ],
+   [
+    "PG [2 Year Program(s)]",
+    475
+   ]
+  ],
+  "ug": {
+   "grad": 808,
+   "placed": 596,
+   "median": 968000
+  },
+  "pg": {
+   "grad": 259,
+   "placed": 196,
+   "median": 800000
+  }
+ },
+ "COEP Technological University": {
+  "ir": "IR-E-U-1257",
+  "name": "COEP Technological University",
+  "city": "Pune",
+  "state": "Maharashtra",
+  "rank": 90,
+  "intake": [
+   [
+    "UG [4 Years Program(s)]",
+    773
+   ],
+   [
+    "PG [2 Year Program(s)]",
+    570
+   ]
+  ],
+  "ug": {
+   "grad": 741,
+   "placed": 587,
+   "median": 1050000
+  },
+  "pg": {
+   "grad": 217,
+   "placed": 140,
+   "median": 660000
+  }
+ },
+ "Defence Institute of Advanced Technology": {
+  "ir": "IR-E-U-0297",
+  "name": "Defence Institute of Advanced Technology",
+  "city": "Pune",
+  "state": "Maharashtra",
+  "rank": 92,
+  "intake": [
+   [
+    "PG [2 Year Program(s)]",
+    478
+   ]
+  ],
+  "ug": null,
+  "pg": {
+   "grad": 220,
+   "placed": 156,
+   "median": 929000
+  }
+ },
+ "Pandit Deendayal Energy University": {
+  "ir": "IR-E-U-0147",
+  "name": "Pandit Deendayal Energy University",
+  "city": "Gandhinagar",
+  "state": "Gujarat",
+  "rank": 98,
+  "intake": [
+   [
+    "UG [4 Years Program(s)]",
+    1260
+   ],
+   [
+    "PG [2 Year Program(s)]",
+    234
+   ]
+  ],
+  "ug": {
+   "grad": 1112,
+   "placed": 618,
+   "median": 642000
+  },
+  "pg": {
+   "grad": 119,
+   "placed": 34,
+   "median": 625000
+  }
+ }
+}
