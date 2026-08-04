@@ -81,6 +81,36 @@
     padding: 5px 8px; font-size: 12.5px;
   }
   input[type="search"] { width: 220px; }
+  /* ---- multi-select popover (Programmes) ---- */
+  .ms { position: relative; }
+  .ms-btn {
+    background: var(--surface-1); color: var(--text-primary);
+    border: 1px solid var(--border-strong); border-radius: 4px;
+    padding: 5px 8px; font-size: 12.5px; cursor: pointer; white-space: nowrap;
+  }
+  .ms-btn.active { border-color: var(--accent); color: var(--accent); }
+  .ms-btn .caret { margin-left: 5px; opacity: .7; }
+  .ms-panel {
+    position: absolute; z-index: 40; top: calc(100% + 4px); left: 0;
+    width: 320px; max-width: 84vw; background: var(--surface-1);
+    border: 1px solid var(--border-strong); border-radius: 6px;
+    box-shadow: 0 8px 26px rgba(0,0,0,.28); padding: 8px; display: none;
+  }
+  .ms-panel.open { display: block; }
+  .ms-panel .ms-search { width: 100%; box-sizing: border-box; margin-bottom: 6px; }
+  .ms-head { display: flex; justify-content: space-between; align-items: center;
+    gap: 8px; margin: 2px 2px 6px; font-size: 11px; color: var(--text-secondary); }
+  .ms-head button { background: none; border: none; color: var(--accent);
+    font-size: 11px; cursor: pointer; padding: 0; }
+  .ms-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; }
+  .ms-opt { display: flex; align-items: flex-start; gap: 8px; padding: 4px 4px;
+    font-size: 12.5px; cursor: pointer; border-radius: 4px; }
+  .ms-opt:hover { background: var(--surface-2); }
+  .ms-opt input { margin: 2px 0 0; flex: 0 0 auto; }
+  .ms-opt > span:not(.ms-n) { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+  .ms-opt .ms-n { flex: 0 0 auto; margin-left: auto; padding-left: 4px; color: var(--text-muted);
+    font-variant-numeric: tabular-nums; font-size: 11px; }
+  .ms-empty { color: var(--text-muted); font-size: 12px; padding: 6px 4px; }
   .switch { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; font-size: 12.5px; }
   .switch input { position: absolute; opacity: 0; }
   .track {
@@ -491,6 +521,15 @@
         <input type="number" id="salMax" class="salbox" min="0" step="0.5" placeholder="max"></span>
       <span class="control"><label for="grpSel">Group</label>
         <select id="grpSel"><option>All</option></select></span>
+      <span class="control ms" id="progMs">
+        <label for="progBtn">Programmes</label>
+        <button type="button" class="ms-btn" id="progBtn" aria-haspopup="true" aria-expanded="false">All<span class="caret">▾</span></button>
+        <div class="ms-panel" id="progPanel" role="dialog" aria-label="Filter by programme">
+          <input type="search" class="ms-search" id="progSearch" placeholder="Search programmes…" aria-label="Search programmes">
+          <div class="ms-head"><span id="progCount">any programme</span><button type="button" id="progClear">Clear</button></div>
+          <div class="ms-list" id="progList"></div>
+        </div>
+      </span>
       <span class="control"><label for="spocSel">SPOC</label>
         <select id="spocSel"><option>All</option></select></span>
       <span class="control"><input type="search" id="search" placeholder="Search college / group / city / TPO / SPOC…" aria-label="Search"></span>
@@ -1170,6 +1209,10 @@ const els = {
   zoneChart: document.getElementById("zoneChart"), cgChart: document.getElementById("cgChart"),
   topChart: document.getElementById("topChart"), tooltip: document.getElementById("tooltip"),
   clearBtn: document.getElementById("clearBtn"),
+  progMs: document.getElementById("progMs"), progBtn: document.getElementById("progBtn"),
+  progPanel: document.getElementById("progPanel"), progSearch: document.getElementById("progSearch"),
+  progList: document.getElementById("progList"), progClear: document.getElementById("progClear"),
+  progCount: document.getElementById("progCount"),
 };
 const F = id => document.getElementById(id);
 
@@ -1190,6 +1233,63 @@ function populateFilters() {
   for (const g of [...new Set(COLLEGES.map(c => realGroup(c.group, c.name)).filter(Boolean))].sort())
     els.grp.add(new Option(g));
 }
+/* ---- Programme multi-select filter ---------------------------------- */
+// AICTE/team programme names are granular and spelled inconsistently; fold the
+// obvious duplicates onto one canonical label so the picker isn't fragmented.
+const PROG_ACR = { bca: "BCA", bba: "BBA", mca: "MCA", mba: "MBA", bba_: "BBA" };
+function canonProgram(name) {
+  let s = String(name || "").replace(/&/g, " and ").replace(/\s+/g, " ").trim();
+  s = s.replace(/\bTelecommunications\b/gi, "Telecommunication")
+       .replace(/\bEngg\.?\b/gi, "Engineering")
+       .replace(/\s*\(AI\)/gi, "");
+  s = s.replace(/^Master(?:s)? (?:of|in) Computer Applications?$/i, "MCA")
+       .replace(/^Bachelor (?:of|in) Computer Applications?$/i, "BCA")
+       .replace(/^Master (?:of|in) Business Administration$/i, "MBA")
+       .replace(/^Bachelor (?:of|in) Business Administration$/i, "BBA");
+  s = s.replace(/\s+/g, " ").trim();
+  return PROG_ACR[s.toLowerCase()] || s;
+}
+const collegeProgs = c => {
+  const set = new Set();
+  for (const p of (c.programs || [])) {
+    const nm = Array.isArray(p) ? p[0] : p;
+    if (nm) set.add(canonProgram(nm));
+  }
+  return set;
+};
+let progSet = new Set();   // selected canonical programme labels; empty = all
+function programOptions() {
+  const counts = new Map();
+  for (const r of computeCurrent(userColleges))
+    for (const nm of collegeProgs(r.raw)) counts.set(nm, (counts.get(nm) || 0) + 1);
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));  // by frequency, then name
+}
+function populatePrograms() {
+  const opts = programOptions();
+  const q = els.progSearch.value.trim().toLowerCase();
+  const shown = opts.filter(([nm]) => !q || nm.toLowerCase().includes(q));
+  els.progList.innerHTML = shown.length ? shown.map(([nm, n]) =>
+    `<label class="ms-opt"><input type="checkbox" value="${esc(nm)}"${progSet.has(nm) ? " checked" : ""}>
+      <span>${esc(nm)}</span><span class="ms-n">${n}</span></label>`).join("")
+    : `<div class="ms-empty">No programmes match “${esc(q)}”.</div>`;
+  updateProgLabel();
+}
+function updateProgLabel() {
+  els.progBtn.textContent = progSet.size ? `${progSet.size} selected` : "All";
+  const caret = document.createElement("span");
+  caret.className = "caret"; caret.textContent = "▾";
+  els.progBtn.append(caret);
+  els.progBtn.classList.toggle("active", progSet.size > 0);
+  els.progCount.textContent = progSet.size ? `${progSet.size} selected · any match` : "any programme";
+}
+const byProgramMatch = c => {
+  if (progSet.size === 0) return true;
+  const set = collegeProgs(c);
+  for (const nm of progSet) if (set.has(nm)) return true;   // OR semantics
+  return false;
+};
+
 const zoneMatch = z => zoneSet.size === 0 || zoneSet.has(z);
 function salaryBounds() {
   const lo = parseFloat(els.salMin.value), hi = parseFloat(els.salMax.value);
@@ -1209,13 +1309,14 @@ function viewSets() {
   const bySpoc = r => els.spoc.value === "All"
     || (els.spoc.value === "Unassigned" ? !r.spoc : r.spoc === els.spoc.value);
   const byGroup = r => els.grp.value === "All" || r.group === els.grp.value;
+  const byProgram = r => byProgramMatch(r.raw);
   const { lo, hi } = salaryBounds();
   const bySalary = r => {
     if (lo === null && hi === null) return true;
     if (typeof r.raw.med !== "number") return false;
     return (lo === null || r.raw.med >= lo) && (hi === null || r.raw.med <= hi);
   };
-  const searched = ordered.filter(bySearch).filter(bySalary).filter(byGroup);
+  const searched = ordered.filter(bySearch).filter(bySalary).filter(byGroup).filter(byProgram);
   const view = searched.filter(byZone).filter(bySpoc);
   view.forEach((r, k) => r.rank = k + 1); // rank is the position within the filtered view
   return { all: rows, view,
@@ -1695,7 +1796,7 @@ function render() {
     : "Configure SHARED in index.html (see supabase/shared_colleges.sql) to share additions and edits across the team.";
   const { lo: salLo, hi: salHi } = salaryBounds();
   els.clearBtn.hidden = zoneSet.size === 0 && els.spoc.value === "All" && els.grp.value === "All"
-    && !els.search.value.trim() && salLo === null && salHi === null;
+    && !els.search.value.trim() && salLo === null && salHi === null && progSet.size === 0;
   for (const b of els.zoneChips.querySelectorAll(".zchip")) {
     b.classList.toggle("on", zoneSet.has(b.dataset.zone));
     b.setAttribute("aria-pressed", zoneSet.has(b.dataset.zone));
@@ -1816,8 +1917,33 @@ document.getElementById("hideTest").addEventListener("change", render);
 
 els.clearBtn.addEventListener("click", () => {
   zoneSet.clear(); els.spoc.value = "All"; els.grp.value = "All"; els.search.value = "";
-  els.salMin.value = ""; els.salMax.value = ""; render();
+  els.salMin.value = ""; els.salMax.value = ""; progSet.clear(); els.progSearch.value = "";
+  updateProgLabel(); render();
 });
+
+/* ---- Programme multi-select interactions ---- */
+function closeProgPanel() {
+  els.progPanel.classList.remove("open");
+  els.progBtn.setAttribute("aria-expanded", "false");
+}
+els.progBtn.addEventListener("click", e => {
+  e.stopPropagation();
+  const open = els.progPanel.classList.toggle("open");
+  els.progBtn.setAttribute("aria-expanded", String(open));
+  if (open) { populatePrograms(); els.progSearch.focus(); }
+});
+els.progPanel.addEventListener("click", e => e.stopPropagation());
+els.progSearch.addEventListener("input", populatePrograms);
+els.progList.addEventListener("change", e => {
+  const cb = e.target.closest("input[type=checkbox]"); if (!cb) return;
+  if (cb.checked) progSet.add(cb.value); else progSet.delete(cb.value);
+  updateProgLabel(); render();
+});
+els.progClear.addEventListener("click", () => {
+  progSet.clear(); populatePrograms(); render();
+});
+document.addEventListener("click", () => closeProgPanel());
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeProgPanel(); });
 
 /* shared hover tooltip for chart marks */
 document.addEventListener("mousemove", e => {

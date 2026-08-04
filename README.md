@@ -44,6 +44,12 @@ college's breakdown states which one it is.
 - **State chips instead of zone chips** — every college here is West zone,
   so the slicer, the "Avg score by state" chart and the catalogue grouping
   work on Maharashtra / Gujarat / Goa instead.
+- **Programme filter** — a searchable multi-select in the slicer bar lets you
+  pick one or more programmes (from the seeded Programmes data); the dashboard,
+  catalogue and charts then show every college offering **any** of the chosen
+  programmes. Names are canonicalised so spelling variants collapse to one
+  option (e.g. Electronics & Tele-communication singular/plural, `&` vs "and",
+  MCA vs "Masters in Computer Applications"), each shown with its college count.
 - **SPOC-driven, state-driven pages** — instead of the all-India engine's
   priority tiers, the dashboard carries a clickable **SPOC portfolios band**
   (count, avg score, Priority-1s per owner — click to focus the page) and a
