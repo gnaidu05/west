@@ -100,8 +100,13 @@
   .ms-panel .ms-search { width: 100%; box-sizing: border-box; margin-bottom: 6px; }
   .ms-head { display: flex; justify-content: space-between; align-items: center;
     gap: 8px; margin: 2px 2px 6px; font-size: 11px; color: var(--text-secondary); }
-  .ms-head button { background: none; border: none; color: var(--accent);
+  .ms-head #progClear { background: none; border: none; color: var(--accent);
     font-size: 11px; cursor: pointer; padding: 0; }
+  .ms-seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 5px; overflow: hidden; }
+  .ms-seg button { background: var(--surface-1); color: var(--text-secondary); border: none;
+    font-size: 11px; padding: 3px 10px; cursor: pointer; }
+  .ms-seg button + button { border-left: 1px solid var(--border-strong); }
+  .ms-seg button.on { background: var(--accent); color: #fff; }
   .ms-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; }
   .ms-opt { display: flex; align-items: flex-start; gap: 8px; padding: 4px 4px;
     font-size: 12.5px; cursor: pointer; border-radius: 4px; }
@@ -526,7 +531,12 @@
         <button type="button" class="ms-btn" id="progBtn" aria-haspopup="true" aria-expanded="false">All<span class="caret">▾</span></button>
         <div class="ms-panel" id="progPanel" role="dialog" aria-label="Filter by programme">
           <input type="search" class="ms-search" id="progSearch" placeholder="Search programmes…" aria-label="Search programmes">
-          <div class="ms-head"><span id="progCount">any programme</span><button type="button" id="progClear">Clear</button></div>
+          <div class="ms-head">
+            <span class="ms-seg" role="group" aria-label="Match mode">
+              <button type="button" id="progAny" class="on" aria-pressed="true">Any</button><button type="button" id="progAll" aria-pressed="false">All</button>
+            </span>
+            <button type="button" id="progClear">Clear</button>
+          </div>
           <div class="ms-list" id="progList"></div>
         </div>
       </span>
@@ -1212,7 +1222,7 @@ const els = {
   progMs: document.getElementById("progMs"), progBtn: document.getElementById("progBtn"),
   progPanel: document.getElementById("progPanel"), progSearch: document.getElementById("progSearch"),
   progList: document.getElementById("progList"), progClear: document.getElementById("progClear"),
-  progCount: document.getElementById("progCount"),
+  progAny: document.getElementById("progAny"), progAll: document.getElementById("progAll"),
 };
 const F = id => document.getElementById(id);
 
@@ -1258,6 +1268,7 @@ const collegeProgs = c => {
   return set;
 };
 let progSet = new Set();   // selected canonical programme labels; empty = all
+let progMode = "any";      // "any" = offers ANY selected (OR); "all" = offers ALL (AND)
 function programOptions() {
   const counts = new Map();
   for (const r of computeCurrent(userColleges))
@@ -1276,17 +1287,24 @@ function populatePrograms() {
   updateProgLabel();
 }
 function updateProgLabel() {
-  els.progBtn.textContent = progSet.size ? `${progSet.size} selected` : "All";
+  els.progBtn.textContent = progSet.size ? `${progSet.size} · ${progMode}` : "All";
   const caret = document.createElement("span");
   caret.className = "caret"; caret.textContent = "▾";
   els.progBtn.append(caret);
   els.progBtn.classList.toggle("active", progSet.size > 0);
-  els.progCount.textContent = progSet.size ? `${progSet.size} selected · any match` : "any programme";
+  els.progAny.classList.toggle("on", progMode === "any");
+  els.progAll.classList.toggle("on", progMode === "all");
+  els.progAny.setAttribute("aria-pressed", String(progMode === "any"));
+  els.progAll.setAttribute("aria-pressed", String(progMode === "all"));
 }
 const byProgramMatch = c => {
   if (progSet.size === 0) return true;
   const set = collegeProgs(c);
-  for (const nm of progSet) if (set.has(nm)) return true;   // OR semantics
+  if (progMode === "all") {                                 // AND: offers every selected
+    for (const nm of progSet) if (!set.has(nm)) return false;
+    return true;
+  }
+  for (const nm of progSet) if (set.has(nm)) return true;   // OR: offers any selected
   return false;
 };
 
@@ -1917,8 +1935,8 @@ document.getElementById("hideTest").addEventListener("change", render);
 
 els.clearBtn.addEventListener("click", () => {
   zoneSet.clear(); els.spoc.value = "All"; els.grp.value = "All"; els.search.value = "";
-  els.salMin.value = ""; els.salMax.value = ""; progSet.clear(); els.progSearch.value = "";
-  updateProgLabel(); render();
+  els.salMin.value = ""; els.salMax.value = ""; progSet.clear(); progMode = "any";
+  els.progSearch.value = ""; updateProgLabel(); render();
 });
 
 /* ---- Programme multi-select interactions ---- */
@@ -1939,8 +1957,15 @@ els.progList.addEventListener("change", e => {
   if (cb.checked) progSet.add(cb.value); else progSet.delete(cb.value);
   updateProgLabel(); render();
 });
+function setProgMode(mode) {
+  if (progMode === mode) return;
+  progMode = mode; updateProgLabel();
+  if (progSet.size) render();   // only affects the view when ≥2 selections matter
+}
+els.progAny.addEventListener("click", () => setProgMode("any"));
+els.progAll.addEventListener("click", () => setProgMode("all"));
 els.progClear.addEventListener("click", () => {
-  progSet.clear(); populatePrograms(); render();
+  progSet.clear(); progMode = "any"; populatePrograms(); render();
 });
 document.addEventListener("click", () => closeProgPanel());
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeProgPanel(); });
