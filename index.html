@@ -169,9 +169,9 @@
     display: grid; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr)); gap: 14px 16px;
     align-items: start; white-space: normal;
   }
-  /* the breakdown lives inside a table <td> (nowrap by default) — let it wrap */
-  .detail-inner, .detail-inner * { white-space: normal; }
-  .detail-inner .kv .v.num, .detail-inner .pf-table .num { white-space: nowrap; }
+  /* the breakdown + profile live inside a table <td> (nowrap by default) — let them wrap */
+  .detail-inner, .detail-inner *, .profile-section, .profile-section * { white-space: normal; }
+  .pf-gt .num { white-space: nowrap; }
   .card { border: 1px solid var(--border); border-radius: 8px; padding: 12px; min-width: 0; }
   .card h3 { margin: 0 0 8px; font-size: 12.5px; color: var(--text-secondary); font-weight: 600; }
   .kv { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; padding: 2px 0; }
@@ -188,18 +188,16 @@
   .pf-block.wide { grid-column: 1 / -1; }
   .pf-block-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
     color: var(--text-muted); font-weight: 700; margin-bottom: 5px; }
-  .pf-table-wrap { overflow-x: auto; }
-  /* content-width tables so the 2nd column sits next to the 1st, not flung right */
-  .pf-table { border-collapse: collapse; font-size: 12.5px; width: auto; max-width: 100%; }
-  .pf-table th, .pf-table td { text-align: left; padding: 5px 20px 5px 0;
-    border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere; }
-  .pf-table td:last-child, .pf-table th:last-child { padding-right: 0; }
-  .pf-table th { font-size: 10px; text-transform: uppercase; letter-spacing: .04em;
+  /* CSS-grid "table": columns from inline grid-template-columns; never scrolls */
+  .pf-gt { display: grid; column-gap: 18px; font-size: 12.5px; align-items: start; }
+  .pf-gt-h, .pf-gt-c, .pf-gt-f { padding: 5px 0; border-bottom: 1px solid var(--border);
+    overflow-wrap: anywhere; min-width: 0; }
+  .pf-gt-h { font-size: 10px; text-transform: uppercase; letter-spacing: .04em;
     color: var(--text-muted); font-weight: 600; }
-  .pf-table td.num, .pf-table th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .pf-table tfoot td { font-weight: 700; border-bottom: none; border-top: 1px solid var(--border-strong); }
-  .pf-table a { color: var(--accent); text-decoration: none; font-weight: 500; }
-  .pf-table a:hover { text-decoration: underline; }
+  .pf-gt-f { font-weight: 700; border-bottom: none; border-top: 1px solid var(--border-strong); }
+  .pf-gt .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pf-gt a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .pf-gt a:hover { text-decoration: underline; }
   /* flat lists as wrapping chips */
   .pf-chips { display: flex; flex-wrap: wrap; gap: 6px 8px; }
   .pf-chip { display: inline-block; padding: 3px 11px; border: 1px solid var(--border);
@@ -1307,55 +1305,57 @@ function spocChartHTML(rows) {
 
 /* ---- reference-only institution profile (never scored) ----
    Rendered full-width below the score cards: every sub-topic is its own
-   titled table. Accepts structured arrays (preferred) or plain strings. */
-function profTable(title, headers, rows, opts) {
+   titled mini "table" built with CSS grid so one column fills-and-wraps
+   (minmax(0,1fr)) while the other hugs content — never scrolls. */
+function gridTable(title, tmpl, headers, rows, opts) {
   if (!rows.length) return "";
-  const wide = opts && opts.wide ? " wide" : "";
-  const thead = headers ? `<thead><tr>${headers.map(h =>
-    `<th${/^#|intake|seats/i.test(h) ? ' class="num"' : ''}>${esc(h)}</th>`).join("")}</tr></thead>` : "";
-  const foot = opts && opts.foot ? `<tfoot><tr>${opts.foot.map((c, i) =>
-    `<td${i > 0 ? ' class="num"' : ''}>${esc(c)}</td>`).join("")}</tr></tfoot>` : "";
-  const body = rows.map(cells => `<tr>${cells.map((c, i) =>
-    `<td${(opts && opts.numCols && opts.numCols.includes(i)) ? ' class="num"' : ''}>${c}</td>`).join("")}</tr>`).join("");
+  opts = opts || {};
+  const wide = opts.wide ? " wide" : "";
+  const numCols = opts.numCols || [];
+  const cell = (v, i, cls) => `<div class="pf-gt-${cls}${numCols.includes(i) ? " num" : ""}">${v}</div>`;
+  const head = headers ? headers.map((h, i) => cell(esc(h), i, "h")).join("") : "";
+  const body = rows.map(r => r.map((v, i) => cell(v, i, "c")).join("")).join("");
+  const foot = opts.foot ? opts.foot.map((v, i) => cell(esc(v), i, "f")).join("") : "";
   return `<div class="pf-block${wide}"><div class="pf-block-title">${esc(title)}</div>
-    <div class="pf-table-wrap"><table class="pf-table">${thead}<tbody>${body}</tbody>${foot}</table></div></div>`;
+    <div class="pf-gt" style="grid-template-columns:${tmpl}">${head}${body}${foot}</div></div>`;
 }
-function chunk(a, n) { const o = []; for (let i = 0; i < a.length; i += n) o.push(a.slice(i, i + n)); return o; }
 const asList = v => Array.isArray(v) ? v : (typeof v === "string" && v ? v.split(/[;,·]/).map(s => s.trim()).filter(Boolean) : []);
 
 function profileSectionHTML(c) {
   const blocks = [];
+  const LABEL = "max-content minmax(0,1fr)";   // label hugs · value fills & wraps
+  const FILLHUG = "minmax(0,1fr) max-content";  // first fills & wraps · second hugs
 
-  // Overview — single-value facts as a label/detail table
+  // Overview — single-value facts as label / detail rows
   const ov = [
     ["School / Department", c.school],
     ["Super-specializations", Array.isArray(c.specializations) ? c.specializations.join(" · ") : c.specializations],
     ["MoUs", c.mous],
   ].filter(([, v]) => v).map(([k, v]) => [`<b>${esc(k)}</b>`, esc(v)]);
-  blocks.push(profTable("Overview", null, ov));
+  blocks.push(gridTable("Overview", LABEL, null, ov));
 
   // Programmes — [name, level]
   if (Array.isArray(c.programs) && c.programs.length)
-    blocks.push(profTable("Programmes", ["Programme", "Level"],
+    blocks.push(gridTable("Programmes", FILLHUG, ["Programme", "Level"],
       c.programs.map(p => Array.isArray(p) ? [esc(p[0]), esc(p[1] || "—")] : [esc(p), "—"])));
   else if (typeof c.programs === "string" && c.programs)
-    blocks.push(profTable("Programmes", null, asList(c.programs).map(p => [esc(p)])));
+    blocks.push(gridTable("Programmes", "minmax(0,1fr)", null, asList(c.programs).map(p => [esc(p)])));
 
   // Batch size / intake — [programme, seats] with a Total row
   if (Array.isArray(c.batch) && c.batch.length) {
     const total = c.batch.reduce((s, [, n]) => s + (Number(n) || 0), 0);
-    blocks.push(profTable("Batch Size / Intake", ["Programme", "Intake"],
+    blocks.push(gridTable("Batch Size / Intake", FILLHUG, ["Programme", "Intake"],
       c.batch.map(([p, n]) => [esc(p), esc(n)]), { numCols: [1], foot: ["Total", total] }));
   } else if (c.batch) {
-    blocks.push(profTable("Batch Size", null, [[esc(c.batch)]]));
+    blocks.push(gridTable("Batch Size", "minmax(0,1fr)", null, [[esc(c.batch)]]));
   }
 
   // Campuses — [name, location/status]
   if (Array.isArray(c.campuses) && c.campuses.length)
-    blocks.push(profTable("Campuses", ["Campus", "Location / status"],
+    blocks.push(gridTable("Campuses", LABEL, ["Campus", "Location / status"],
       c.campuses.map(x => Array.isArray(x) ? [esc(x[0]), esc(x[1] || "—")] : [esc(x), "—"])));
   else if (typeof c.campuses === "string" && c.campuses)
-    blocks.push(profTable("Campuses", null, asList(c.campuses).map(x => [esc(x)])));
+    blocks.push(gridTable("Campuses", "minmax(0,1fr)", null, asList(c.campuses).map(x => [esc(x)])));
 
   // Hot skills & Top recruiters — flat lists as wrapping chips (full width)
   const chips = (title, items) => items.length
