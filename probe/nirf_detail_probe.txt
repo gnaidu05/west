@@ -1,56 +1,438 @@
-ranked institutes: 100 | West: 9
-    3  IR-E-U-0306  Indian Institute of Technology Bombay  (Mumbai, Maharashtra)
-   25  IR-E-U-0139  Indian Institute of Technology Gandhinagar  (Gandhinagar, Gujarat)
-   41  IR-E-U-0308  Institute of Chemical Technology  (Mumbai, Maharashtra)
-   44  IR-E-U-0334  Visvesvaraya National Institute of Technology, N  (Nagpur, Maharashtra)
-   46  IR-E-U-0329  Symbiosis International  (Pune, Maharashtra)
-   66  IR-E-U-0149  Sardar Vallabhbhai National Institute of Technol  (SURAT, Gujarat)
-   90  IR-E-U-1257  COEP Technological University  (Pune, Maharashtra)
-   92  IR-E-U-0297  Defence Institute of Advanced Technology  (Pune, Maharashtra)
-   98  IR-E-U-0147  Pandit Deendayal Energy University  (Gandhinagar, Gujarat)
 
-===== #3 Indian Institute of Technology Bombay [IR-E-U-0306] =====
-pdf HTTP 200 application/pdf 10258B
-  L5: Sanctioned (Approved) Intake ⏎ Academic Year 2023-24 2022-23 2021-22 2020-21 2019-20 2018-19 ⏎ UG [4 Years Program(s)] 1161 1059 1039 1030 - -
-  L17: Total Students Within State ⏎ (Including male ⏎ & female)
-  L69: Placement & Higher Studies ⏎ UG [4 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year
-  L70: UG [4 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
-  L72: students intake in the ⏎ year ⏎ No. of first year
-  L81: graduating in ⏎ minimum stipulated ⏎ time
-  L86: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
-  L87: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
-  L105: UG [5 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
-  L107: students intake in the ⏎ year ⏎ No. of first year
-  L116: graduating in ⏎ minimum stipulated ⏎ time
-  L121: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
-  L122: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
-  L139: PG [2 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
-  L141: students intake in the ⏎ year ⏎ No. of first year
-  L146: Academic Year No. of students graduating in minimum ⏎ stipulated time ⏎ No. of students
-  L150: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
-  L151: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
-  L170: Total Students ⏎ Full Time 3523 ⏎ Part Time 466
-  L173: No. of Ph.D students graduated (including Integrated Ph.D) ⏎ 2023-24 2022-23 2021-22 ⏎ Full Time 451 382 416
+########## COEP #90 [IR-E-U-1257] HTTP 200 ##########
+  0: National Institutional Ranking Framework
+  1: Ministry of Education
+  2: Government of India
+  3: Data Submitted by Institution for India Rankings '2025'
+  4: Institute Name: COEP Technological University [IR-E-U-1257]
+  5: Sanctioned (Approved) Intake
+  6: Academic Year 2023-24 2022-23 2021-22 2020-21 2019-20 2018-19
+  7: UG [4 Years Program(s)] 773 713 570 570 - -
+  8: PG [2 Year Program(s)] 570 486 - - - -
+  9: Total Actual Student Strength (Program(s) Offered by your Institution)
+ 10: (All programs
+ 11: of all years)
+ 12: No. of Male
+ 13: Students
+ 14: No. of Female
+ 15: Students
+ 16: Total Students Within State
+ 17: (Including male
+ 18: & female)
+ 19: Outside State
+ 20: (Including male
+ 21: & female)
+ 22: Outside
+ 23: Country
+ 24: (Including male
+ 25: & female)
+ 26: Economically
+ 27: Backward
+ 28: (Including male
+ 29: & female)
+ 30: Socially
+ 31: Challenged
+ 32: (SC+ST+OBC
+ 33: Including male
+ 34: & female)
+ 35: No. of students
+ 36: receiving full
+ 37: tuition fee
+ 38: reimbursement
+ 39: from the State
+ 40: and Central
+ 41: Government
+ 42: No. of students
+ 43: receiving full
+ 44: tuition fee
+ 45: reimbursement
+ 46: from Institution
+ 47: Funds
+ 48: No. of students
+ 49: receiving full
+ 50: tuition fee
+ 51: reimbursement
+ 52: from the Private
+ 53: Bodies
+ 54: No. of students
+ 55: who are not
+ 56: receiving full
+ 57: tuition fee
+ 58: reimbursement
+ 59: UG [4 Years
+ 60: Program(s)]
+ 61: 2485 984 3469 3174 161 134 278 1607 1379 342 164 0
+ 62: PG [2 Year
+ 63: Program(s)]
+ 64: 414 157 571 537 34 0 30 297 261 2 20 44
+ 65: Placement & Higher Studies
+ 66: UG [4 Years Program(s)]: Placement & higher studies for previous 3 years
+ 67: Academic Year No. of first year
+ 68: students intake in the
+ 69: year
+ 70: No. of first year
+ 71: students admitted in
+ 72: the year
+ 73: Academic Year No. of students
+ 74: admitted through
+ 75: Lateral entry
+ 76: Academic Year No. of students
+ 77: graduating in
+ 78: minimum stipulated
+ 79: time
+ 80: No. of students
+ 81: placed
+ 82: Median salary of
+ 83: placed graduates per
+ 84: annum(Amount in
+ 85: Rs.)
+ 86: No. of students
+ 87: selected for Higher
+ 88: Studies
+ 89: 2018-19 570 676 2019-20 76 2021-22 714 577 970000(Nine Lakhs
+ 90: Seventy Thousand)
+ 91: 135
+ 92: 2019-20 570 758 2020-21 92 2022-23 756 602 975000(Nine Lakhs
+ 93: Seventy Five
+ 94: Thousand)
+ 95: 80
+ 96: 2020-21 570 715 2021-22 80 2023-24 741 587 1050000(Ten Lakhs
+ 97: Fifty Thousand)
+ 98: 124
+ 99: PG [2 Years Program(s)]: Placement & higher studies for previous 3 years
+100: Academic Year No. of first year
+101: students intake in the
+102: year
+103: No. of first year
+104: students admitted in
+105: the year
+106: Academic Year No. of students graduating in minimum
+107: stipulated time
+108: No. of students
+109: placed
+110: Median salary of
+111: placed graduates per
+112: annum(Amount in
+113: Rs.)
+114: No. of students
+115: selected for Higher
+116: Studies
+117: 2020-21 462 440 2021-22 375 329 696000(Six Lakhs
+118: Ninety Six Thousand)
+119: 35
+120: 2021-22 486 309 2022-23 275 180 650000(Six Lakhs Fifty
+121: Thousand)
+122: 38
+123: 2022-23 486 245 2023-24 217 140 660000(Six Lakhs
+124: Sixty Thousand)
+125: 40
+126: Ph.D Student Details
+127: Ph.D (Student pursuing doctoral program till 2023-24)
+128: Total Students
+129: Full Time 103
+130: Part Time 185
+131: No. of Ph.D students graduated (including Integrated Ph.D)
+132: 2023-24 2022-23 2021-22
+133: Full Time 18 16 10
+134: Part Time 26 18 27
+135: Financial Resources: Utilised Amount for the Capital expenditure for previous 3 years
+136: Financial Year 2023-24 2022-23 2021-22
+137: Utilised Amount Utilised Amount Utilised Amount
+138: Annual Capital Expenditure on Academic Activities and Resources (excluding expenditure on buildings)
+139: Library ( Books, Journals and e-Resources only) 46040965 (Four Crore Sixty Lakhs Forty Thousand Nine
+140: Hundred Sixty Five)
+141: 14908434 (One Crore Forty Nine Lakhs And Eight Thousand
+142: Four Hundred Thirty Four)
+143: 11423453 (One Crore Fourteen Lakhs Twenty Three Thousand
+144: Four Hundred Fifty Three)
+145: New Equipment and software for Laboratories 26581925 (Two Crore Sixty Five Lakhs Eighty One Thousand
+146: Nine Hundred Twenty Five)
+147: 74423912 (Seven Crore Forty Four Lakhs Twenty Three
+148: Thousand Nine Hundred Twelve)
+149: 95252546 (Nine Crore Fifty Two Lakhs Fifty Two Thousand
+150: Five Hundred Forty Six)
+151: Engineering Workshops 25067214 (Two Crore Fifty Lakhs Sixty Seven Thousand Two
+152: Hundred Fourteen)
+153: 41822948 (Four Crore Eighteen Lakhs Twenty Two Thousand
+154: Nine Hundred Forty Eight)
+155: 48385787 (Four Crore Eighty Three Lakhs Eighty Five
+156: Thousand Seven Hundred Eighty Seven)
+157: Other expenditure on creation of Capital Assets (For setting up
+158: classrooms, seminar hall, conference hall , library, Lab, Engg
+159: workshops excluding expenditure on Land and Building)
+160: 255655632 (Twenty Five Crore Fifty Six Lakhs Fifty Five
+161: Thousand Six Hundred And Thirty Two)
+162: 241138969 (Twenty Four Crore Eleven Lakhs Thirty Eight
+163: Thousand Nine Hundred Sixty Nine)
+164: 213597163 (Twenty One Crore Thirty Five Lakhs Ninety Seven
+165: Thousand One Hundred Sixty Three)
+166: Financial Resources: Utilised Amount for the Operational expenditure for previous 3 years
+167: Financial Year 2023-24 2022-23 2021-22
+168: Utilised Amount Utilised Amount Utilised Amount
+169: Annual Operational Expenditure
+170: Salaries (Teaching and Non Teaching staff) 845143303 (Eighty Four Crore Fifty One Lakhs Forty Three
+171: Thousand Three Hundred and Three)
+172: 752492112 (Seventy Five Crore Twenty Four Lakhs NInety
+173: Two Thousand One Hundred Twelve)
+174: 686383742 (Sixty Eight Crore Sixty Three Lakhs Eighty Three
+175: Thousand Seven Hundred Forty Two)
+176: Maintenance of Academic Infrastructure or consumables and
+177: other running expenditures(excluding maintenance of hostels
+178: and allied services,rent of the building, depreciation cost, etc)
+179: 587031730 (Fifty Eight Crore Seventy Lakhs Thirty One
+180: Thousand Seven Hundred and Thirty )
+181: 585097664 (Fifty Eight Crore Fifty Lakhs Ninety Seven
+182: Thousand Six Hundred Sixty Four)
+183: 585684297 (Fifty Eight Crore Fifty SIx Lakhs Eighty Four
+184: Thousand Two Hundred Ninety Seven)
+185: Seminars/Conferences/Workshops 4636488 (Forty Six Lakhs Thirty Six Thousand Four Hundred
+186: and Eighty Eight)
+187: 4129022 (Forty One Lakhs Twenty Nine Thousand And Twenty
+188: Two)
+189: 2935386 (Twenty Nine Lakhs Thirty Five Thousand Three
+190: Hundred Eighty Six)
+191: Sponsored Research Details
+192: Financial Year 2023-24 2022-23 2021-22
+193: Total no. of Sponsored Projects 162 152 148
+194: Total no. of Funding Agencies 51 48 52
+195: Total Amount Received (Amount in Rupees) 231384775 176507848 227821000
+196: Amount Received in Words Twenty Three Crores Thirteen Lakhs Eighty Four Thousand
+197: Seven Hundred and Seventy Five
+198: Seventeen Crore Sixty Five Lakhs And Seven Thousand Eight
+199: Hundred Forty Eight
+200: Twenty Two Crore Seventy Eight Lakhs Twenty One Thousand
+201: Consultancy Project Details
+202: Financial Year 2023-24 2022-23 2021-22
+203: Total no. of Consultancy Projects 1238 1157 688
+204: Total no. of Client Organizations 863 800 539
+205: Total Amount Received (Amount in Rupees) 131233513 127212607 118932000
+206: Amount Received in Words Rupees Thirteen Crore Twelve Lakhs Thirty Three Thousand
+207: Five Hundred and Thirteen
+208: Twelve Crore Seventy Two Lakhs Twelve Thousand Six
+209: Hundred Seven
+210: Eleven Crore Eighty Nine Lakhs Thirty Two Thousand
+211: PCS Facilities: Facilities of Physically Challenged Students
+212: 1. Do your institution buildings have Lifts/Ramps? Yes, more than 80% of the buildings
+213: 2. Do your institution have provision for walking aids, including wheelchairs and transportation from one building to another for
+214: handicapped students?
+215: Yes
+216: 3. Do your institution buildings have specially designed toilets for handicapped students? Yes, more than 80% of the buildings
+217: Faculty Details
+218: Number of faculty members entered 236
 
-===== #25 Indian Institute of Technology Gandhinagar [IR-E-U-0139] =====
-pdf HTTP 200 application/pdf 10021B
-  L5: Sanctioned (Approved) Intake ⏎ Academic Year 2023-24 2022-23 2021-22 2020-21 2019-20 2018-19 ⏎ UG [4 Years Program(s)] 310 225 225 225 - -
-  L17: Total Students Within State ⏎ (Including male ⏎ & female)
-  L69: Placement & Higher Studies ⏎ UG [4 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year
-  L70: UG [4 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
-  L72: students intake in the ⏎ year ⏎ No. of first year
-  L81: graduating in ⏎ minimum stipulated ⏎ time
-  L86: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
-  L87: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
-  L101: UG [5 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
-  L103: students intake in the ⏎ year ⏎ No. of first year
-  L112: graduating in ⏎ minimum stipulated ⏎ time
-  L117: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
-  L118: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
-  L127: PG [2 Years Program(s)]: Placement & higher studies for previous 3 years ⏎ Academic Year No. of first year ⏎ students intake in the
-  L129: students intake in the ⏎ year ⏎ No. of first year
-  L134: Academic Year No. of students graduating in minimum ⏎ stipulated time ⏎ No. of students
-  L138: Median salary of ⏎ placed graduates per ⏎ annum(Amount in
-  L139: placed graduates per ⏎ annum(Amount in ⏎ Rs.)
-  L157: Total Students ⏎ Full Time 590 ⏎ Part Time 5
-  L160: No. of Ph.D students graduated (including Integrated Ph.D) ⏎ 2023-24 2022-23 2021-22 ⏎ Full Time 73 40 37
+########## PDEU #98 [IR-E-U-0147] HTTP 200 ##########
+  0: National Institutional Ranking Framework
+  1: Ministry of Education
+  2: Government of India
+  3: Data Submitted by Institution for India Rankings '2025'
+  4: Institute Name: Pandit Deendayal Energy University [IR-E-U-0147]
+  5: Sanctioned (Approved) Intake
+  6: Academic Year 2023-24 2022-23 2021-22 2020-21 2019-20 2018-19
+  7: UG [4 Years Program(s)] 1260 1260 1200 1080 - -
+  8: PG [2 Year Program(s)] 234 234 - - - -
+  9: Total Actual Student Strength (Program(s) Offered by your Institution)
+ 10: (All programs
+ 11: of all years)
+ 12: No. of Male
+ 13: Students
+ 14: No. of Female
+ 15: Students
+ 16: Total Students Within State
+ 17: (Including male
+ 18: & female)
+ 19: Outside State
+ 20: (Including male
+ 21: & female)
+ 22: Outside
+ 23: Country
+ 24: (Including male
+ 25: & female)
+ 26: Economically
+ 27: Backward
+ 28: (Including male
+ 29: & female)
+ 30: Socially
+ 31: Challenged
+ 32: (SC+ST+OBC
+ 33: Including male
+ 34: & female)
+ 35: No. of students
+ 36: receiving full
+ 37: tuition fee
+ 38: reimbursement
+ 39: from the State
+ 40: and Central
+ 41: Government
+ 42: No. of students
+ 43: receiving full
+ 44: tuition fee
+ 45: reimbursement
+ 46: from Institution
+ 47: Funds
+ 48: No. of students
+ 49: receiving full
+ 50: tuition fee
+ 51: reimbursement
+ 52: from the Private
+ 53: Bodies
+ 54: No. of students
+ 55: who are not
+ 56: receiving full
+ 57: tuition fee
+ 58: reimbursement
+ 59: UG [4 Years
+ 60: Program(s)]
+ 61: 4264 897 5161 4617 343 201 47 680 514 213 0 0
+ 62: PG [2 Year
+ 63: Program(s)]
+ 64: 199 57 256 219 29 8 2 53 3 0 0 52
+ 65: Placement & Higher Studies
+ 66: UG [4 Years Program(s)]: Placement & higher studies for previous 3 years
+ 67: Academic Year No. of first year
+ 68: students intake in the
+ 69: year
+ 70: No. of first year
+ 71: students admitted in
+ 72: the year
+ 73: Academic Year No. of students
+ 74: admitted through
+ 75: Lateral entry
+ 76: Academic Year No. of students
+ 77: graduating in
+ 78: minimum stipulated
+ 79: time
+ 80: No. of students
+ 81: placed
+ 82: Median salary of
+ 83: placed graduates per
+ 84: annum(Amount in
+ 85: Rs.)
+ 86: No. of students
+ 87: selected for Higher
+ 88: Studies
+ 89: 2018-19 780 810 2019-20 116 2021-22 814 384 600000(Rupees Six
+ 90: Lac)
+ 91: 368
+ 92: 2019-20 780 869 2020-21 210 2022-23 884 462 650000(Rupees six
+ 93: lakh fifty thousand)
+ 94: 319
+ 95: 2020-21 1080 1153 2021-22 185 2023-24 1112 618 642000(Rupees six
+ 96: lakh two thousand)
+ 97: 418
+ 98: PG [2 Years Program(s)]: Placement & higher studies for previous 3 years
+ 99: Academic Year No. of first year
+100: students intake in the
+101: year
+102: No. of first year
+103: students admitted in
+104: the year
+105: Academic Year No. of students graduating in minimum
+106: stipulated time
+107: No. of students
+108: placed
+109: Median salary of
+110: placed graduates per
+111: annum(Amount in
+112: Rs.)
+113: No. of students
+114: selected for Higher
+115: Studies
+116: 2020-21 270 168 2021-22 167 66 420000(Rupees Four
+117: Lac Twenty Thousand)
+118: 4
+119: 2021-22 270 148 2022-23 140 69 500000(Rupees Five
+120: lakh)
+121: 5
+122: 2022-23 234 139 2023-24 119 34 625000(Rupees Six
+123: Lakh Twenty Five
+124: Thousand)
+125: 0
+126: Ph.D Student Details
+127: Ph.D (Student pursuing doctoral program till 2023-24)
+128: Total Students
+129: Full Time 103
+130: Part Time 113
+131: No. of Ph.D students graduated (including Integrated Ph.D)
+132: 2023-24 2022-23 2021-22
+133: Full Time 10 4 3
+134: Part Time 7 15 11
+135: Financial Resources: Utilised Amount for the Capital expenditure for previous 3 years
+136: Financial Year 2023-24 2022-23 2021-22
+137: Utilised Amount Utilised Amount Utilised Amount
+138: Annual Capital Expenditure on Academic Activities and Resources (excluding expenditure on buildings)
+139: Library ( Books, Journals and e-Resources only) 21369581 (Rupees Two Crore thirteen lac sixty nine thousand
+140: five hundred eighty one)
+141: 21474142 (Rupees Two Crore Fourteen lac Seventy Four
+142: Thousand One Hundred Forty Two )
+143: 13384482 (Rupees One Crore Thirty Three Lac Eighty Four
+144: Thousand Four Hundred Eighty Two)
+145: New Equipment and software for Laboratories 137073097 (Rupees thirteen crore seventy lac seventy three
+146: thousand ninety seven)
+147: 166274737 (Rupees Sixteen Crore Sixty Two Lac Seventy
+148: Four Thousand Seven Hundred Thirty Seven)
+149: 86995731 (Rupees Eight Crore Sixty Nine Lac Ninety Five
+150: Thousand Seven Hundred Thirty One)
+151: Engineering Workshops 0 (Zero) 0 (Zero) 0 (Rupees Zero)
+152: Other expenditure on creation of Capital Assets (For setting up
+153: classrooms, seminar hall, conference hall , library, Lab, Engg
+154: workshops excluding expenditure on Land and Building)
+155: 155630030 (Rupees fifteen crore fifty six lac thirty thousand
+156: thirty )
+157: 180479538 (Rupees Eighteen Crore Four Lac Seventy Nine
+158: Thousand Five Hundred Thirty Eight)
+159: 71572442 (Rupees Seven Crore Fifteen Lac Seventy Two
+160: Thousand Four Hundred Forty Two)
+161: Financial Resources: Utilised Amount for the Operational expenditure for previous 3 years
+162: Financial Year 2023-24 2022-23 2021-22
+163: Utilised Amount Utilised Amount Utilised Amount
+164: Annual Operational Expenditure
+165: Salaries (Teaching and Non Teaching staff) 788778861 (Rupees seventy eight crore eighty seven lac
+166: seventy eight thousand eight hundred sixty one)
+167: 708929137 (Rupees Seventy Crore Eighty Nine Lac Twenty
+168: Nine Thousand One Hundred Thirty Seven)
+169: 555219567 (Rupees Fifty Five Crore Fifty Two Lac Nineteen
+170: Thousand Five Hundred Sixty Seven)
+171: Maintenance of Academic Infrastructure or consumables and
+172: other running expenditures(excluding maintenance of hostels
+173: and allied services,rent of the building, depreciation cost, etc)
+174: 343137628 (Rupees thirty four crore thirty one lac thirty seven
+175: thousand six hundred twenty eight)
+176: 356698993 (Rupees Thirty Five Crore Sixty Six Lac Ninety
+177: Eight Thousand Nine Hundred Ninety Three )
+178: 230540396 (Rupees Twenty Three Crore Five Lac Forty
+179: Thousand Three Hundred Ninety Six)
+180: Seminars/Conferences/Workshops 9819335 (Rupees ninety eight lac nineteen thousand three
+181: hundred thirty five )
+182: 6664516 (Rupees Sixty Six Lac Sixty Four Thousand Five
+183: Hundred Sixteen)
+184: 6532710 (Rupees Sixty Five Lac Thirty Two Thousand Seven
+185: Hundred Ten)
+186: Sponsored Research Details
+187: Financial Year 2023-24 2022-23 2021-22
+188: Total no. of Sponsored Projects 60 43 37
+189: Total no. of Funding Agencies 21 15 9
+190: Total Amount Received (Amount in Rupees) 67214679 63777415 27140193
+191: Amount Received in Words Rupees Six crore seventy two lac fourteen thousand six
+192: hundred seventy nine
+193: Rupees Six Crore Thirty Seven Lac Seventy Seven Thousand
+194: Four Hundred Fifteen
+195: Two Crore Seventy One Lakh Forty Thousand One Hundred
+196: And Ninety Three
+197: Consultancy Project Details
+198: Financial Year 2023-24 2022-23 2021-22
+199: Total no. of Consultancy Projects 40 26 7
+200: Total no. of Client Organizations 33 13 6
+201: Total Amount Received (Amount in Rupees) 10847831 5756775 3415746
+202: Amount Received in Words Rupees One Crore eight lakhs forty seven thousand eight
+203: hundred and thirty one
+204: Rupees Fifty Seven Lac Fifty six Thousand Seven hundred
+205: Seventy Five
+206: Rupees thirty four lacs fifteen thousand seven hundred forty six
+207: PCS Facilities: Facilities of Physically Challenged Students
+208: 1. Do your institution buildings have Lifts/Ramps? Yes, more than 80% of the buildings
+209: 2. Do your institution have provision for walking aids, including wheelchairs and transportation from one building to another for
+210: handicapped students?
+211: Yes
+212: 3. Do your institution buildings have specially designed toilets for handicapped students? Yes, more than 80% of the buildings
+213: Faculty Details
+214: Number of faculty members entered 332
