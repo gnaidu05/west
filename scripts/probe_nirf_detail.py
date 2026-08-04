@@ -1,65 +1,47 @@
 #!/usr/bin/env python3
-"""Probe NIRF 2025 per-institute data: find the institute-detail / data URL
-pattern from the Engineering ranking page and report which fields
-(intake, median salary, placement) are extractable. Report only."""
-import os, re, requests
+"""Dump NIRF 2025 data-PDF text for a few West institutes so the
+intake / median-salary / placement extraction can be designed."""
+import os, re, io, requests
+from pypdf import PdfReader
 
-UA = {"User-Agent": "Mozilla/5.0 (college-priority-dashboard NIRF detail probe)"}
-YEAR = 2025
-BASE = f"https://www.nirfindia.org/Rankings/{YEAR}/EngineeringRanking.html"
+UA = {"User-Agent": "Mozilla/5.0 (college-priority-dashboard NIRF probe)"}
+Y = 2025
+PDF = "https://www.nirfindia.org/nirfpdfcdn/{y}/pdf/Engineering/{ir}.pdf"
 out = []
+def log(m): out.append(str(m)); print(m)
 
-def log(m): out.append(m); print(m)
+html = requests.get(f"https://www.nirfindia.org/Rankings/{Y}/EngineeringRanking.html",
+                    headers=UA, timeout=90).text
 
-r = requests.get(BASE, headers=UA, timeout=90)
-log(f"ranking page: HTTP {r.status_code} | {len(r.content)} bytes")
-html = r.text
+# parse rows: IR id + institute name + ... + city + state + score + rank
+rows = []
+for part in re.split(r"(?=<tr[^>]*>\s*<td[^>]*>\s*IR-)", html)[1:]:
+    m = re.match(r"<tr[^>]*>\s*<td[^>]*>\s*(IR-E-[A-Za-z0-9-]+)\s*</td>\s*<td[^>]*>\s*([^<]+)", part)
+    if not m: continue
+    ir, name = m.group(1), re.sub(r"\s+", " ", m.group(2)).strip()
+    tails = re.findall(r"<td[^>]*>\s*([^<>]+?)\s*</td>\s*<td[^>]*>\s*([^<>]+?)\s*</td>"
+                       r"\s*<td[^>]*>\s*([\d.]+)\s*</td>\s*<td[^>]*>\s*(\d+)\s*</td>\s*</tr>", part)
+    if not tails: continue
+    city, state, _s, rank = tails[-1]
+    rows.append((ir, name, city.strip(), state.strip(), int(rank)))
 
-# IR IDs present
-irs = re.findall(r"IR-E-[A-Za-z0-9-]+", html)
-log(f"IR IDs found: {len(set(irs))}; sample: {sorted(set(irs))[:6]}")
+west = [r for r in rows if r[3] in ("Maharashtra", "Gujarat", "Goa")]
+log(f"ranked institutes: {len(rows)} | West: {len(west)}")
+for r in west: log(f"  {r[4]:>3}  {r[0]}  {r[1][:48]}  ({r[2]}, {r[3]})")
 
-# any hrefs / onclick / data-* that reference a detail page or pdf
-links = re.findall(r'(?:href|onclick|data-[a-z]+)\s*=\s*"([^"]*(?:pdf|Report|institute|Institute|detail|Detail|IR-E)[^"]*)"', html)
-log(f"candidate detail links: {len(set(links))}")
-for l in sorted(set(links))[:20]:
-    log("  LINK " + l)
-
-# pick a sample IR (prefer a West one if identifiable near 'Maharashtra'/'Gujarat')
-sample = None
-for m in re.finditer(r"(IR-E-[A-Za-z0-9-]+)(.{0,400})", html, re.S):
-    if re.search(r"Maharashtra|Gujarat|Goa", m.group(2)):
-        sample = m.group(1); break
-sample = sample or (sorted(set(irs))[0] if irs else None)
-log(f"\nsample IR for detail probe: {sample}")
-
-# candidate detail/data URL patterns to try
-cands = [
-    f"https://www.nirfindia.org/nirfpdfcdn/{YEAR}/pdf/Engineering/{sample}.pdf",
-    f"https://www.nirfindia.org/Rankings/{YEAR}/Report/{sample}.pdf",
-    f"https://www.nirfindia.org/{YEAR}/Institutions/{sample}",
-    f"https://www.nirfindia.org/DataCapture/Report/{sample}",
-    f"https://www.nirfindia.org/Rankings/{YEAR}/Institutions/Institution.html?ID={sample}",
-]
-for u in cands:
-    try:
-        rr = requests.get(u, headers=UA, timeout=60)
-        ct = rr.headers.get("content-type", "?")
-        log(f"\nTRY {u}\n  HTTP {rr.status_code} | {ct} | {len(rr.content)} bytes")
-        if rr.status_code == 200 and "pdf" in ct.lower():
-            try:
-                from pypdf import PdfReader
-                import io
-                txt = "".join((p.extract_text() or "") for p in PdfReader(io.BytesIO(rr.content)).pages[:6])
-                for kw in ["Intake", "Sanctioned", "Median salary", "Median Salary", "Placement", "Total Students", "salary"]:
-                    hits = [s.strip()[:90] for s in txt.splitlines() if kw.lower() in s.lower()]
-                    if hits: log(f"    [{kw}] " + " | ".join(hits[:2]))
-            except Exception as e:
-                log(f"    pdf parse error: {e}")
-        elif rr.status_code == 200:
-            log("    EXCERPT: " + re.sub(r"\s+", " ", rr.text[:400]))
-    except Exception as e:
-        log(f"TRY {u}\n  ERROR {e}")
+# dump text for the two highest-ranked West institutes
+for ir, name, city, state, rank in sorted(west, key=lambda x: x[4])[:2]:
+    log(f"\n===== #{rank} {name} [{ir}] =====")
+    rr = requests.get(PDF.format(y=Y, ir=ir), headers=UA, timeout=60)
+    log(f"pdf HTTP {rr.status_code} {rr.headers.get('content-type')} {len(rr.content)}B")
+    if rr.status_code != 200: continue
+    txt = "\n".join((p.extract_text() or "") for p in PdfReader(io.BytesIO(rr.content)).pages)
+    lines = [re.sub(r"\s+", " ", l).strip() for l in txt.splitlines() if l.strip()]
+    # print lines around intake / salary / placement keywords
+    for i, l in enumerate(lines):
+        if re.search(r"intake|median salary|placement|higher stud|total student|graduat", l, re.I):
+            ctx = " ⏎ ".join(lines[i:i+3])
+            log(f"  L{i}: {ctx[:160]}")
 
 os.makedirs("probe", exist_ok=True)
 open("probe/nirf_detail_probe.txt", "w").write("\n".join(out) + "\n")
