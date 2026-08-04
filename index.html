@@ -480,6 +480,7 @@
     <button type="button" class="pill-btn" id="myReqBtn" hidden>My requests<span class="n" id="myReqN" hidden></span></button>
     <button type="button" class="pill-btn" id="apprBtn" hidden>Approvals<span class="n" id="apprN" hidden></span></button>
     <button type="button" class="pill-btn" id="usersBtn" hidden>Users</button>
+    <button type="button" class="pill-btn" id="pwBtn" hidden>Password</button>
     <span class="who" id="authWho"></span>
     <span class="role" id="authRole"></span>
     <button type="button" class="clearlink" id="logoutBtn">Log out</button>
@@ -784,6 +785,21 @@
     <p class="hint">Edits you submitted and their approval status.</p>
     <div id="myReqBody"></div>
     <div class="form-actions"><button type="button" class="btn primary" id="myReqClose">Close</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="pwOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwTitle" style="max-width:380px">
+    <h2 id="pwTitle">Change password</h2>
+    <p class="hint">Set a new password for your account. You stay signed in.</p>
+    <form id="pwForm" autocomplete="off">
+      <label class="perm-note" for="pw_new" style="display:block;margin:0 0 4px">New password (min 6 characters)</label>
+      <input id="pw_new" type="password" autocomplete="new-password" minlength="6" required style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-1);color:var(--text-primary)">
+      <label class="perm-note" for="pw_new2" style="display:block;margin:10px 0 4px">Confirm new password</label>
+      <input id="pw_new2" type="password" autocomplete="new-password" minlength="6" required style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-1);color:var(--text-primary)">
+      <div class="login-err" id="pw_err"></div>
+      <div class="form-actions"><button type="button" class="btn" id="pwClose">Cancel</button><button type="submit" class="btn primary">Update password</button></div>
+    </form>
   </div>
 </div>
 
@@ -2714,6 +2730,7 @@ function renderAuthChip() {
   const admin = u.role === "admin";
   $("apprBtn").hidden = !admin;
   $("usersBtn").hidden = !admin || AUTH.mode === "supabase";  // users managed in Supabase when real auth
+  $("pwBtn").hidden = AUTH.mode !== "supabase";               // change own password (real auth only)
   $("myReqBtn").hidden = admin;
   updateReqCounts();
 }
@@ -2833,8 +2850,33 @@ $("usersBody").addEventListener("click", e => {
   const d = e.target.closest("[data-deluser]"); if (!d) return;
   USERS = USERS.filter(u => u.u !== d.dataset.deluser); saveUsers(); renderUsers();
 });
-for (const id of ["apprOverlay", "usersOverlay", "myReqOverlay"])
+for (const id of ["apprOverlay", "usersOverlay", "myReqOverlay", "pwOverlay"])
   $(id).addEventListener("click", e => { if (e.target === $(id)) closeModal(id); });
+
+/* change own password (Supabase Auth: PUT /auth/v1/user with the user's token) */
+$("pwBtn").addEventListener("click", () => { $("pw_err").textContent = ""; $("pwForm").reset(); openModal("pwOverlay"); });
+$("pwClose").addEventListener("click", () => closeModal("pwOverlay"));
+$("pwForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const a = $("pw_new").value, b = $("pw_new2").value;
+  if (a.length < 6) { $("pw_err").textContent = "Password must be at least 6 characters."; return; }
+  if (a !== b) { $("pw_err").textContent = "Passwords don't match."; return; }
+  if (!(session && session.token)) { $("pw_err").textContent = "Not signed in."; return; }
+  $("pw_err").textContent = "Updating…";
+  try {
+    const res = await fetch(`${SHARED.url}/auth/v1/user`, {
+      method: "PUT", headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${session.token}`,
+        "Content-Type": "application/json" }, body: JSON.stringify({ password: a }) });
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      $("pw_err").textContent = (d.msg || d.error_description || "Could not update password") + ".";
+      return;
+    }
+    $("pw_err").textContent = ""; closeModal("pwOverlay");
+    els.formError && (els.formError.textContent = "");
+    alert("Password updated. Use it next time you sign in.");
+  } catch (e2) { $("pw_err").textContent = "Network error — try again."; }
+});
 
 populateFilters();
 (async () => {
