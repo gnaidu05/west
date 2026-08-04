@@ -181,23 +181,31 @@
   /* full-width institution profile section (below the score cards) */
   .profile-section { margin-top: 4px; }
   .profile-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px 24px; margin-top: 6px; align-items: start;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px 28px; margin-top: 6px; align-items: start;
   }
   .pf-block { min-width: 0; }
   .pf-block.wide { grid-column: 1 / -1; }
   .pf-block-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
-    color: var(--text-muted); font-weight: 700; margin-bottom: 4px; }
+    color: var(--text-muted); font-weight: 700; margin-bottom: 5px; }
   .pf-table-wrap { overflow-x: auto; }
-  .pf-table { border-collapse: collapse; font-size: 12.5px; width: 100%; }
-  .pf-table th, .pf-table td { text-align: left; padding: 6px 14px 6px 0;
+  /* content-width tables so the 2nd column sits next to the 1st, not flung right */
+  .pf-table { border-collapse: collapse; font-size: 12.5px; width: auto; max-width: 100%; }
+  .pf-table th, .pf-table td { text-align: left; padding: 5px 20px 5px 0;
     border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere; }
+  .pf-table td:last-child, .pf-table th:last-child { padding-right: 0; }
   .pf-table th { font-size: 10px; text-transform: uppercase; letter-spacing: .04em;
     color: var(--text-muted); font-weight: 600; }
-  .pf-table td.num, .pf-table th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 8px; white-space: nowrap; }
+  .pf-table td.num, .pf-table th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .pf-table tfoot td { font-weight: 700; border-bottom: none; border-top: 1px solid var(--border-strong); }
   .pf-table a { color: var(--accent); text-decoration: none; font-weight: 500; }
   .pf-table a:hover { text-decoration: underline; }
+  /* flat lists as wrapping chips */
+  .pf-chips { display: flex; flex-wrap: wrap; gap: 6px 8px; }
+  .pf-chip { display: inline-block; padding: 3px 11px; border: 1px solid var(--border);
+    border-radius: 13px; font-size: 12px; background: var(--surface-0); color: var(--text-secondary); }
+  .pf-chip-link { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .pf-chip-link:hover { background: var(--accent-soft); }
   .comp { margin: 6px 0; }
   .comp .lbl { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-secondary); }
   .comp .lbl b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
@@ -1324,47 +1332,45 @@ function profileSectionHTML(c) {
     ["Super-specializations", Array.isArray(c.specializations) ? c.specializations.join(" · ") : c.specializations],
     ["MoUs", c.mous],
   ].filter(([, v]) => v).map(([k, v]) => [`<b>${esc(k)}</b>`, esc(v)]);
-  blocks.push(profTable("Overview", null, ov, { wide: true }));
+  blocks.push(profTable("Overview", null, ov));
 
   // Programmes — [name, level]
   if (Array.isArray(c.programs) && c.programs.length)
     blocks.push(profTable("Programmes", ["Programme", "Level"],
-      c.programs.map(p => Array.isArray(p) ? [esc(p[0]), esc(p[1] || "—")] : [esc(p), "—"]), { wide: true }));
+      c.programs.map(p => Array.isArray(p) ? [esc(p[0]), esc(p[1] || "—")] : [esc(p), "—"])));
   else if (typeof c.programs === "string" && c.programs)
-    blocks.push(profTable("Programmes", null, asList(c.programs).map(p => [esc(p)]), { wide: true }));
+    blocks.push(profTable("Programmes", null, asList(c.programs).map(p => [esc(p)])));
 
   // Batch size / intake — [programme, seats] with a Total row
   if (Array.isArray(c.batch) && c.batch.length) {
     const total = c.batch.reduce((s, [, n]) => s + (Number(n) || 0), 0);
     blocks.push(profTable("Batch Size / Intake", ["Programme", "Intake"],
-      c.batch.map(([p, n]) => [esc(p), esc(n)]), { wide: true, numCols: [1], foot: ["Total", total] }));
+      c.batch.map(([p, n]) => [esc(p), esc(n)]), { numCols: [1], foot: ["Total", total] }));
   } else if (c.batch) {
-    blocks.push(profTable("Batch Size", null, [[esc(c.batch)]], { wide: true }));
+    blocks.push(profTable("Batch Size", null, [[esc(c.batch)]]));
   }
 
   // Campuses — [name, location/status]
   if (Array.isArray(c.campuses) && c.campuses.length)
     blocks.push(profTable("Campuses", ["Campus", "Location / status"],
-      c.campuses.map(x => Array.isArray(x) ? [esc(x[0]), esc(x[1] || "—")] : [esc(x), "—"]), { wide: true }));
+      c.campuses.map(x => Array.isArray(x) ? [esc(x[0]), esc(x[1] || "—")] : [esc(x), "—"])));
   else if (typeof c.campuses === "string" && c.campuses)
-    blocks.push(profTable("Campuses", null, asList(c.campuses).map(x => [esc(x)]), { wide: true }));
+    blocks.push(profTable("Campuses", null, asList(c.campuses).map(x => [esc(x)])));
 
-  // Hot skills — flat list laid into a 2-wide grid table
-  const skills = asList(c.skills);
-  if (skills.length)
-    blocks.push(profTable("Hot Skills", null, chunk(skills.map(esc), 2).map(r => r.concat(r.length < 2 ? [""] : []))));
+  // Hot skills & Top recruiters — flat lists as wrapping chips (full width)
+  const chips = (title, items) => items.length
+    ? `<div class="pf-block wide"><div class="pf-block-title">${title}</div>
+        <div class="pf-chips">${items.map(x => `<span class="pf-chip">${esc(x)}</span>`).join("")}</div></div>`
+    : "";
+  blocks.push(chips("Hot Skills", asList(c.skills)));
+  blocks.push(chips("Top Recruiters", asList(c.recruiters)));
 
-  // Top recruiters — flat list in a 3-wide grid table
-  const recs = asList(c.recruiters);
-  if (recs.length)
-    blocks.push(profTable("Top Recruiters", null,
-      chunk(recs.map(esc), 3).map(r => r.concat(Array(3 - r.length).fill(""))), { wide: true }));
-
-  // Media & recognition — links, one per row
+  // Media & recognition — linked chips (full width)
   const media = Array.isArray(c.media) ? c.media : [];
   if (media.length)
-    blocks.push(profTable("Media & recognition", null,
-      media.map(([t, u]) => [`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a>`]), { wide: true }));
+    blocks.push(`<div class="pf-block wide"><div class="pf-block-title">Media &amp; recognition</div>
+      <div class="pf-chips">${media.map(([t, u]) =>
+        `<a class="pf-chip pf-chip-link" href="${esc(u)}" target="_blank" rel="noopener">${esc(t)} ↗</a>`).join("")}</div></div>`);
 
   const out = blocks.filter(Boolean).join("");
   if (!out) return "";
