@@ -50,6 +50,13 @@ college's breakdown states which one it is.
   programmes. Names are canonicalised so spelling variants collapse to one
   option (e.g. Electronics & Tele-communication singular/plural, `&` vs "and",
   MCA vs "Masters in Computer Applications"), each shown with its college count.
+- **NAAC accreditation directory** — a searchable **"NAAC directory"** button
+  (dashboard slicer bar) opens a lookup of West-zone institutions with their
+  **latest NAAC grade**, validity and declaration date, sourced from the
+  official **AISHE** dataset (`scripts/build_aishe_dir.py`). Filter by state,
+  by grade, or "accredited only", or search by name/district. The same AISHE
+  latest-grades were reconciled into the scored per-college NAAC field, so the
+  rankings and the directory agree.
 - **SPOC-driven, state-driven pages** — instead of the all-India engine's
   priority tiers, the dashboard carries a clickable **SPOC portfolios band**
   (count, avg score, Priority-1s per owner — click to focus the page) and a
