@@ -326,6 +326,16 @@
   .preview { border: 1px solid var(--border); border-radius: 8px; padding: 12px; align-self: start; }
   .preview h3 { margin: 0 0 8px; font-size: 12.5px; color: var(--text-secondary); }
   .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+  .profile-fields { grid-column: 1 / -1; margin-top: 6px; border: 1px solid var(--border);
+    border-radius: 8px; background: var(--surface-0); }
+  .profile-fields > summary { cursor: pointer; padding: 10px 14px; font-weight: 600; font-size: 13px;
+    color: var(--text-secondary); list-style-position: inside; }
+  .profile-fields[open] > summary { border-bottom: 1px solid var(--border); }
+  .profile-fields .fields { padding: 12px 14px; }
+  .profile-fields textarea { width: 100%; resize: vertical; font: inherit; padding: 7px 9px;
+    background: var(--surface-1); color: var(--text-primary); border: 1px solid var(--border-strong);
+    border-radius: 6px; line-height: 1.5; }
+  .pf-hint { font-weight: 400; color: var(--text-muted); font-size: 11px; }
   .how-body p { margin: 10px 0 0; font-size: 13px; }
   .how-body .kv { margin-top: 12px; padding: 0; }
   .how-body .note { margin: 2px 0 0; }
@@ -421,6 +431,29 @@
         <div class="field"><label for="f_spoc">SPOC — our team</label>
           <input id="f_spoc" placeholder="who owns this college"></div>
       </div>
+      <details class="profile-fields">
+        <summary>＋ Institution profile <span class="pf-hint">optional · reference only, never affects the score</span></summary>
+        <div class="fields">
+          <div class="field wide"><label for="f_school">School / Department</label>
+            <input id="f_school" placeholder="e.g. School of Computer Science & Engineering"></div>
+          <div class="field wide"><label for="f_spec">Super-specializations</label>
+            <input id="f_spec" placeholder="comma-separated · e.g. AI/ML, Cyber Security, Data Science"></div>
+          <div class="field wide"><label for="f_mous">MoUs</label>
+            <input id="f_mous" placeholder="e.g. 40+ industry & academic MoUs"></div>
+          <div class="field wide"><label for="f_skills">Hot skills</label>
+            <textarea id="f_skills" rows="2" placeholder="comma-separated · e.g. Full-stack, Cloud, AI/ML, DevOps"></textarea></div>
+          <div class="field wide"><label for="f_recruiters">Top recruiters</label>
+            <textarea id="f_recruiters" rows="2" placeholder="comma-separated · e.g. TCS, Infosys, Deloitte, Accenture"></textarea></div>
+          <div class="field wide"><label for="f_programs">Programmes <span class="pf-hint">one per line · "Programme | Level"</span></label>
+            <textarea id="f_programs" rows="3" placeholder="B.Tech Computer Engineering | UG&#10;M.Tech Data Science | PG"></textarea></div>
+          <div class="field wide"><label for="f_batch">Batch size / intake <span class="pf-hint">one per line · "Programme | Intake"</span></label>
+            <textarea id="f_batch" rows="3" placeholder="B.Tech Computer Engineering | 120&#10;M.Tech Data Science | 24"></textarea></div>
+          <div class="field wide"><label for="f_campuses">Campuses <span class="pf-hint">one per line · "Campus | Location/status"</span></label>
+            <textarea id="f_campuses" rows="2" placeholder="Pune | Main campus&#10;Nagpur | Second campus"></textarea></div>
+          <div class="field wide"><label for="f_media">Media &amp; recognition <span class="pf-hint">one per line · "Title | URL"</span></label>
+            <textarea id="f_media" rows="2" placeholder="Ranked in Times Engineering 2025 | https://…"></textarea></div>
+        </div>
+      </details>
       <div class="preview" id="preview" aria-live="polite"></div>
       <div class="form-actions" style="grid-column:1/-1">
         <span class="form-error" id="formError"></span>
@@ -1075,7 +1108,15 @@ const fromRow = row => ({ _id: row.id, name: row.name, loc: row.loc,
   spoc: row.spoc ?? null,
   group: row.grp ?? null, hml: row.hml ?? null, mou: row.mou ?? null,
   mouType: row.moutype ?? null, phase: row.phase ?? null, mode: row.mode ?? null,
-  wzPriority: row.wzpriority ?? null });
+  wzPriority: row.wzpriority ?? null,
+  // institution profile — array fields are stored as JSON text
+  school: row.school ?? null, mous: row.mous ?? null,
+  specializations: jparse(row.specializations), skills: jparse(row.skills),
+  recruiters: jparse(row.recruiters), programs: jparse(row.programs),
+  batch: jparse(row.batch), campuses: jparse(row.campuses), media: jparse(row.media) });
+const jparse = v => { if (v === null || v === undefined || v === "") return null;
+  try { return JSON.parse(v); } catch (e) { return v; } };
+const jstr = v => v === null || v === undefined ? null : (Array.isArray(v) ? JSON.stringify(v) : v);
 function toRow(c, kind) {
   const t = v => v === null || v === undefined ? null : String(v);
   return { kind, name: c.name, loc: c.loc, type: c.type, year: c.year, div: c.div,
@@ -1086,7 +1127,11 @@ function toRow(c, kind) {
     spoc: c.spoc ?? null,
     grp: c.group ?? null, hml: c.hml ?? null, mou: c.mou ?? null,
     moutype: c.mouType ?? null, phase: c.phase ?? null, mode: c.mode ?? null,
-    wzpriority: c.wzPriority ?? null };
+    wzpriority: c.wzPriority ?? null,
+    school: c.school ?? null, mous: c.mous ?? null,
+    specializations: jstr(c.specializations), skills: jstr(c.skills),
+    recruiters: jstr(c.recruiters), programs: jstr(c.programs),
+    batch: jstr(c.batch), campuses: jstr(c.campuses), media: jstr(c.media) };
 }
 async function loadShared() {
   try {
@@ -1785,6 +1830,22 @@ const parseNirf = s => { s = s.trim(); if (s === "") return null;
 const parseNum = s => { s = String(s).trim(); return s === "" ? null : Number(s); };
 const parseNba = s => s === "" ? null : (s === "-" ? "-" : Number(s));
 
+/* ---- institution-profile parsers (form text -> structured data) ---- */
+const commaList = id => { const a = F(id).value.split(",").map(s => s.trim()).filter(Boolean); return a.length ? a : null; };
+const splitPair = line => { const m = line.split(/\s*\|\s*/); return [m[0].trim(), (m.slice(1).join(" | ").trim()) || ""]; };
+const pairLines = (id, numSecond) => {
+  const rows = F(id).value.split(/\n/).map(l => l.trim()).filter(Boolean).map(l => {
+    const [a, b] = splitPair(l);
+    return [a, numSecond ? (b === "" ? "" : (Number(b) || b)) : b];
+  });
+  return rows.length ? rows : null;
+};
+const mediaLines = id => {
+  const rows = F(id).value.split(/\n/).map(l => l.trim()).filter(Boolean)
+    .map(splitPair).filter(([, u]) => u);
+  return rows.length ? rows : null;
+};
+
 function formCollege() {
   return {
     name: F("f_name").value.trim(),
@@ -1805,6 +1866,16 @@ function formCollege() {
     tpoEmail: F("f_tpoEmail").value.trim() || null,
     tpoPhone: F("f_tpoPhone").value.trim() || null,
     spoc: F("f_spoc").value.trim() || null,
+    // institution profile (reference only, never scored)
+    school: F("f_school").value.trim() || null,
+    specializations: commaList("f_spec"),
+    mous: F("f_mous").value.trim() || null,
+    skills: commaList("f_skills"),
+    recruiters: commaList("f_recruiters"),
+    programs: pairLines("f_programs", false),
+    batch: pairLines("f_batch", true),
+    campuses: pairLines("f_campuses", false),
+    media: mediaLines("f_media"),
   };
 }
 
@@ -1892,6 +1963,22 @@ function fillForm(c, lockName) {
   F("f_tpoEmail").value = c && c.tpoEmail ? c.tpoEmail : "";
   F("f_tpoPhone").value = c && c.tpoPhone ? c.tpoPhone : "";
   F("f_spoc").value = c && c.spoc ? c.spoc : "";
+  // institution profile — stringify structured data back into the inputs
+  const asCommas = v => Array.isArray(v) ? v.join(", ") : (v || "");
+  const asPairs = v => Array.isArray(v)
+    ? v.map(x => Array.isArray(x) ? (x[1] !== "" && x[1] != null ? `${x[0]} | ${x[1]}` : `${x[0]}`) : x).join("\n")
+    : (v || "");
+  F("f_school").value = c && c.school ? c.school : "";
+  F("f_spec").value = c ? asCommas(c.specializations) : "";
+  F("f_mous").value = c && c.mous ? c.mous : "";
+  F("f_skills").value = c ? asCommas(c.skills) : "";
+  F("f_recruiters").value = c ? asCommas(c.recruiters) : "";
+  F("f_programs").value = c ? asPairs(c.programs) : "";
+  F("f_batch").value = c ? asPairs(c.batch) : "";
+  F("f_campuses").value = c ? asPairs(c.campuses) : "";
+  F("f_media").value = c ? asPairs(c.media) : "";
+  // reveal the profile section pre-expanded when the college already has one
+  F("f_school").closest("details").open = !!(c && (c.school || c.programs || c.skills || c.recruiters || c.campuses || c.batch || c.mous || c.specializations || (c.media && c.media.length)));
   updatePreview();
   renderNirfSuggestions();
   renderDupWarn();
@@ -2003,13 +2090,13 @@ els.form.addEventListener("submit", async e => {
   e.preventDefault();
   const c = formCollege();
   if (editBaseName !== null) c.name = editBaseName;
-  /* the programme fields (worksheet imports) have no form inputs — carry
-     them over untouched so editing a college never drops them */
+  /* the worksheet/import fields have no form inputs — carry them over
+     untouched so editing a college never drops them (the institution
+     profile fields DO have inputs now, so they're not carried here) */
   const prevSrc = editBaseName !== null
     ? (baseEdits[editBaseName] || COLLEGES.find(x => x.name === editBaseName))
     : (editIndex !== null ? userColleges[editIndex] : null);
-  if (prevSrc) for (const k of ["group","hml","mou","mouType","phase","mode","wzPriority","prYear",
-       "school","programs","skills","specializations","batch","recruiters","mous","campuses","media"])
+  if (prevSrc) for (const k of ["group","hml","mou","mouType","phase","mode","wzPriority","prYear"])
     if (prevSrc[k] !== undefined && prevSrc[k] !== null) c[k] = prevSrc[k];
   const err = validateForm(c);
   if (err) { els.formError.textContent = err; els.formError.classList.remove("ok"); return; }

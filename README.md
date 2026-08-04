@@ -60,6 +60,14 @@ college's breakdown states which one it is.
   Contacts card, on catalogue cards, in the Add/Edit form, and are
   searchable — plus the SPOC slicer on the dashboard. Contacts never
   affect the score.
+- **Institution profile** (reference only, never scored) — an optional,
+  collapsible section on the Add/Edit form captures each college's
+  School/Department, Programmes (with level), Batch size/intake, MoUs,
+  Campuses, Hot skills, Super-specializations, Top recruiters and Media
+  links. Free-text inputs parse into structured data and render as a
+  full-width panel of titled mini-tables + chips below the score cards;
+  it persists per-browser and syncs via Supabase. Populate any college
+  through the UI (see Rashtriya Raksha University for a worked example).
 - **Programme fields** (group, HML, MOU status & type, WZ priority, phase,
   mode) imported from the SPOC workbook are reference-only: shown in the
   breakdown's Profile card and as catalogue tags, preserved across form

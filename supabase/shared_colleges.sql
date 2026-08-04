@@ -42,7 +42,17 @@ create table if not exists public.shared_colleges_west (
   moutype text,
   phase text,
   mode text,
-  wzpriority text
+  wzpriority text,
+  -- institution profile (reference only; array fields stored as JSON text)
+  school text,
+  mous text,
+  specializations text,
+  skills text,
+  recruiters text,
+  programs text,
+  batch text,
+  campuses text,
+  media text
 );
 
 -- If you created this table from an earlier version of this file (without
