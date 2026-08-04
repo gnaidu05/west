@@ -175,12 +175,17 @@ must never sit in the static page — this runs through an Edge Function:
 
 1. Deploy `supabase/functions/invite-user`:
    `supabase functions deploy invite-user` (or paste it in the dashboard).
-2. Create a [Resend](https://resend.com) account, verify a sending domain, and
-   set the function secrets (Project Settings → Edge Functions →
-   Secrets, or `supabase secrets set`):
-   - `RESEND_API_KEY` — your Resend key
-   - `INVITE_FROM` — a verified sender, e.g. `West Zone Portal <invites@yourdomain>`
-   - `PORTAL_URL` — your portal URL (e.g. `https://gnaidu05.github.io/west/`)
+2. Set the function secrets (Project Settings → Edge Functions → Secrets, or
+   `supabase secrets set`). Always set `PORTAL_URL`, then pick **one** email
+   sender:
+   - **No domain — Gmail** (send from a Gmail account, any recipient):
+     `GMAIL_USER` = your Gmail address, `GMAIL_APP_PASSWORD` = a 16-char Google
+     [App Password](https://myaccount.google.com/apppasswords) (requires
+     2-Step Verification on the account).
+   - **Resend** (needs a verified domain to email external recipients):
+     `RESEND_API_KEY` and `INVITE_FROM` (e.g. `West Zone Portal <invites@yourdomain>`).
+   - **Neither** — the function returns the temp password to the admin in the
+     Invite panel to share manually.
 
    (`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are injected automatically.)
 

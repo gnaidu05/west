@@ -7,9 +7,15 @@
 //
 // Deploy:  supabase functions deploy invite-user
 // Secrets (Project Settings -> Edge Functions, or `supabase secrets set`):
-//   RESEND_API_KEY   your Resend API key
-//   INVITE_FROM      verified sender, e.g. "West Zone Portal <invites@yourdomain>"
-//   PORTAL_URL       https://gnaidu05.github.io/west/
+//   PORTAL_URL   https://gnaidu05.github.io/west/
+//   Email sender — pick ONE:
+//   (a) No domain: send from a Gmail account via app password
+//       GMAIL_USER          your.address@gmail.com
+//       GMAIL_APP_PASSWORD  a 16-char Google App Password (needs 2-Step Verification)
+//   (b) Resend (needs a verified domain to email external recipients)
+//       RESEND_API_KEY      your Resend API key
+//       INVITE_FROM         verified sender, e.g. "West Zone Portal <invites@yourdomain>"
+//   If neither is set, the temp password is returned to the admin to share manually.
 // (SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are injected automatically.)
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -69,13 +75,10 @@ Deno.serve(async (req) => {
     .upsert({ id: newId, role, scope, name }, { onConflict: "id" });
   if (pErr) return json({ error: "user created but profile failed: " + pErr.message, userId: newId, tempPassword }, 500);
 
-  // 5) email the temp password via Resend (fall back to returning it)
-  const resendKey = Deno.env.get("RESEND_API_KEY");
-  const from = Deno.env.get("INVITE_FROM") || "West Zone Portal <onboarding@resend.dev>";
+  // 5) email the temp password (fall back to returning it)
   const portal = Deno.env.get("PORTAL_URL") || "https://gnaidu05.github.io/west/";
-  let emailed = false, emailError: string | null = null;
-  if (resendKey) {
-    const text =
+  const subject = "Your West Zone Portal login";
+  const text =
 `Hi ${name},
 
 An account has been created for you on the West Zone campus hiring portal.
@@ -90,15 +93,35 @@ Your access: ${role}${scope ? ` — ${scope}` : ""}.${role !== "admin" ? " Your 
 
 Thanks,
 West Zone Campus Team`;
-    const r = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from, to: [email], subject: "Your West Zone Portal login", text }),
-    });
-    emailed = r.ok;
-    if (!r.ok) emailError = (await r.text()).slice(0, 300);
-  } else {
-    emailError = "RESEND_API_KEY not set";
+
+  let emailed = false, emailError: string | null = null;
+  const gmailUser = Deno.env.get("GMAIL_USER");
+  const gmailPass = Deno.env.get("GMAIL_APP_PASSWORD");
+  const resendKey = Deno.env.get("RESEND_API_KEY");
+  try {
+    if (gmailUser && gmailPass) {
+      // send from a Gmail account via SMTP (no domain needed; uses an app password)
+      const { SMTPClient } = await import("https://deno.land/x/denomailer@1.6.0/mod.ts");
+      const client = new SMTPClient({
+        connection: { hostname: "smtp.gmail.com", port: 465, tls: true, auth: { username: gmailUser, password: gmailPass } },
+      });
+      await client.send({ from: `West Zone Campus Team <${gmailUser}>`, to: email, subject, content: text });
+      await client.close();
+      emailed = true;
+    } else if (resendKey) {
+      const from = Deno.env.get("INVITE_FROM") || "West Zone Portal <onboarding@resend.dev>";
+      const r = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ from, to: [email], subject, text }),
+      });
+      emailed = r.ok;
+      if (!r.ok) emailError = (await r.text()).slice(0, 300);
+    } else {
+      emailError = "no email sender configured (set GMAIL_USER + GMAIL_APP_PASSWORD, or RESEND_API_KEY)";
+    }
+  } catch (e) {
+    emailError = String((e as Error)?.message || e).slice(0, 300);
   }
 
   // if the email went out, don't return the password; otherwise return it so
