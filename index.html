@@ -1792,6 +1792,58 @@ function detailHTML(r) {
     <div class="trackbar"><div class="fill" style="width:${Math.max(0,Math.min(100,v))}%"></div></div></div>`).join("");
   const ranks = [["2025", c.nirf25, rankUsed(c.nirf25)], ["2024", c.nirf24, rankUsed(c.nirf24)], ["2023", c.nirf23, rankUsed(c.nirf23)]];
   const engOn = els.eng.checked, divOn = els.div.checked;
+  const tpo = typeof role === "function" && role() === "tpo";
+  const editBtns = canEditName(r.name) ? (r.added
+    ? `<button type="button" class="btn" data-edit="${r.i - COLLEGES.length}">Edit</button>
+       ${isAdmin() ? `<button type="button" class="btn danger" data-remove="${r.i - COLLEGES.length}">Remove</button>` : ""}`
+    : `<button type="button" class="btn" data-editbase="${esc(r.name)}">Edit</button>
+       ${isAdmin() && r.edited ? `<button type="button" class="btn danger" data-resetbase="${esc(r.name)}">Reset to original</button>` : ""}`) : "";
+  // TPOs don't see the scoring internals — only Contacts + Institution profile
+  const indexCard = tpo ? "" : `<div class="card"><h3>Index inputs</h3>
+      ${ranks.map(([y, raw, used]) => `<div class="kv"><span class="k">NIRF ${y}</span><span class="v">${esc(raw ?? "—")} → ${used}</span></div>`).join("")}
+      <div class="kv"><span class="k">Weighted rank (0.5/0.3/0.2)</span><span class="v">${fmt2(rankUsed(c.nirf25)*0.5 + rankUsed(c.nirf24)*0.3 + rankUsed(c.nirf23)*0.2)}</span></div>
+      <div class="kv"><span class="k">NIRF Index</span><span class="v">${fmt2(r.nirf)}</span></div>
+      <div class="kv"><span class="k">NAAC grade</span><span class="v">${esc(c.naac ?? "—")} → ${fmt2(r.naac)}</span></div>
+      <div class="kv"><span class="k">NBA value</span><span class="v">${esc(c.nba ?? "—")} → ${fmt2(r.nba)}%</span></div>
+      <div class="kv"><span class="k">Salary Index (median ÷ list max)</span><span class="v">${fmt2(r.sal)}</span></div>
+    </div>`;
+  const brandCard = tpo ? "" : `<div class="card"><h3>Brand Perception sub-factors</h3>
+      <div class="kv"><span class="k">Employer Preference</span><span class="v">${fmt1(bpAll.empPref)}</span></div>
+      <div class="kv"><span class="k">Employer Reputation</span><span class="v">${fmt1(bpAll.empRep)}</span></div>
+      <div class="kv"><span class="k">Alumni Network</span><span class="v">${fmt1(bpAll.alumni)}</span></div>
+      <div class="kv"><span class="k">Placement Outcomes</span><span class="v">${fmt1(bpAll.placement)}</span></div>
+      <div class="kv"><span class="k">Talent Quality</span><span class="v">${fmt1(bpAll.talent)}</span></div>
+      <div class="kv"><span class="k">Media Visibility</span><span class="v">${fmt1(bpAll.media)}</span></div>
+      ${bpAll.official ? `
+      <div class="kv total"><span class="k">Official NIRF PR survey score${c.prYear ? ` (${c.prYear})` : ""}</span><span class="v">${fmt2(c.pr)} / 100</span></div>
+      <div class="kv total"><span class="k">Brand Perception Index (official PR, rescaled)</span><span class="v">${fmt1(r.bp)}</span></div>
+      <p class="note">NIRF surveys employers and academic peers for its Perception (PR) parameter.
+      The official score is rescaled onto this dashboard's 0–100 brand scale (raw PR is heavily
+      skewed toward the IITs) and used as the index. The six sub-factors above remain indicative
+      model estimates.</p>` : `
+      <div class="kv total"><span class="k">Brand Perception Index (used in core score)</span><span class="v">${fmt1(r.bp)}</span></div>
+      <p class="note">Indicative estimate — a weighted composite of the six sub-factors, built from NIRF
+      standing, salary outcomes and institutional vintage. NIRF publishes its official Perception (PR)
+      survey score only for ranks 1–100; none is available for this college — enter one via Edit if
+      NIRF publishes it.</p>`}
+    </div>`;
+  const assemblyCard = tpo
+    ? `<div class="card"><h3>Update college</h3>
+        <p class="note" style="margin:0 0 8px">Update this college's contacts and institution profile. Your changes are submitted to the admin for approval before they publish.</p>
+        <div class="form-actions">${editBtns}</div>
+      </div>`
+    : `<div class="card"><h3>Score assembly</h3>
+        <p class="note" style="margin:0 0 8px">Marks out of 100 in six areas; each contributes its
+        fixed share of the core score, and bonus points go on top.</p>
+        ${compHTML}
+        <div class="kv total"><span class="k">Weighted Core Score</span><span class="v">${fmt2(r.core)}</span></div>
+        <div class="kv ${engOn ? "" : "off"}"><span class="k">Engagement bonus (${esc(c.eng ?? "—")})${engOn ? "" : " — toggled off"}</span><span class="v">+${engOn ? r.engb : 0}</span></div>
+        <div class="kv ${divOn ? "" : "off"}"><span class="k">Diversity bonus (${esc(c.div ?? "—")})${divOn ? "" : " — toggled off"}</span><span class="v">+${divOn ? r.divb : 0}</span></div>
+        <div class="kv total"><span class="k">Total Priority Score</span><span class="v">${fmt2(r.total)}</span></div>
+        <div class="kv"><span class="k">Overall rank (by total score)</span><span class="v">${r.prank}</span></div>
+        <div class="kv"><span class="k">Base Rank (core only)</span><span class="v">${r.brank}</span></div>
+        <div class="form-actions" style="margin-top:12px">${editBtns}</div>
+      </div>`;
   return `<div class="detail-inner">
     <div class="card"><h3>Profile</h3>
       <div class="kv"><span class="k">Location (raw)</span><span class="v">${esc(c.loc)}</span></div>
@@ -1815,52 +1867,9 @@ function detailHTML(r) {
       <div class="kv"><span class="k">SPOC (our team)</span><span class="v">${esc(c.spoc || "—")}</span></div>
       <p class="note">Reference only — contacts never affect the score.</p>
     </div>
-    <div class="card"><h3>Index inputs</h3>
-      ${ranks.map(([y, raw, used]) => `<div class="kv"><span class="k">NIRF ${y}</span><span class="v">${esc(raw ?? "—")} → ${used}</span></div>`).join("")}
-      <div class="kv"><span class="k">Weighted rank (0.5/0.3/0.2)</span><span class="v">${fmt2(rankUsed(c.nirf25)*0.5 + rankUsed(c.nirf24)*0.3 + rankUsed(c.nirf23)*0.2)}</span></div>
-      <div class="kv"><span class="k">NIRF Index</span><span class="v">${fmt2(r.nirf)}</span></div>
-      <div class="kv"><span class="k">NAAC grade</span><span class="v">${esc(c.naac ?? "—")} → ${fmt2(r.naac)}</span></div>
-      <div class="kv"><span class="k">NBA value</span><span class="v">${esc(c.nba ?? "—")} → ${fmt2(r.nba)}%</span></div>
-      <div class="kv"><span class="k">Salary Index (median ÷ list max)</span><span class="v">${fmt2(r.sal)}</span></div>
-    </div>
-    <div class="card"><h3>Brand Perception sub-factors</h3>
-      <div class="kv"><span class="k">Employer Preference</span><span class="v">${fmt1(bpAll.empPref)}</span></div>
-      <div class="kv"><span class="k">Employer Reputation</span><span class="v">${fmt1(bpAll.empRep)}</span></div>
-      <div class="kv"><span class="k">Alumni Network</span><span class="v">${fmt1(bpAll.alumni)}</span></div>
-      <div class="kv"><span class="k">Placement Outcomes</span><span class="v">${fmt1(bpAll.placement)}</span></div>
-      <div class="kv"><span class="k">Talent Quality</span><span class="v">${fmt1(bpAll.talent)}</span></div>
-      <div class="kv"><span class="k">Media Visibility</span><span class="v">${fmt1(bpAll.media)}</span></div>
-      ${bpAll.official ? `
-      <div class="kv total"><span class="k">Official NIRF PR survey score${c.prYear ? ` (${c.prYear})` : ""}</span><span class="v">${fmt2(c.pr)} / 100</span></div>
-      <div class="kv total"><span class="k">Brand Perception Index (official PR, rescaled)</span><span class="v">${fmt1(r.bp)}</span></div>
-      <p class="note">NIRF surveys employers and academic peers for its Perception (PR) parameter.
-      The official score is rescaled onto this dashboard's 0–100 brand scale (raw PR is heavily
-      skewed toward the IITs) and used as the index. The six sub-factors above remain indicative
-      model estimates.</p>` : `
-      <div class="kv total"><span class="k">Brand Perception Index (used in core score)</span><span class="v">${fmt1(r.bp)}</span></div>
-      <p class="note">Indicative estimate — a weighted composite of the six sub-factors, built from NIRF
-      standing, salary outcomes and institutional vintage. NIRF publishes its official Perception (PR)
-      survey score only for ranks 1–100; none is available for this college — enter one via Edit if
-      NIRF publishes it.</p>`}
-    </div>
-    <div class="card"><h3>Score assembly</h3>
-      <p class="note" style="margin:0 0 8px">Marks out of 100 in six areas; each contributes its
-      fixed share of the core score, and bonus points go on top.</p>
-      ${compHTML}
-      <div class="kv total"><span class="k">Weighted Core Score</span><span class="v">${fmt2(r.core)}</span></div>
-      <div class="kv ${engOn ? "" : "off"}"><span class="k">Engagement bonus (${esc(c.eng ?? "—")})${engOn ? "" : " — toggled off"}</span><span class="v">+${engOn ? r.engb : 0}</span></div>
-      <div class="kv ${divOn ? "" : "off"}"><span class="k">Diversity bonus (${esc(c.div ?? "—")})${divOn ? "" : " — toggled off"}</span><span class="v">+${divOn ? r.divb : 0}</span></div>
-      <div class="kv total"><span class="k">Total Priority Score</span><span class="v">${fmt2(r.total)}</span></div>
-      <div class="kv"><span class="k">Overall rank (by total score)</span><span class="v">${r.prank}</span></div>
-      <div class="kv"><span class="k">Base Rank (core only)</span><span class="v">${r.brank}</span></div>
-      <div class="form-actions" style="margin-top:12px">
-        ${canEditName(r.name) ? (r.added
-          ? `<button type="button" class="btn" data-edit="${r.i - COLLEGES.length}">Edit</button>
-             ${isAdmin() ? `<button type="button" class="btn danger" data-remove="${r.i - COLLEGES.length}">Remove</button>` : ""}`
-          : `<button type="button" class="btn" data-editbase="${esc(r.name)}">Edit</button>
-             ${isAdmin() && r.edited ? `<button type="button" class="btn danger" data-resetbase="${esc(r.name)}">Reset to original</button>` : ""}`) : ""}
-      </div>
-    </div>
+    ${indexCard}
+    ${brandCard}
+    ${assemblyCard}
   </div>${profileSectionHTML(c)}`;
 }
 
