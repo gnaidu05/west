@@ -423,6 +423,9 @@
     align-items: center; justify-content: center; padding: 5vh 16px;
     background: var(--bg, #f4f4f5); overflow: auto; }
   #loginGate.show { display: flex; }
+  /* the "set a new password" modal must sit ABOVE the login gate (z-index 100)
+     so a reset link opened on a fresh, still-locked page is visible on top */
+  #pwOverlay { z-index: 200; }
   body.locked { overflow: hidden; }
   .login-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
     box-shadow: var(--shadow); width: 100%; max-width: 380px; padding: 26px 26px 22px; }
@@ -3020,8 +3023,13 @@ $("rs_send").addEventListener("click", async () => {
 function checkRecovery() {
   if (AUTH.mode !== "supabase") return false;
   const h = new URLSearchParams((location.hash || "").replace(/^#/, ""));
-  if (h.get("type") === "recovery" && h.get("access_token")) {
-    recoveryToken = h.get("access_token");
+  const tok = h.get("access_token");
+  // a recovery email lands back here with the token in the URL hash; treat any
+  // hashed access_token as a reset (password sign-in never puts one there)
+  if (tok && (h.get("type") === "recovery" || !h.get("type"))) {
+    recoveryToken = tok;
+    // drop the token from the address bar so it isn't left in history
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
     $("pwTitle").textContent = "Set a new password";
     $("pw_err").textContent = ""; $("pwForm").reset();
     openModal("pwOverlay");
