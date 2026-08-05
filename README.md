@@ -195,6 +195,25 @@ and emails the password. If email isn't configured it returns the temp
 password to the admin instead so it can be shared manually. Invited users sign
 in and immediately change their password via the **Password** button.
 
+### Password reset
+
+The login screen has a **Forgot password?** link. By default it calls
+Supabase's built-in `/auth/v1/recover` (rate-limited email). For reliable,
+Gmail-branded reset mail, deploy `supabase/functions/reset-password` — it
+generates a recovery link with the admin API and sends it via Gmail SMTP
+(reusing the same `GMAIL_USER` / `GMAIL_APP_PASSWORD` / `PORTAL_URL` secrets):
+
+1. Deploy it **with JWT verification off** (it must be callable without a
+   login): `supabase functions deploy reset-password --no-verify-jwt` (or in
+   the dashboard, create it then turn off **Verify JWT** in its settings).
+2. Set `AUTH.resetFn` in `index.html` to the function's slug.
+3. Add the portal URL under **Authentication → URL Configuration → Redirect
+   URLs** (and as the **Site URL**) so the emailed link returns to the portal.
+
+The function always returns a generic success (it never reveals whether an
+account exists). The returned link opens the portal's "Set a new password"
+screen.
+
 ## Updating the NIRF directory
 
 The "Update NIRF directory" workflow (Actions tab) runs

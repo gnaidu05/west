@@ -1345,6 +1345,9 @@ const AUTH = {
   // Supabase auto-named this deployment "rapid-handler"; change it here if you
   // redeploy the function under a different slug.
   inviteFn: "rapid-handler",
+  // slug of the reset-password Edge Function (Gmail-based reset email). Leave
+  // "" to use Supabase's built-in /auth/v1/recover email instead.
+  resetFn: "",
 };
 const A_SESSION = "westCollegeDashboard.session.v1";
 const A_USERS   = "westCollegeDashboard.users.v1";
@@ -3000,9 +3003,13 @@ $("rs_send").addEventListener("click", async () => {
   $("rs_msg").style.color = "var(--text-muted)"; $("rs_msg").textContent = "Sending…";
   try {
     const redirect = location.origin + location.pathname;
-    const res = await fetch(`${SHARED.url}/auth/v1/recover?redirect_to=${encodeURIComponent(redirect)}`, {
-      method: "POST", headers: { apikey: SHARED.anonKey, "Content-Type": "application/json" },
-      body: JSON.stringify({ email }) });
+    const res = AUTH.resetFn
+      ? await fetch(`${SHARED.url}/functions/v1/${AUTH.resetFn}`, {
+          method: "POST", headers: { apikey: SHARED.anonKey, "Content-Type": "application/json" },
+          body: JSON.stringify({ email, redirectTo: redirect }) })
+      : await fetch(`${SHARED.url}/auth/v1/recover?redirect_to=${encodeURIComponent(redirect)}`, {
+          method: "POST", headers: { apikey: SHARED.anonKey, "Content-Type": "application/json" },
+          body: JSON.stringify({ email }) });
     $("rs_msg").style.color = "var(--text-muted)";
     $("rs_msg").textContent = res.ok
       ? "If that account exists, a reset link has been emailed. Open it to set a new password."
