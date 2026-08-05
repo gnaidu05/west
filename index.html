@@ -1337,6 +1337,10 @@ const AUTH = {
   //              then run supabase/auth_and_approvals.sql. Users sign in with
   //              their EMAIL + password.
   mode: "supabase",
+  // slug of the invite-user Edge Function (the URL path after /functions/v1/).
+  // Supabase auto-named this deployment "rapid-handler"; change it here if you
+  // redeploy the function under a different slug.
+  inviteFn: "rapid-handler",
 };
 const A_SESSION = "westCollegeDashboard.session.v1";
 const A_USERS   = "westCollegeDashboard.users.v1";
@@ -2895,7 +2899,7 @@ $("inviteForm").addEventListener("submit", async e => {
   $("inv_err").textContent = ""; $("inv_result").textContent = ""; $("inviteSend").disabled = true;
   $("inviteSend").textContent = "Creating…";
   try {
-    const res = await fetch(`${SHARED.url}/functions/v1/invite-user`, {
+    const res = await fetch(`${SHARED.url}/functions/v1/${AUTH.inviteFn}`, {
       method: "POST", headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${session.token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ email, role: r, scope: scope || null, name: name || null }) });
     const d = await res.json().catch(() => ({}));
