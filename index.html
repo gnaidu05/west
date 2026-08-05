@@ -506,10 +506,7 @@
   <div id="addView" class="vgroup" hidden>
     <div class="visual">
       <p class="vtitle" id="formTitle">Add a college</p>
-      <p class="hint">Enter the raw data for the college.
-        Everything else — city, state, zone, every index, brand perception, scores and ranks — is computed automatically.
-        TPO and SPOC contacts are reference fields and never affect the score.
-        Saved colleges appear in the Dashboard and Catalogue tabs immediately.</p>
+      <p class="hint" id="addHint" data-default="Enter the college's raw data — city, state, zone, every index, brand perception, scores and ranks are computed automatically. TPO/SPOC contacts are reference fields and never affect the score. Saved colleges appear in the Dashboard and Catalogue immediately.">Enter the college's raw data — city, state, zone, every index, brand perception, scores and ranks are computed automatically. TPO/SPOC contacts are reference fields and never affect the score. Saved colleges appear in the Dashboard and Catalogue immediately.</p>
       <form id="addForm" class="formgrid" novalidate>
       <div class="fields">
         <div class="field wide"><label for="f_name">College name *</label>
@@ -1554,7 +1551,7 @@ function viewSets() {
     if (typeof r.raw.med !== "number") return false;
     return (lo === null || r.raw.med >= lo) && (hi === null || r.raw.med <= hi);
   };
-  const searched = ordered.filter(bySearch).filter(bySalary).filter(byGroup).filter(byProgram);
+  const searched = ordered.filter(inScope).filter(bySearch).filter(bySalary).filter(byGroup).filter(byProgram);
   const view = searched.filter(byZone).filter(bySpoc);
   view.forEach((r, k) => r.rank = k + 1); // rank is the position within the filtered view
   return { all: rows, view,
@@ -1919,7 +1916,7 @@ function catCardHTML(r) {
 }
 
 function renderCatalogue(viewRows) {
-  const hideTest = F("hideTest").checked;
+  const hideTest = F("hideTest").checked && role() !== "tpo";
   const rows = hideTest ? viewRows.filter(r => !isTestCollege(r.name)) : viewRows;
   const bonusState = `Engagement bonus ${els.eng.checked ? "on" : "off"} · Diversity bonus ${els.div.checked ? "on" : "off"}`;
   document.getElementById("printHead").innerHTML =
@@ -1999,7 +1996,7 @@ function renderAddList(allRows) {
 }
 
 function spocBandHTML(view) {
-  const rows = F("hideTest").checked ? view.filter(r => !isTestCollege(r.name)) : view;
+  const rows = (F("hideTest").checked && role() !== "tpo") ? view.filter(r => !isTestCollege(r.name)) : view;
   const names = [...new Set(computeCurrent(userColleges).map(spocKey))].sort(spocOrder);
   const sel = els.spoc.value;
   const segs = names.map((g, i) => {
@@ -2044,7 +2041,7 @@ function render() {
   document.getElementById("dashView").hidden = activeView !== "dash";
   document.getElementById("catView").hidden = activeView !== "cat";
   for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t.dataset.view === activeView);
-  if (activeView === "add") { renderAddList(dashSort(computeCurrent(userColleges))); return; }
+  if (activeView === "add") { renderAddList(dashSort(computeCurrent(userColleges)).filter(inScope)); return; }
   if (activeView === "cat") { renderCatalogue(view); return; }
   els.kpis.innerHTML = kpiHTML(view);
   els.zoneChart.innerHTML = zoneChartHTML(forZoneChart);
@@ -2366,12 +2363,33 @@ function fillForm(c, lockName) {
   F("f_media").value = c ? asPairs(c.media) : "";
   // reveal the profile section pre-expanded when the college already has one
   F("f_school").closest("details").open = !!(c && (c.school || c.programs || c.skills || c.recruiters || c.campuses || c.batch || c.mous || c.specializations || (c.media && c.media.length)));
+  applyFormRole();
   updatePreview();
   renderNirfSuggestions();
   renderDupWarn();
   activeView = "add";
   render();
-  F("f_name").focus();
+  if (!F("f_name").disabled) F("f_name").focus();
+}
+/* A TPO edits only Contacts + Institution profile of their own college; hide
+   the scored/identity fields for them. Admins & SPOCs see the full form. */
+function applyFormRole() {
+  const tpo = typeof role === "function" && role() === "tpo";
+  const keep = new Set(["f_name", "f_tpo", "f_tpoEmail", "f_tpoPhone"]);
+  for (const fld of els.form.querySelectorAll(".fields .field")) {
+    const inp = fld.querySelector("input,select,textarea");
+    const id = inp && inp.id;
+    const inProfile = !!fld.closest(".profile-fields");
+    fld.style.display = (tpo && id && !inProfile && !keep.has(id)) ? "none" : "";
+  }
+  if (tpo) {
+    F("f_name").disabled = true;                                  // name never editable by a TPO
+    const det = F("f_school").closest("details"); if (det) det.open = true;  // profile always expanded
+  }
+  const hint = document.getElementById("addHint");
+  if (hint) hint.textContent = tpo
+    ? "Update your college's contacts and institution profile below. Your changes are submitted to the admin for approval before they publish."
+    : hint.dataset.default;
 }
 
 document.getElementById("cancelBtn").addEventListener("click", () => openEditor(null));
@@ -2675,6 +2693,12 @@ function canEditName(name) {
   return false;
 }
 const isAdmin = () => role() === "admin";
+/* a TPO only sees their own college; admins & SPOCs see everything */
+function inScope(r) {
+  const u = currentUser();
+  if (!u || u.role !== "tpo") return true;
+  return (r && (r.name || (r.raw && r.raw.name))) === u.scope;
+}
 
 /* ---- change-request queue ---- */
 const FIELD_LABEL = { loc:"Location", type:"Type", year:"Year", div:"Diversity", nirf25:"NIRF 2025",
