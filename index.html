@@ -498,6 +498,13 @@
     <input id="lg_pass" type="password" autocomplete="current-password" required>
     <button type="submit" class="btn primary">Sign in</button>
     <div class="login-err" id="lg_err"></div>
+    <button type="button" class="clearlink" id="forgotLink" hidden style="margin-top:10px;padding:0">Forgot password?</button>
+    <div id="resetBox" hidden style="margin-top:10px">
+      <label for="rs_email">Account email</label>
+      <input id="rs_email" type="email" autocomplete="email" placeholder="you@college.ac.in">
+      <button type="button" class="btn primary" id="rs_send" style="width:100%;margin-top:10px;justify-content:center">Send reset link</button>
+      <div class="login-err" id="rs_msg"></div>
+    </div>
     <div class="login-demo" id="lg_demo"></div>
   </form>
 </div>
@@ -2870,6 +2877,7 @@ $("loginForm").addEventListener("submit", async e => {
 if (AUTH.mode === "supabase") {
   const lbl = document.querySelector('label[for="lg_user"]'); if (lbl) lbl.textContent = "Email";
   $("lg_user").type = "email"; $("lg_user").setAttribute("autocomplete", "email");
+  $("forgotLink").hidden = false;   // password reset only applies to real Supabase auth
 }
 $("logoutBtn").addEventListener("click", logout);
 if (AUTH.mode === "supabase")
@@ -2947,18 +2955,20 @@ $("inviteForm").addEventListener("submit", async e => {
 });
 
 /* change own password (Supabase Auth: PUT /auth/v1/user with the user's token) */
-$("pwBtn").addEventListener("click", () => { $("pw_err").textContent = ""; $("pwForm").reset(); openModal("pwOverlay"); });
-$("pwClose").addEventListener("click", () => closeModal("pwOverlay"));
+let recoveryToken = null;   // set when the page is opened via a password-reset email link
+$("pwBtn").addEventListener("click", () => { recoveryToken = null; $("pwTitle").textContent = "Change password"; $("pw_err").textContent = ""; $("pwForm").reset(); openModal("pwOverlay"); });
+$("pwClose").addEventListener("click", () => { closeModal("pwOverlay"); if (recoveryToken) { recoveryToken = null; showGate(true); } });
 $("pwForm").addEventListener("submit", async e => {
   e.preventDefault();
   const a = $("pw_new").value, b = $("pw_new2").value;
   if (a.length < 6) { $("pw_err").textContent = "Password must be at least 6 characters."; return; }
   if (a !== b) { $("pw_err").textContent = "Passwords don't match."; return; }
-  if (!(session && session.token)) { $("pw_err").textContent = "Not signed in."; return; }
+  const tok = recoveryToken || (session && session.token);
+  if (!tok) { $("pw_err").textContent = "Not signed in."; return; }
   $("pw_err").textContent = "Updating…";
   try {
     const res = await fetch(`${SHARED.url}/auth/v1/user`, {
-      method: "PUT", headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${session.token}`,
+      method: "PUT", headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${tok}`,
         "Content-Type": "application/json" }, body: JSON.stringify({ password: a }) });
     if (!res.ok) {
       const d = await res.json().catch(() => ({}));
@@ -2967,9 +2977,51 @@ $("pwForm").addEventListener("submit", async e => {
     }
     $("pw_err").textContent = ""; closeModal("pwOverlay");
     els.formError && (els.formError.textContent = "");
-    alert("Password updated. Use it next time you sign in.");
+    if (recoveryToken) {   // reset flow — send them back to sign in with the new password
+      recoveryToken = null;
+      try { history.replaceState(null, "", location.origin + location.pathname); } catch (e3) {}
+      showGate(true);
+      $("lg_err").style.color = "var(--text-muted)"; $("lg_err").textContent = "Password updated — please sign in.";
+    } else {
+      alert("Password updated. Use it next time you sign in.");
+    }
   } catch (e2) { $("pw_err").textContent = "Network error — try again."; }
 });
+
+/* ---- forgot / reset password (Supabase Auth) ---- */
+$("forgotLink").addEventListener("click", () => {
+  const showing = !$("resetBox").hidden;
+  $("resetBox").hidden = showing;
+  if (!showing) { $("rs_email").value = $("lg_user").value.trim(); $("rs_msg").textContent = ""; $("rs_email").focus(); }
+});
+$("rs_send").addEventListener("click", async () => {
+  const email = $("rs_email").value.trim();
+  if (!email) { $("rs_msg").style.color = ""; $("rs_msg").textContent = "Enter your account email."; return; }
+  $("rs_msg").style.color = "var(--text-muted)"; $("rs_msg").textContent = "Sending…";
+  try {
+    const redirect = location.origin + location.pathname;
+    const res = await fetch(`${SHARED.url}/auth/v1/recover?redirect_to=${encodeURIComponent(redirect)}`, {
+      method: "POST", headers: { apikey: SHARED.anonKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ email }) });
+    $("rs_msg").style.color = "var(--text-muted)";
+    $("rs_msg").textContent = res.ok
+      ? "If that account exists, a reset link has been emailed. Open it to set a new password."
+      : "Could not send a reset link — try again.";
+  } catch (e) { $("rs_msg").style.color = ""; $("rs_msg").textContent = "Network error — try again."; }
+});
+/* if the page was opened from a reset email, show the set-new-password form */
+function checkRecovery() {
+  if (AUTH.mode !== "supabase") return false;
+  const h = new URLSearchParams((location.hash || "").replace(/^#/, ""));
+  if (h.get("type") === "recovery" && h.get("access_token")) {
+    recoveryToken = h.get("access_token");
+    $("pwTitle").textContent = "Set a new password";
+    $("pw_err").textContent = ""; $("pwForm").reset();
+    openModal("pwOverlay");
+    return true;
+  }
+  return false;
+}
 
 populateFilters();
 (async () => {
@@ -2983,6 +3035,7 @@ populateFilters();
   if (AUTH.enabled && !loggedIn) showGate(true);
   else { showGate(false); renderAuthChip(); }
   render();
+  checkRecovery();   // if opened from a reset-password email, prompt for a new password
 })();
 </script>
 </body>
