@@ -1816,6 +1816,11 @@ function detailHTML(r) {
       ${ranks.map(([y, raw, used]) => `<div class="kv"><span class="k">NIRF ${y}</span><span class="v">${esc(raw ?? "—")} → ${used}</span></div>`).join("")}
       <div class="kv"><span class="k">Weighted rank (0.5/0.3/0.2)</span><span class="v">${fmt2(rankUsed(c.nirf25)*0.5 + rankUsed(c.nirf24)*0.3 + rankUsed(c.nirf23)*0.2)}</span></div>
       <div class="kv"><span class="k">NIRF Index</span><span class="v">${fmt2(r.nirf)}</span></div>
+      <p class="note">In plain terms: the <b>weighted rank</b> is the college's average NIRF rank
+      over three years, counting the most recent year the most (this year half, last year a third,
+      the year before a fifth); a year it wasn't ranked counts as ${WORST_RANK}. The <b>NIRF Index</b>
+      just turns that rank into an easy 0–100 score where higher is better — rank ${BEST_RANK} scores
+      100, and no rank at all scores 0. The score uses this 0–100 number, not the raw rank.</p>
       <div class="kv"><span class="k">NAAC grade</span><span class="v">${esc(c.naac ?? "—")} → ${fmt2(r.naac)}</span></div>
       <div class="kv"><span class="k">NBA value</span><span class="v">${esc(c.nba ?? "—")} → ${fmt2(r.nba)}%</span></div>
       <div class="kv"><span class="k">Salary Index (median ÷ list max)</span><span class="v">${fmt2(r.sal)}</span></div>
