@@ -2290,6 +2290,9 @@ function validateForm(c) {
 }
 
 function updatePreview() {
+  // TPOs don't see the live scoring preview (indices, core score, ranks)
+  if (typeof role === "function" && role() === "tpo") { els.preview.style.display = "none"; els.locPreview.textContent = ""; return; }
+  els.preview.style.display = "";
   const c = formCollege();
   const loc = resolveLocation(c);
   els.locPreview.textContent = c.loc
