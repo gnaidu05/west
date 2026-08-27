@@ -441,17 +441,42 @@
   .cmp-chip button:hover { opacity: 1; }
   .cmp-hint { color: var(--text-muted); font-size: 13px; padding: 24px 4px; text-align: center; }
   .cmp-scroll { overflow-x: auto; }
-  table.cmp-table { border-collapse: collapse; width: 100%; font-size: 13px; }
-  table.cmp-table th, table.cmp-table td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
-  table.cmp-table thead th { background: var(--surface-2); font-size: 13px; }
-  table.cmp-table thead th.cmp-name { min-width: 150px; }
-  table.cmp-table thead th .cmp-th-sub { display: block; font-weight: 400; color: var(--text-muted); font-size: 11.5px; margin-top: 2px; }
-  table.cmp-table td.cmp-metric, table.cmp-table th.cmp-metric { background: var(--surface-2); font-weight: 600; white-space: nowrap; width: 210px; }
+  table.cmp-table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; }
+  table.cmp-table th, table.cmp-table td { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    padding: 8px 12px; text-align: left; vertical-align: middle; }
+  table.cmp-table td:first-child, table.cmp-table th:first-child { border-left: 1px solid var(--border); }
+  table.cmp-table thead th { border-top: 1px solid var(--border); }
+  /* sticky metric column so labels stay visible when scrolling wide comparisons */
+  table.cmp-table td.cmp-metric, table.cmp-table th.cmp-metric {
+    position: sticky; left: 0; z-index: 1; background: var(--surface-2);
+    font-weight: 600; white-space: nowrap; width: 190px; min-width: 150px; }
+  /* college header cards */
+  table.cmp-table thead th.cmp-name { background: var(--surface-1); min-width: 168px; vertical-align: top; }
+  .cmp-card { display: flex; flex-direction: column; gap: 3px; }
+  .cmp-cardtop { display: flex; align-items: center; gap: 6px; }
+  .cmp-rankpill { display: inline-block; background: var(--accent-soft); color: var(--accent);
+    font-weight: 700; font-size: 11px; padding: 1px 8px; border-radius: 10px; }
+  .cmp-toppill { display: inline-block; background: var(--chip-p2-bg); color: var(--chip-p2-fg);
+    font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: .03em; padding: 1px 7px; border-radius: 10px; }
+  .cmp-cname { font-size: 13.5px; font-weight: 700; line-height: 1.25; }
+  .cmp-ctot { font-size: 22px; font-weight: 800; line-height: 1; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .cmp-ctot .cmp-ctotlab { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--text-muted); margin-left: 5px; }
+  .cmp-cmeta { font-size: 11px; color: var(--text-muted); }
   table.cmp-table tr.cmp-group td { background: var(--surface-2); font-weight: 700; text-transform: uppercase;
-    letter-spacing: .04em; font-size: 10.5px; color: var(--text-muted); }
+    letter-spacing: .04em; font-size: 10.5px; color: var(--text-muted); padding: 5px 12px; }
   table.cmp-table td.cmp-val { font-variant-numeric: tabular-nums; }
-  table.cmp-table td.cmp-best { background: var(--chip-p2-bg); color: var(--chip-p2-fg); font-weight: 700; }
-  table.cmp-table td.cmp-best::after { content: " ★"; font-size: 10px; }
+  /* mini score bars for 0–100 metrics */
+  .cmp-barwrap { display: flex; align-items: center; gap: 8px; }
+  .cmp-barnum { min-width: 40px; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .cmp-bar { flex: 1; height: 7px; min-width: 44px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+  .cmp-bar i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+  /* winner cell */
+  table.cmp-table td.cmp-best { background: var(--chip-p2-bg); }
+  table.cmp-table td.cmp-best.cmp-val:not(.cmp-barcell) { color: var(--chip-p2-fg); font-weight: 700; }
+  table.cmp-table td.cmp-best.cmp-val:not(.cmp-barcell)::after { content: " ★"; font-size: 10px; }
+  .cmp-best .cmp-bar i { background: var(--chip-p2-fg); }
+  .cmp-best .cmp-barnum { color: var(--chip-p2-fg); font-weight: 800; }
   /* ---- auth: login gate, user chip, approvals ---- */
   #loginGate { position: fixed; inset: 0; z-index: 100; display: none;
     align-items: center; justify-content: center; padding: 5vh 16px;
@@ -2247,31 +2272,29 @@ const cmpEls = {
 };
 const cmpMoney = v => isNum(v) ? "₹" + (v / 100000).toFixed(1) + " L" : "—";
 // rows: { g:true } starts a group; else a metric row
+// rows: { g:"…" } starts a group; a metric row may set bar:true (0–100 mini bar,
+// value from num()), cmp()+dir for winner highlighting. Contact/SPOC fields are
+// intentionally left out of the comparison.
 const CMP_ROWS = [
   { g: "Ranking & score" },
   { label: "Overall rank",          get: r => "#" + r.prank,               cmp: r => r.prank, dir: "min" },
-  { label: "Total Priority Score",  get: r => fmt2(r.total),               cmp: r => r.total, dir: "max" },
-  { label: "Core Score",            get: r => fmt2(r.core),                cmp: r => r.core,  dir: "max" },
+  { label: "Total Priority Score",  bar: true, num: r => r.total, get: r => fmt2(r.total), cmp: r => r.total, dir: "max" },
+  { label: "Core Score",            bar: true, num: r => r.core,  get: r => fmt2(r.core),  cmp: r => r.core,  dir: "max" },
+  { g: "Score components (0–100)" },
+  { label: "Salary Index",          bar: true, num: r => r.sal,  get: r => fmt2(r.sal),  cmp: r => r.sal,  dir: "max" },
+  { label: "NIRF Index",            bar: true, num: r => r.nirf, get: r => fmt2(r.nirf), cmp: r => r.nirf, dir: "max" },
+  { label: "NAAC Index",            bar: true, num: r => r.naac, get: r => fmt2(r.naac), cmp: r => r.naac, dir: "max" },
+  { label: "NBA Score %",           bar: true, num: r => r.nba,  get: r => fmt2(r.nba),  cmp: r => r.nba,  dir: "max" },
+  { label: "Brand Perception",      bar: true, num: r => (r.bp === null ? 0 : r.bp), get: r => r.bp === null ? "—" : fmt1(r.bp), cmp: r => r.bp, dir: "max" },
   { g: "Where & who" },
   { label: "State",                 get: r => esc(r.state || "—") },
   { label: "City",                  get: r => esc(r.city || "—") },
   { label: "Group",                 get: r => esc(dispGroup(r) || "—") },
-  { label: "SPOC",                  get: r => esc(r.spoc || "—") },
-  { g: "Score components (0–100)" },
-  { label: "Salary Index",          get: r => fmt2(r.sal),                 cmp: r => r.sal,  dir: "max" },
-  { label: "NIRF Index",            get: r => fmt2(r.nirf),                cmp: r => r.nirf, dir: "max" },
-  { label: "NAAC Index",            get: r => fmt2(r.naac),                cmp: r => r.naac, dir: "max" },
-  { label: "NBA Score %",           get: r => fmt2(r.nba),                 cmp: r => r.nba,  dir: "max" },
-  { label: "Brand Perception",      get: r => r.bp === null ? "—" : fmt1(r.bp), cmp: r => r.bp, dir: "max" },
   { g: "Raw inputs" },
   { label: "Median salary",         get: r => cmpMoney(r.raw.med),         cmp: r => isNum(r.raw.med) ? r.raw.med : null, dir: "max" },
   { label: "NIRF 2025 / 24 / 23",   get: r => `${esc(r.raw.nirf25 ?? "—")} · ${esc(r.raw.nirf24 ?? "—")} · ${esc(r.raw.nirf23 ?? "—")}` },
   { label: "NAAC grade",            get: r => esc(r.raw.naac ?? "—") },
   { label: "NBA value",             get: r => esc(r.raw.nba ?? "—") },
-  { g: "Contacts" },
-  { label: "TPO",                   get: r => esc(r.tpo || "—") },
-  { label: "TPO email",             get: r => r.raw.tpoEmail ? esc(r.raw.tpoEmail) : "—" },
-  { label: "TPO phone",             get: r => r.raw.tpoPhone ? esc(r.raw.tpoPhone) : "—" },
   { g: "Reference (never scored)" },
   { label: "HML",                   get: r => esc(r.raw.hml || "—") },
   { label: "MOU",                   get: r => esc(r.raw.mou || "—") },
@@ -2315,24 +2338,35 @@ function renderCompare() {
       : "Add at least one more college to see a side-by-side comparison."}</p>`;
     return;
   }
-  const head = `<tr><th class="cmp-metric">Metric</th>${cols.map(r =>
-    `<th class="cmp-name">${esc(r.name)}<span class="cmp-th-sub">overall #${r.prank} · total ${fmt2(r.total)}</span></th>`).join("")}</tr>`;
+  // "Top pick" = the single highest total among the selected colleges
+  const bestTotal = Math.max(...cols.map(r => r.total));
+  const soleTop = cols.filter(r => r.total === bestTotal).length === 1;
+  const head = `<tr><th class="cmp-metric">Metric</th>${cols.map(r => `
+    <th class="cmp-name"><div class="cmp-card">
+      <div class="cmp-cardtop"><span class="cmp-rankpill">#${r.prank}</span>${soleTop && r.total === bestTotal ? '<span class="cmp-toppill">Top pick</span>' : ""}</div>
+      <div class="cmp-cname" title="${esc(r.name)}">${esc(r.name)}</div>
+      <div class="cmp-ctot">${fmt2(r.total)}<span class="cmp-ctotlab">total</span></div>
+      <div class="cmp-cmeta">${esc(r.city || "—")}, ${esc(r.state)}</div>
+    </div></th>`).join("")}</tr>`;
   const bodyRows = CMP_ROWS.map(row => {
     if (row.g) return `<tr class="cmp-group"><td colspan="${cols.length + 1}">${esc(row.g)}</td></tr>`;
     // decide winners for numeric rows
     let best = null;
     if (row.cmp && row.dir) {
-      const vals = cols.map(row.cmp);
-      const nums = vals.filter(v => isNum(v));
+      const nums = cols.map(row.cmp).filter(v => isNum(v));
       if (nums.length >= 2) {
         const target = row.dir === "min" ? Math.min(...nums) : Math.max(...nums);
-        // only mark a winner if not everyone is tied
-        if (nums.some(v => v !== target)) best = target;
+        if (nums.some(v => v !== target)) best = target;  // skip if everyone's tied
       }
     }
     const cells = cols.map(r => {
       const win = best !== null && row.cmp && row.cmp(r) === best;
-      return `<td class="cmp-val${win ? " cmp-best" : ""}">${row.get(r)}</td>`;
+      let inner = row.get(r);
+      if (row.bar) {
+        const v = row.num(r), w = Math.max(0, Math.min(100, isNum(v) ? v : 0));
+        inner = `<div class="cmp-barwrap"><span class="cmp-barnum">${row.get(r)}</span><div class="cmp-bar"><i style="width:${w}%"></i></div></div>`;
+      }
+      return `<td class="cmp-val${row.bar ? " cmp-barcell" : ""}${win ? " cmp-best" : ""}">${inner}</td>`;
     }).join("");
     return `<tr><td class="cmp-metric">${esc(row.label)}</td>${cells}</tr>`;
   }).join("");

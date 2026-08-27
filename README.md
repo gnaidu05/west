@@ -42,12 +42,16 @@ college's breakdown states which one it is.
 ### What's different from the all-India engine
 
 - **Compare tab** — a fourth workflow tab (**4 · Compare**) lets you pick up to
-  **four colleges** from a searchable box and see them **side by side**: overall
-  rank and scores, the five score components (Salary / NIRF / NAAC / NBA / Brand
-  Perception), the raw inputs behind them (median salary, NIRF ranks, NAAC grade,
-  NBA value), contacts, and the reference programme fields. The best value in each
-  numeric row is highlighted, so the trade-offs between colleges are obvious at a
-  glance. The tab is hidden for TPO accounts (they only see their own college).
+  **four colleges** from a searchable box and see them **side by side**. Each
+  college gets a header card (overall-rank pill, big total score, location, and a
+  "Top pick" badge on the highest-scoring one), then the metrics stack up in rows:
+  overall rank and scores, the five score components (Salary / NIRF / NAAC / NBA /
+  Brand Perception) shown as mini 0–100 bars, the raw inputs behind them (median
+  salary, NIRF ranks, NAAC grade, NBA value), location, and the reference
+  programme fields. The best value in each numeric row is highlighted green so the
+  trade-offs are obvious at a glance. SPOC and TPO contact details are left out of
+  the comparison to keep it focused, and the tab is hidden for TPO accounts (they
+  only see their own college).
 - **State chips instead of zone chips** — every college here is West zone,
   so the slicer, the "Avg score by state" chart and the catalogue grouping
   work on Maharashtra / Gujarat / Goa instead.
