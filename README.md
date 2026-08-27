@@ -41,6 +41,13 @@ college's breakdown states which one it is.
 
 ### What's different from the all-India engine
 
+- **Compare tab** — a fourth workflow tab (**4 · Compare**) lets you pick up to
+  **four colleges** from a searchable box and see them **side by side**: overall
+  rank and scores, the five score components (Salary / NIRF / NAAC / NBA / Brand
+  Perception), the raw inputs behind them (median salary, NIRF ranks, NAAC grade,
+  NBA value), contacts, and the reference programme fields. The best value in each
+  numeric row is highlighted, so the trade-offs between colleges are obvious at a
+  glance. The tab is hidden for TPO accounts (they only see their own college).
 - **State chips instead of zone chips** — every college here is West zone,
   so the slicer, the "Avg score by state" chart and the catalogue grouping
   work on Maharashtra / Gujarat / Goa instead.
@@ -114,8 +121,8 @@ college's breakdown states which one it is.
   (`shared_colleges_west`), so this dashboard never collides with the
   all-India one in the same browser or Supabase project.
 
-Everything else — the three-step workflow (Add College → Dashboard →
-Catalogue), cross-filtering visuals, NIRF directory auto-fill and the
+Everything else — the workflow tabs (Add College → Dashboard → Catalogue →
+Compare), cross-filtering visuals, NIRF directory auto-fill and the
 print layout — matches the all-India engine; see that repo's README for
 the full feature guide.
 

@@ -418,6 +418,40 @@
   .added-row .ar-score { font-size: 12.5px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
   .added-row .ar-actions { display: flex; gap: 6px; }
   @media (prefers-color-scheme: dark) { .form-error { color: #e66767; } }
+  /* ---- compare tab ---- */
+  .cmp-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px; }
+  .cmp-search-wrap { position: relative; flex: 0 0 auto; }
+  #cmpSearch { width: 280px; max-width: 100%; padding: 7px 10px; font-size: 13px;
+    border: 1px solid var(--border); border-radius: 6px; background: var(--surface-1); color: var(--text-primary); }
+  #cmpSearch:disabled { opacity: .55; cursor: not-allowed; }
+  .cmp-drop { position: absolute; top: calc(100% + 4px); left: 0; z-index: 20; width: 340px; max-width: 90vw;
+    max-height: 320px; overflow: auto; background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 8px; box-shadow: var(--shadow); }
+  .cmp-drop button { display: block; width: 100%; text-align: left; padding: 8px 12px; font-size: 13px;
+    background: none; border: none; border-bottom: 1px solid var(--border); color: var(--text-primary); cursor: pointer; }
+  .cmp-drop button:last-child { border-bottom: none; }
+  .cmp-drop button:hover, .cmp-drop button.active { background: var(--surface-2); }
+  .cmp-drop .cd-sub { color: var(--text-muted); font-size: 11.5px; }
+  .cmp-drop .cd-empty { padding: 10px 12px; color: var(--text-muted); font-size: 12.5px; }
+  .cmp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cmp-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px 4px 10px;
+    background: var(--accent-soft); color: var(--accent); border-radius: 14px; font-size: 12px; font-weight: 600; }
+  .cmp-chip button { background: none; border: none; color: inherit; cursor: pointer; font-size: 14px;
+    line-height: 1; padding: 0 2px; opacity: .8; }
+  .cmp-chip button:hover { opacity: 1; }
+  .cmp-hint { color: var(--text-muted); font-size: 13px; padding: 24px 4px; text-align: center; }
+  .cmp-scroll { overflow-x: auto; }
+  table.cmp-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.cmp-table th, table.cmp-table td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
+  table.cmp-table thead th { background: var(--surface-2); font-size: 13px; }
+  table.cmp-table thead th.cmp-name { min-width: 150px; }
+  table.cmp-table thead th .cmp-th-sub { display: block; font-weight: 400; color: var(--text-muted); font-size: 11.5px; margin-top: 2px; }
+  table.cmp-table td.cmp-metric, table.cmp-table th.cmp-metric { background: var(--surface-2); font-weight: 600; white-space: nowrap; width: 210px; }
+  table.cmp-table tr.cmp-group td { background: var(--surface-2); font-weight: 700; text-transform: uppercase;
+    letter-spacing: .04em; font-size: 10.5px; color: var(--text-muted); }
+  table.cmp-table td.cmp-val { font-variant-numeric: tabular-nums; }
+  table.cmp-table td.cmp-best { background: var(--chip-p2-bg); color: var(--chip-p2-fg); font-weight: 700; }
+  table.cmp-table td.cmp-best::after { content: " ★"; font-size: 10px; }
   /* ---- auth: login gate, user chip, approvals ---- */
   #loginGate { position: fixed; inset: 0; z-index: 100; display: none;
     align-items: center; justify-content: center; padding: 5vh 16px;
@@ -478,6 +512,7 @@
     <button type="button" class="tab" data-view="add">1 · Add College</button>
     <button type="button" class="tab active" data-view="dash">2 · Dashboard</button>
     <button type="button" class="tab" data-view="cat">3 · Catalogue</button>
+    <button type="button" class="tab" data-view="cmp" id="cmpTab">4 · Compare</button>
   </nav>
   <div class="auth-chip" id="authChip" style="margin-left:auto" hidden>
     <button type="button" class="pill-btn" id="myReqBtn" hidden>My requests<span class="n" id="myReqN" hidden></span></button>
@@ -684,6 +719,23 @@
     </div>
     <div class="printhead" id="printHead"></div>
     <div id="catBody" class="vgroup"></div>
+  </div>
+
+  <div id="cmpView" class="vgroup" hidden>
+    <div class="visual">
+      <p class="vtitle">Compare colleges <span class="vhint">· pick up to 4 colleges to see their scores and inputs side by side</span></p>
+      <div class="cmp-picker">
+        <div class="cmp-search-wrap">
+          <input type="text" id="cmpSearch" placeholder="Search a college to add…" autocomplete="off" aria-label="Search colleges to compare">
+          <div class="cmp-drop" id="cmpDrop" hidden></div>
+        </div>
+        <div class="cmp-chips" id="cmpChips"></div>
+        <button type="button" class="clearlink" id="cmpClear" hidden>Clear all</button>
+      </div>
+    </div>
+    <div class="visual" id="cmpResultCard">
+      <div id="cmpBody"></div>
+    </div>
   </div>
 </div>
 
@@ -2064,12 +2116,19 @@ function render() {
     b.classList.toggle("on", zoneSet.has(b.dataset.zone));
     b.setAttribute("aria-pressed", zoneSet.has(b.dataset.zone));
   }
+  // TPOs can't use Compare (single-college scope) — hide the tab, send them to the dashboard
+  const isTpo = typeof role === "function" && role() === "tpo";
+  const cmpTabBtn = document.getElementById("cmpTab");
+  if (cmpTabBtn) cmpTabBtn.hidden = isTpo;
+  if (activeView === "cmp" && isTpo) activeView = "dash";
   document.getElementById("addView").hidden = activeView !== "add";
   document.getElementById("dashView").hidden = activeView !== "dash";
   document.getElementById("catView").hidden = activeView !== "cat";
+  document.getElementById("cmpView").hidden = activeView !== "cmp";
   for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t.dataset.view === activeView);
   if (activeView === "add") { renderAddList(dashSort(computeCurrent(userColleges)).filter(inScope)); return; }
   if (activeView === "cat") { renderCatalogue(view); return; }
+  if (activeView === "cmp") { renderCompare(); return; }
   els.kpis.innerHTML = kpiHTML(view);
   els.zoneChart.innerHTML = zoneChartHTML(forZoneChart);
   els.cgChart.innerHTML = spocChartHTML(forSpocChart);
@@ -2177,6 +2236,132 @@ document.addEventListener("click", e => {
 });
 document.getElementById("printBtn").addEventListener("click", () => window.print());
 document.getElementById("hideTest").addEventListener("change", render);
+
+/* ---- Compare tab: pick up to 4 colleges, show them side by side ---- */
+const CMP_MAX = 4;
+let cmpSel = [];   // selected college names, in pick order
+const cmpEls = {
+  search: document.getElementById("cmpSearch"), drop: document.getElementById("cmpDrop"),
+  chips: document.getElementById("cmpChips"), clear: document.getElementById("cmpClear"),
+  body: document.getElementById("cmpBody"),
+};
+const cmpMoney = v => isNum(v) ? "₹" + (v / 100000).toFixed(1) + " L" : "—";
+// rows: { g:true } starts a group; else a metric row
+const CMP_ROWS = [
+  { g: "Ranking & score" },
+  { label: "Overall rank",          get: r => "#" + r.prank,               cmp: r => r.prank, dir: "min" },
+  { label: "Total Priority Score",  get: r => fmt2(r.total),               cmp: r => r.total, dir: "max" },
+  { label: "Core Score",            get: r => fmt2(r.core),                cmp: r => r.core,  dir: "max" },
+  { g: "Where & who" },
+  { label: "State",                 get: r => esc(r.state || "—") },
+  { label: "City",                  get: r => esc(r.city || "—") },
+  { label: "Group",                 get: r => esc(dispGroup(r) || "—") },
+  { label: "SPOC",                  get: r => esc(r.spoc || "—") },
+  { g: "Score components (0–100)" },
+  { label: "Salary Index",          get: r => fmt2(r.sal),                 cmp: r => r.sal,  dir: "max" },
+  { label: "NIRF Index",            get: r => fmt2(r.nirf),                cmp: r => r.nirf, dir: "max" },
+  { label: "NAAC Index",            get: r => fmt2(r.naac),                cmp: r => r.naac, dir: "max" },
+  { label: "NBA Score %",           get: r => fmt2(r.nba),                 cmp: r => r.nba,  dir: "max" },
+  { label: "Brand Perception",      get: r => r.bp === null ? "—" : fmt1(r.bp), cmp: r => r.bp, dir: "max" },
+  { g: "Raw inputs" },
+  { label: "Median salary",         get: r => cmpMoney(r.raw.med),         cmp: r => isNum(r.raw.med) ? r.raw.med : null, dir: "max" },
+  { label: "NIRF 2025 / 24 / 23",   get: r => `${esc(r.raw.nirf25 ?? "—")} · ${esc(r.raw.nirf24 ?? "—")} · ${esc(r.raw.nirf23 ?? "—")}` },
+  { label: "NAAC grade",            get: r => esc(r.raw.naac ?? "—") },
+  { label: "NBA value",             get: r => esc(r.raw.nba ?? "—") },
+  { g: "Contacts" },
+  { label: "TPO",                   get: r => esc(r.tpo || "—") },
+  { label: "TPO email",             get: r => r.raw.tpoEmail ? esc(r.raw.tpoEmail) : "—" },
+  { label: "TPO phone",             get: r => r.raw.tpoPhone ? esc(r.raw.tpoPhone) : "—" },
+  { g: "Reference (never scored)" },
+  { label: "HML",                   get: r => esc(r.raw.hml || "—") },
+  { label: "MOU",                   get: r => esc(r.raw.mou || "—") },
+  { label: "WZ priority",           get: r => esc(r.raw.wzPriority || "—") },
+  { label: "Phase · Mode",          get: r => `${esc(r.raw.phase || "—")} · ${esc(r.raw.mode || "—")}` },
+];
+
+function cmpAllRows() { return dashSort(computeCurrent(userColleges)).filter(inScope); }
+
+function renderCmpDrop() {
+  const q = cmpEls.search.value.trim().toLowerCase();
+  const picked = new Set(cmpSel);
+  const list = cmpAllRows().filter(r => !picked.has(r.name) &&
+    (!q || r.name.toLowerCase().includes(q) || (r.city || "").toLowerCase().includes(q) || (r.state || "").toLowerCase().includes(q)));
+  if (cmpSel.length >= CMP_MAX) {
+    cmpEls.drop.innerHTML = `<div class="cd-empty">You can compare up to ${CMP_MAX} colleges — remove one to add another.</div>`;
+  } else if (!list.length) {
+    cmpEls.drop.innerHTML = `<div class="cd-empty">No matching college${q ? " for “" + esc(q) + "”" : ""}.</div>`;
+  } else {
+    cmpEls.drop.innerHTML = list.slice(0, 40).map(r =>
+      `<button type="button" data-add="${esc(r.name)}">${esc(r.name)}<span class="cd-sub"> · ${esc(r.city || "—")}, ${esc(r.state)} · overall #${r.prank}</span></button>`).join("");
+  }
+  cmpEls.drop.hidden = false;
+}
+function closeCmpDrop() { cmpEls.drop.hidden = true; }
+
+function renderCompare() {
+  // chips
+  cmpEls.chips.innerHTML = cmpSel.map(n =>
+    `<span class="cmp-chip">${esc(n)}<button type="button" data-rm="${esc(n)}" aria-label="Remove ${esc(n)}">×</button></span>`).join("");
+  cmpEls.clear.hidden = cmpSel.length === 0;
+  const atMax = cmpSel.length >= CMP_MAX;
+  cmpEls.search.disabled = atMax;
+  cmpEls.search.placeholder = atMax ? `Maximum ${CMP_MAX} colleges selected` : "Search a college to add…";
+
+  const rowsByName = new Map(cmpAllRows().map(r => [r.name, r]));
+  const cols = cmpSel.map(n => rowsByName.get(n)).filter(Boolean);
+  if (cols.length < 2) {
+    cmpEls.body.innerHTML = `<p class="cmp-hint">${cols.length === 0
+      ? "Search above and add two to four colleges to compare them side by side."
+      : "Add at least one more college to see a side-by-side comparison."}</p>`;
+    return;
+  }
+  const head = `<tr><th class="cmp-metric">Metric</th>${cols.map(r =>
+    `<th class="cmp-name">${esc(r.name)}<span class="cmp-th-sub">overall #${r.prank} · total ${fmt2(r.total)}</span></th>`).join("")}</tr>`;
+  const bodyRows = CMP_ROWS.map(row => {
+    if (row.g) return `<tr class="cmp-group"><td colspan="${cols.length + 1}">${esc(row.g)}</td></tr>`;
+    // decide winners for numeric rows
+    let best = null;
+    if (row.cmp && row.dir) {
+      const vals = cols.map(row.cmp);
+      const nums = vals.filter(v => isNum(v));
+      if (nums.length >= 2) {
+        const target = row.dir === "min" ? Math.min(...nums) : Math.max(...nums);
+        // only mark a winner if not everyone is tied
+        if (nums.some(v => v !== target)) best = target;
+      }
+    }
+    const cells = cols.map(r => {
+      const win = best !== null && row.cmp && row.cmp(r) === best;
+      return `<td class="cmp-val${win ? " cmp-best" : ""}">${row.get(r)}</td>`;
+    }).join("");
+    return `<tr><td class="cmp-metric">${esc(row.label)}</td>${cells}</tr>`;
+  }).join("");
+  cmpEls.body.innerHTML = `<div class="cmp-scroll"><table class="cmp-table"><thead>${head}</thead><tbody>${bodyRows}</tbody></table></div>`;
+}
+
+function cmpAdd(name) {
+  if (cmpSel.includes(name) || cmpSel.length >= CMP_MAX) return;
+  cmpSel.push(name);
+  cmpEls.search.value = "";
+  renderCompare();
+  if (cmpSel.length < CMP_MAX) { renderCmpDrop(); cmpEls.search.focus(); } else closeCmpDrop();
+}
+function cmpRemove(name) { cmpSel = cmpSel.filter(n => n !== name); renderCompare(); }
+
+cmpEls.search.addEventListener("input", renderCmpDrop);
+cmpEls.search.addEventListener("focus", renderCmpDrop);
+cmpEls.drop.addEventListener("mousedown", e => {   // mousedown so it fires before input blur
+  const b = e.target.closest("button[data-add]");
+  if (b) { e.preventDefault(); cmpAdd(b.dataset.add); }
+});
+cmpEls.chips.addEventListener("click", e => {
+  const b = e.target.closest("button[data-rm]");
+  if (b) cmpRemove(b.dataset.rm);
+});
+cmpEls.clear.addEventListener("click", () => { cmpSel = []; cmpEls.search.value = ""; renderCompare(); closeCmpDrop(); });
+document.addEventListener("click", e => {
+  if (!e.target.closest(".cmp-search-wrap")) closeCmpDrop();
+});
 
 els.clearBtn.addEventListener("click", () => {
   zoneSet.clear(); els.spoc.value = "All"; els.grp.value = "All"; els.search.value = "";
@@ -2405,6 +2590,10 @@ function fillForm(c, lockName) {
    the scored/identity fields for them. Admins & SPOCs see the full form. */
 function applyFormRole() {
   const tpo = typeof role === "function" && role() === "tpo";
+  // a TPO only sees their own college, so the Compare tab (side-by-side of
+  // several colleges, exposing scoring internals) is hidden for them
+  const cmpTab = document.getElementById("cmpTab");
+  if (cmpTab) cmpTab.hidden = tpo;
   const keep = new Set(["f_name", "f_tpo", "f_tpoEmail", "f_tpoPhone"]);
   for (const fld of els.form.querySelectorAll(".fields .field")) {
     const inp = fld.querySelector("input,select,textarea");
