@@ -115,6 +115,22 @@ college's breakdown states which one it is.
   hand-built Rashtriya Raksha University profile are left intact). The other
   profile fields (Overview, Campuses, Hot skills, Top recruiters) still come
   from the form or a team import — AICTE only publishes programmes and intake.
+- **NIRF/AICTE verified-intake refresh** — the `scripts/build_nirf_intake_profiles.py`
+  job refreshes the **Programmes** and **Batch Size / Intake** tables for the
+  West-zone colleges that appear in the curated *All-India NIRF Engineering
+  Intake (2025-26)* workbook (frozen under `probe/nirf_intake/`). Its `College
+  Program Master` gives each UG branch's official **Approved / Sanctioned
+  Intake** (AICTE 2025-26 public approvals, or JoSAA-verified for NIRF
+  institutes) with normalised branch names, so 17 listed colleges (COEP, PDEU,
+  Symbiosis, VJTI, Marwadi, Walchand, YCCE, MSU Baroda, Dharmsinh Desai, … )
+  get a clean per-branch breakdown captioned *"NIRF/AICTE verified intake
+  2025-26"*. Unlike the AICTE seed this **overwrites** an existing programmes/
+  batch table (the newer, verified source wins) while leaving every other
+  profile field intact. Matches are hand-reviewed the same way (BLOCK a wrong
+  campus — e.g. NMIMS Mumbai vs its Dhule campus — ALLOW a correct match the
+  score just missed, and a collision guard), and institutions the workbook only
+  reports as a single lumped total (no per-branch split) are skipped rather than
+  flattening a real breakdown.
 - **Programme fields** (group, HML, MOU status & type, WZ priority, phase,
   mode) imported from the SPOC workbook are reference-only: shown in the
   breakdown's Profile card and as catalogue tags, preserved across form
