@@ -1441,7 +1441,7 @@ const sbAuthToken = () => (AUTH.mode === "supabase" && typeof session !== "undef
   && session && session.token) ? session.token : SHARED.anonKey;
 
 async function sbFetch(query, opts = {}) {
-  const res = await fetch(`${SHARED.url}/rest/v1/${SHARED.table}${query}`, {
+  const call = () => fetch(`${SHARED.url}/rest/v1/${SHARED.table}${query}`, {
     ...opts,
     headers: {
       apikey: SHARED.anonKey, Authorization: `Bearer ${sbAuthToken()}`,
@@ -1449,6 +1449,9 @@ async function sbFetch(query, opts = {}) {
       ...(opts.headers || {}),
     },
   });
+  let res = await call();
+  // an expired access token 401s — refresh once and retry before giving up
+  if (res.status === 401 && typeof sbRefresh === "function" && await sbRefresh()) res = await call();
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.status === 204 ? null : res.json();
 }
@@ -2920,12 +2923,38 @@ async function supaLogin(email, password) {
   return { session: { u: email, token: d.access_token, refresh: d.refresh_token, role, scope, name } };
 }
 
+/* Supabase access tokens expire after ~1 hour. Exchange the stored refresh
+   token for a fresh access token so long-lived sessions don't 401 on
+   authenticated calls (invite, writes, approvals). Returns true on success. */
+let sbRefreshing = null;
+async function sbRefresh() {
+  if (AUTH.mode !== "supabase" || !(session && session.refresh)) return false;
+  if (sbRefreshing) return sbRefreshing;         // collapse concurrent refreshes
+  sbRefreshing = (async () => {
+    try {
+      const res = await fetch(`${SHARED.url}/auth/v1/token?grant_type=refresh_token`, {
+        method: "POST", headers: { apikey: SHARED.anonKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: session.refresh }) });
+      if (!res.ok) return false;
+      const d = await res.json();
+      if (!d.access_token) return false;
+      session = { ...session, token: d.access_token, refresh: d.refresh_token || session.refresh };
+      lsSet(A_SESSION, session);
+      return true;
+    } catch (e) { return false; }
+    finally { sbRefreshing = null; }
+  })();
+  return sbRefreshing;
+}
+
 let PENDING = lsGet(A_PENDING, []);
 const savePending = () => lsSet(A_PENDING, PENDING);
 async function sbPending(query, opts = {}) {
-  const res = await fetch(`${SHARED.url}/rest/v1/${PENDING_TABLE}${query}`, {
+  const call = () => fetch(`${SHARED.url}/rest/v1/${PENDING_TABLE}${query}`, {
     ...opts, headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${sbAuthToken()}`,
       "Content-Type": "application/json", Prefer: "return=representation", ...(opts.headers || {}) } });
+  let res = await call();
+  if (res.status === 401 && typeof sbRefresh === "function" && await sbRefresh()) res = await call();
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.status === 204 ? null : res.json();
 }
@@ -3177,11 +3206,15 @@ $("inviteForm").addEventListener("submit", async e => {
   $("inv_err").textContent = ""; $("inv_result").textContent = ""; $("inviteSend").disabled = true;
   $("inviteSend").textContent = "Creating…";
   try {
-    const res = await fetch(`${SHARED.url}/functions/v1/${AUTH.inviteFn}`, {
+    const callInvite = () => fetch(`${SHARED.url}/functions/v1/${AUTH.inviteFn}`, {
       method: "POST", headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${session.token}`, "Content-Type": "application/json" },
       body: JSON.stringify({ email, role: r, scope: scope || null, name: name || null }) });
+    let res = await callInvite();
+    // an expired admin token returns 401 — refresh once and retry before failing
+    if (res.status === 401 && await sbRefresh()) res = await callInvite();
     const d = await res.json().catch(() => ({}));
-    if (!res.ok || d.error) { $("inv_err").textContent = d.error || `Failed (HTTP ${res.status})`; }
+    if (res.status === 401) { $("inv_err").textContent = "Your session expired — please log out and sign in again."; }
+    else if (!res.ok || d.error) { $("inv_err").textContent = d.error || `Failed (HTTP ${res.status})`; }
     else if (d.emailed) { $("inv_result").innerHTML = `✅ Account created — a temporary password was emailed to <b>${esc(email)}</b>.`; $("inviteForm").reset(); fillInviteScope(); }
     else { $("inv_result").innerHTML = `⚠️ Account created, but the email didn't send${d.emailError ? ` (${esc(d.emailError)})` : ""}.<br>Temporary password for <b>${esc(email)}</b>: <code>${esc(d.tempPassword || "")}</code> — send it to them manually.`; }
   } catch (e2) { $("inv_err").textContent = "Network error — try again."; }
