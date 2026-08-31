@@ -52,9 +52,34 @@ LVL_RANK = {"UG": 0, "Integrated": 1, "PG": 2, "PG Diploma": 3,
 # ---- institutions from the frozen workbook ------------------------------
 # NIRF-derived rows for institutions whose per-branch split wasn't resolved carry
 # this single placeholder "branch" holding the institution's total intake. It is
-# not a real programme, so we drop it — an institution left with no real branch
-# rows is simply not updated (its existing per-branch profile is preserved).
+# not a real programme, so it is dropped from per-branch aggregation — an
+# institution left with no real branch rows is not updated via the fuzzy pass.
 PSEUDO = "All UG Engineering — institution total"
+# ...except these colleges, where the workbook only reports the institution total
+# and there is no existing per-branch profile to preserve, so we deliberately
+# write that official total as a single clearly-labelled intake row. Maps the
+# baseline college name -> the workbook institution name (exact).
+AGG_LABEL = "All UG Engineering (institution total)"
+AGG_APPLY = {
+    "Nirma University": "Nirma University",
+    "Dr. Vishwanath Karad MIT World Peace University": "Dr. Vishwanath Karad MIT World Peace University",
+    "Dhirubhai Ambani Institute of Information and Communication Technology":
+        "Dhirubhai Ambani Institute of Information and Communication Technology",
+    "Army Institute of Technology": "Army Institute of Technology",
+    "MIT Art, Design and Technology University, Pune": "MIT Art, Design and Technology University, Pune",
+}
+
+def pseudo_totals():
+    """institution name -> official total UG-engineering intake (the PSEUDO row)."""
+    rows = json.load(open(SRCJSON, encoding="utf-8"))
+    tot = {}
+    for r in rows:
+        if (r["branch"] or "").strip() == PSEUDO:
+            try:
+                tot[r["inst"]] = tot.get(r["inst"], 0) + int(float(r["intake"] or 0))
+            except (ValueError, TypeError):
+                pass
+    return tot
 
 def west_institutions():
     rows = json.load(open(SRCJSON, encoding="utf-8"))
@@ -137,6 +162,29 @@ for idx, c in cols:
         continue
     programs, batch = build_fields(e["agg"])
     matches.append((round(sc, 2), idx, c, e, programs, batch))
+
+# aggregate pass: the named colleges whose only workbook data is the institution
+# total. Applied explicitly (not fuzzy) since we have the exact name mapping.
+AGG_N = {norm(k) for k in AGG_APPLY}
+for n in AGG_N:
+    if base_norms.count(n) != 1:
+        print(f"!! AGG_APPLY name resolves to {base_norms.count(n)} baseline colleges: {n}")
+        sys.exit(1)
+totals = pseudo_totals()
+already = {norm(c["name"]) for _, _, c, _, _, _ in matches}
+for idx, c in cols:
+    nn = norm(c["name"])
+    if nn not in AGG_N or nn in already:
+        continue
+    inst_name = AGG_APPLY[next(k for k in AGG_APPLY if norm(k) == nn)]
+    seats = totals.get(inst_name)
+    if not seats:
+        print(f"!! AGG_APPLY: no institution total for {inst_name!r}")
+        sys.exit(1)
+    programs = [[AGG_LABEL, "UG"]]
+    batch = [[AGG_LABEL, seats]]
+    e = {"name": inst_name, "dist": "(institution total)", "nirf": "", "agg": {0: seats}}
+    matches.append((1.00, idx, c, e, programs, batch))
 
 # collision safety net: two colleges resolving to one institution -> keep best
 by_inst = {}

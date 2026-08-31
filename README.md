@@ -128,9 +128,13 @@ college's breakdown states which one it is.
   batch table (the newer, verified source wins) while leaving every other
   profile field intact. Matches are hand-reviewed the same way (BLOCK a wrong
   campus — e.g. NMIMS Mumbai vs its Dhule campus — ALLOW a correct match the
-  score just missed, and a collision guard), and institutions the workbook only
-  reports as a single lumped total (no per-branch split) are skipped rather than
-  flattening a real breakdown.
+  score just missed, and a collision guard). Institutions the workbook reports
+  only as a single lumped total (no per-branch split) are handled by an explicit
+  allow-list: five named colleges with no existing profile (Nirma, MIT-WPU,
+  DAIICT, Army Institute of Technology, MIT-ADT) get that official total written
+  as one clearly-labelled *"All UG Engineering (institution total)"* intake row,
+  while any others are left untouched so a real per-branch breakdown is never
+  flattened.
 - **Programme fields** (group, HML, MOU status & type, WZ priority, phase,
   mode) imported from the SPOC workbook are reference-only: shown in the
   breakdown's Profile card and as catalogue tags, preserved across form
