@@ -67,6 +67,7 @@ AGG_APPLY = {
         "Dhirubhai Ambani Institute of Information and Communication Technology",
     "Army Institute of Technology": "Army Institute of Technology",
     "MIT Art, Design and Technology University, Pune": "MIT Art, Design and Technology University, Pune",
+    "Padmashree Dr. D. Y. Patil Vidyapeeth, Mumbai": "Padmashree Dr. D. Y. Patil Vidyapeeth, Mumbai",
 }
 
 def pseudo_totals():
