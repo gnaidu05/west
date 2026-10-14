@@ -52,6 +52,19 @@ college's breakdown states which one it is.
   trade-offs are obvious at a glance. SPOC and TPO contact details are left out of
   the comparison to keep it focused, and the tab is hidden for TPO accounts (they
   only see their own college).
+- **Batch Hiring tracker** — a fifth tab (**5 · Batch Hiring**) tracks the
+  **end-to-end on-campus hiring funnel for a graduating batch** (e.g. 2027),
+  recorded per **college × Business Unit**. Each drive carries the job-opened and
+  deadline dates (with an auto Open / Closing-soon / Closed status), role and
+  offered CTC, and the full funnel — applications → L1 shortlisted → L2
+  shortlisted → interview selects → offers accepted → joined — plus rejects.
+  The tab shows KPI tiles, a six-stage conversion funnel, a BU roll-up (totals
+  across colleges) and the detailed drives table. **Admin and SPOC** can
+  add/edit/delete drives (a SPOC only for colleges they own); everyone else signed
+  in views only, and the tab is **hidden for TPO** accounts (it is internal hiring
+  analytics). Drives sync team-wide via Supabase (`supabase/hiring_drives.sql`),
+  with a per-browser localStorage mirror so it also works UI-only. See
+  *Batch hiring tracker* below for setup.
 - **State chips instead of zone chips** — every college here is West zone,
   so the slicer, the "Avg score by state" chart and the catalogue grouping
   work on Maharashtra / Gujarat / Goa instead.
@@ -162,6 +175,27 @@ To share them live across the team:
 3. In `index.html`, fill in the `SHARED` config near the top of the last
    script block with your project URL and public anon key.
 4. Commit and push to `main` — the site republishes automatically.
+
+## Batch hiring tracker
+
+The **5 · Batch Hiring** tab records the on-campus hiring funnel per
+**college × Business Unit** for a graduating batch. Out of the box it stores
+drives in each person's browser. To share them live and enforce who can edit:
+
+1. Run `supabase/auth_and_approvals.sql` first (it creates `profiles` and the
+   `is_admin()` helper this depends on), then `supabase/hiring_drives.sql` —
+   which creates the `hiring_drives_west` table with row-level security:
+   **admin + SPOC read**, **admin writes anything**, **a SPOC writes only drives
+   for colleges they own** (the row's `spoc` must match their `profiles.scope`),
+   and **TPOs have no access**.
+2. With `SHARED` filled in and `AUTH.mode = "supabase"`, the tab loads and saves
+   drives through that table using each signed-in user's token, so RLS enforces
+   the rules. Without Supabase it runs UI-only from localStorage.
+
+Each drive stores the batch year, college, BU, role, offered CTC, job-opened and
+deadline dates, and the funnel counts (applications, L1, L2, selects, rejects,
+offers accepted, joined). The tab derives the status, conversion rates, BU
+roll-ups and the six-stage funnel automatically.
 
 ## Sign-in, roles & change approval
 

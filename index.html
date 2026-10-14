@@ -477,6 +477,60 @@
   table.cmp-table td.cmp-best.cmp-val:not(.cmp-barcell)::after { content: " ★"; font-size: 10px; }
   .cmp-best .cmp-bar i { background: var(--chip-p2-fg); }
   .cmp-best .cmp-barnum { color: var(--chip-p2-fg); font-weight: 800; }
+  /* ---- batch hiring tracker ---- */
+  .hire-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 12px; }
+  .hire-toolbar .control { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-secondary); }
+  .hire-toolbar select, .hire-toolbar input[type="search"] { padding: 6px 9px; font-size: 13px;
+    border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface-1); color: var(--text-primary); }
+  .hire-toolbar input[type="search"] { min-width: 180px; }
+  .hire-meta { font-size: 12px; color: var(--text-muted); }
+  .hire-toolbar #hAddBtn { margin-left: auto; }
+  .kpis.hire-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .hire-kpis .kpi { background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px; padding: 11px 13px; box-shadow: var(--shadow); }
+  .hire-kpis .lab { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); font-weight: 600; }
+  .hire-kpis .val { font-size: 22px; font-weight: 800; line-height: 1.1; margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .hire-kpis .val.good { color: var(--cat-p2); }
+  .hire-kpis .sub { font-size: 10.5px; color: var(--text-muted); margin-top: 2px; }
+  /* funnel */
+  .funnel { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
+  .fstage { display: grid; grid-template-columns: 180px 1fr 150px; align-items: center; gap: 12px; }
+  .fstage .fname { font-size: 12.5px; font-weight: 600; }
+  .fbar { height: 24px; background: var(--bar-track); border-radius: 5px; overflow: hidden; position: relative; }
+  .fbar i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), #5b9ae6); border-radius: 5px; }
+  .fbar.sel i { background: linear-gradient(90deg, var(--cat-p2), #49c89a); }
+  .fbar span { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #fff; font-weight: 700;
+    font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,0,.28); }
+  .fconv { font-size: 11.5px; color: var(--text-muted); text-align: right; }
+  .fconv b { color: var(--text-secondary); }
+  .hire-legend, .hire-empty { font-size: 11.5px; color: var(--text-muted); margin-top: 8px; }
+  .hire-empty { padding: 16px 4px; text-align: center; font-size: 13px; }
+  table.hire-table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 12.5px; min-width: 720px; }
+  table.hire-table th, table.hire-table td { padding: 7px 9px; border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border); text-align: center; white-space: nowrap; }
+  table.hire-table th:first-child, table.hire-table td:first-child { border-left: 1px solid var(--border); text-align: left; }
+  table.hire-table thead th { background: var(--surface-0); border-top: 1px solid var(--border); font-size: 10.5px;
+    text-transform: uppercase; letter-spacing: .03em; color: var(--text-secondary); font-weight: 700; }
+  table.hire-table tbody tr.drow { cursor: pointer; }
+  table.hire-table tbody tr:hover { background: var(--accent-soft); }
+  table.hire-table td.lft { text-align: left; }
+  table.hire-table td.num { font-variant-numeric: tabular-nums; font-weight: 600; }
+  table.hire-table td.sel { color: var(--cat-p2); }
+  table.hire-table td.rej { color: var(--chip-na-fg); }
+  table.hire-table tfoot td, table.hire-table tr.total td { background: var(--surface-0); font-weight: 800;
+    border-top: 2px solid var(--border-strong); }
+  .hstatus { display: inline-block; padding: 1px 9px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+  .hstatus.open { background: var(--chip-p2-bg); color: var(--chip-p2-fg); }
+  .hstatus.closed { background: var(--chip-na-bg); color: var(--chip-na-fg); }
+  .hstatus.soon { background: var(--chip-p1-bg); color: var(--chip-p1-fg); }
+  /* add/edit drive form */
+  .drive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 14px; }
+  .drive-grid .dfield { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-secondary); }
+  .drive-grid .dfield input { padding: 7px 9px; font-size: 13px; border: 1px solid var(--border-strong);
+    border-radius: 6px; background: var(--surface-1); color: var(--text-primary); }
+  .drive-actions { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+  .drive-actions .form-error { margin-right: auto; color: #b3261e; font-size: 12.5px; }
+  @media (prefers-color-scheme: dark) { .drive-actions .form-error { color: #e66767; } }
+  @media (max-width: 720px) { .drive-grid { grid-template-columns: repeat(2, 1fr); } }
   /* ---- auth: login gate, user chip, approvals ---- */
   #loginGate { position: fixed; inset: 0; z-index: 100; display: none;
     align-items: center; justify-content: center; padding: 5vh 16px;
@@ -538,6 +592,7 @@
     <button type="button" class="tab active" data-view="dash">2 · Dashboard</button>
     <button type="button" class="tab" data-view="cat">3 · Catalogue</button>
     <button type="button" class="tab" data-view="cmp" id="cmpTab">4 · Compare</button>
+    <button type="button" class="tab" data-view="hire" id="hireTab">5 · Batch Hiring</button>
   </nav>
   <div class="auth-chip" id="authChip" style="margin-left:auto" hidden>
     <button type="button" class="pill-btn" id="myReqBtn" hidden>My requests<span class="n" id="myReqN" hidden></span></button>
@@ -761,6 +816,66 @@
     <div class="visual" id="cmpResultCard">
       <div id="cmpBody"></div>
     </div>
+  </div>
+
+  <div id="hireView" class="vgroup" hidden>
+    <div class="visual">
+      <p class="vtitle">Batch hiring tracker <span class="vhint">· end-to-end on-campus hiring funnel for a graduating batch, by college &amp; Business Unit</span></p>
+      <div class="hire-toolbar">
+        <label class="control">Batch <select id="hBatch"></select></label>
+        <label class="control">BU <select id="hBU"></select></label>
+        <label class="control">College <select id="hCollege"></select></label>
+        <input type="search" id="hSearch" placeholder="Search college / BU / role…" aria-label="Search drives">
+        <span class="hire-meta" id="hMeta"></span>
+        <button type="button" class="btn primary" id="hAddBtn" hidden>+ Add / update drive</button>
+      </div>
+    </div>
+    <div class="kpis hire-kpis" id="hKpis"></div>
+    <div class="visual">
+      <p class="vtitle">Conversion funnel <span class="vhint" id="hFunnelHint"></span></p>
+      <div class="funnel" id="hFunnel"></div>
+      <div class="hire-legend">Each stage shows the headcount and step conversion from the previous stage; offer rate is selects ÷ applications, join rate is joined ÷ selects.</div>
+    </div>
+    <div class="visual">
+      <p class="vtitle">By Business Unit <span class="vhint">· totals rolled up across colleges for the selected batch</span></p>
+      <div class="scroll"><table class="hire-table" id="hBuTable"></table></div>
+    </div>
+    <div class="visual">
+      <div class="tb-head">
+        <p class="vtitle">Drives <span class="vhint">· one row per college × BU · click a row to edit</span></p>
+      </div>
+      <div class="scroll"><table class="hire-table" id="hDrivesTable"></table></div>
+      <div class="hire-empty" id="hEmpty" hidden>No drives recorded for this batch yet.</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="driveOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="driveTitle">
+    <h2 id="driveTitle">Add a hiring drive</h2>
+    <p class="hint">Record one college × Business Unit drive for a batch. Counts roll up into the funnel and BU totals automatically.</p>
+    <form id="driveForm" class="drive-grid" novalidate>
+      <label class="dfield"><span>Batch (grad year)</span><input id="d_batch" type="number" min="2020" max="2035" placeholder="2027" required></label>
+      <label class="dfield"><span>College</span><input id="d_college" list="d_collegeList" placeholder="Start typing…" required><datalist id="d_collegeList"></datalist></label>
+      <label class="dfield"><span>Business Unit</span><input id="d_bu" list="d_buList" placeholder="e.g. Insights &amp; Data" required><datalist id="d_buList"></datalist></label>
+      <label class="dfield"><span>Role / designation</span><input id="d_role" placeholder="e.g. Analyst"></label>
+      <label class="dfield"><span>Offered CTC (LPA)</span><input id="d_ctc" type="number" step="0.1" min="0" placeholder="e.g. 7.5"></label>
+      <label class="dfield"><span>Job opened</span><input id="d_opened" type="date"></label>
+      <label class="dfield"><span>Deadline</span><input id="d_deadline" type="date"></label>
+      <label class="dfield"><span>Applications received</span><input id="d_apps" type="number" min="0" placeholder="0"></label>
+      <label class="dfield"><span>L1 assessment shortlisted</span><input id="d_l1" type="number" min="0" placeholder="0"></label>
+      <label class="dfield"><span>L2 assessment shortlisted</span><input id="d_l2" type="number" min="0" placeholder="0"></label>
+      <label class="dfield"><span>Interview selects</span><input id="d_sel" type="number" min="0" placeholder="0"></label>
+      <label class="dfield"><span>Interview rejects</span><input id="d_rej" type="number" min="0" placeholder="0"></label>
+      <label class="dfield"><span>Offers accepted</span><input id="d_acc" type="number" min="0" placeholder="0"></label>
+      <label class="dfield"><span>Joined</span><input id="d_join" type="number" min="0" placeholder="0"></label>
+      <div class="drive-actions">
+        <div class="form-error" id="d_err"></div>
+        <button type="button" class="btn danger" id="driveDelete" hidden>Delete drive</button>
+        <button type="button" class="btn" id="driveCancel">Cancel</button>
+        <button type="submit" class="btn primary" id="driveSave">Save drive</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -2144,19 +2259,24 @@ function render() {
     b.classList.toggle("on", zoneSet.has(b.dataset.zone));
     b.setAttribute("aria-pressed", zoneSet.has(b.dataset.zone));
   }
-  // TPOs can't use Compare (single-college scope) — hide the tab, send them to the dashboard
+  // TPOs can't use Compare (single-college scope) or Batch Hiring (internal
+  // hiring analytics) — hide those tabs and send them to the dashboard
   const isTpo = typeof role === "function" && role() === "tpo";
   const cmpTabBtn = document.getElementById("cmpTab");
   if (cmpTabBtn) cmpTabBtn.hidden = isTpo;
-  if (activeView === "cmp" && isTpo) activeView = "dash";
+  const hireTabBtn = document.getElementById("hireTab");
+  if (hireTabBtn) hireTabBtn.hidden = isTpo;
+  if ((activeView === "cmp" || activeView === "hire") && isTpo) activeView = "dash";
   document.getElementById("addView").hidden = activeView !== "add";
   document.getElementById("dashView").hidden = activeView !== "dash";
   document.getElementById("catView").hidden = activeView !== "cat";
   document.getElementById("cmpView").hidden = activeView !== "cmp";
+  document.getElementById("hireView").hidden = activeView !== "hire";
   for (const t of document.querySelectorAll(".tab")) t.classList.toggle("active", t.dataset.view === activeView);
   if (activeView === "add") { renderAddList(dashSort(computeCurrent(userColleges)).filter(inScope)); return; }
   if (activeView === "cat") { renderCatalogue(view); return; }
   if (activeView === "cmp") { renderCompare(); return; }
+  if (activeView === "hire") { renderHiring(); return; }
   els.kpis.innerHTML = kpiHTML(view);
   els.zoneChart.innerHTML = zoneChartHTML(forZoneChart);
   els.cgChart.innerHTML = spocChartHTML(forSpocChart);
@@ -2398,6 +2518,275 @@ cmpEls.chips.addEventListener("click", e => {
 cmpEls.clear.addEventListener("click", () => { cmpSel = []; cmpEls.search.value = ""; renderCompare(); closeCmpDrop(); });
 document.addEventListener("click", e => {
   if (!e.target.closest(".cmp-search-wrap")) closeCmpDrop();
+});
+
+/* ---- Batch hiring tracker ---------------------------------------------
+   Each record is one college x Business Unit hiring drive for a graduating
+   batch, carrying the full funnel (applications -> L1 -> L2 -> selects ->
+   offers accepted -> joined) plus role/CTC and open/deadline dates. Admin and
+   SPOC can add/edit/delete; everyone signed in can view. Stored in Supabase
+   (table hiring_drives_west, see supabase/hiring_drives.sql) when configured,
+   with a localStorage mirror so it also works offline / UI-only. */
+const HIRING_KEY = "westCollegeDashboard.hiring.v1";
+const HIRING_TABLE = "hiring_drives_west";
+const DEFAULT_BUS = ["Cloud & Infrastructure", "Insights & Data",
+  "Custom Software Engineering", "Cybersecurity", "Enterprise Transformation"];
+const FUNNEL_FIELDS = ["apps", "l1", "l2", "sel", "acc", "joined"];
+// local element getter (defined here so the module doesn't depend on $ / lsGet
+// which are declared further down the file)
+const H = id => document.getElementById(id);
+let HIRING = (() => { try { return JSON.parse(localStorage.getItem(HIRING_KEY)) || []; } catch (e) { return []; } })();
+let hireError = null;
+const saveHiringLocal = () => { try { localStorage.setItem(HIRING_KEY, JSON.stringify(HIRING)); } catch (e) {} };
+const hRole = () => (typeof role === "function" ? role() : null);
+const canEditHiring = () => hRole() === "admin" || hRole() === "spoc";
+const myScope = () => { const u = (typeof currentUser === "function" && currentUser()) || {}; return u.scope || u.name || ""; };
+// which SPOC owns a college (from the baseline + added, with edits applied)
+function collegeOwner(name) {
+  const u = userColleges.find(c => c.name === name);
+  if (u) return u.spoc || "";
+  const be = typeof baseEdits !== "undefined" && baseEdits[name];
+  if (be) return be.spoc || "";
+  const c = COLLEGES.find(x => x.name === name);
+  return c ? (c.spoc || "") : "";
+}
+const ownedByMe = name => hRole() === "admin" || (hRole() === "spoc" && collegeOwner(name) === myScope());
+const canEditDrive = d => hRole() === "admin" || (hRole() === "spoc" && ownedByMe(d.college));
+// colleges a SPOC may file drives for (admin: all)
+function editableColleges() {
+  if (hRole() === "admin") return allCollegeNames();
+  if (hRole() === "spoc") return allCollegeNames().filter(n => collegeOwner(n) === myScope());
+  return [];
+}
+
+const hireEls = {
+  batch: H("hBatch"), bu: H("hBU"), college: H("hCollege"), search: H("hSearch"),
+  meta: H("hMeta"), add: H("hAddBtn"), kpis: H("hKpis"), funnel: H("hFunnel"),
+  funnelHint: H("hFunnelHint"), buTable: H("hBuTable"), drivesTable: H("hDrivesTable"), empty: H("hEmpty"),
+};
+const hFmt = n => Number(n || 0).toLocaleString("en-IN");
+const hPct = (a, b) => b > 0 ? (a / b * 100).toFixed(1) + "%" : "—";
+const hDate = s => s ? new Date(s + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—";
+function hStatus(d) {
+  if (!d.deadline) return ["open", "Open"];
+  const days = (new Date(d.deadline + "T00:00:00") - new Date()) / 864e5;
+  if (days < 0) return ["closed", "Closed"];
+  if (days <= 10) return ["soon", "Closing soon"];
+  return ["open", "Open"];
+}
+
+/* ---- Supabase I/O (mirror of sbFetch, against the hiring table) ---- */
+async function hireReq(query, opts = {}) {
+  const call = () => fetch(`${SHARED.url}/rest/v1/${HIRING_TABLE}${query}`, {
+    ...opts, headers: { apikey: SHARED.anonKey, Authorization: `Bearer ${sbAuthToken()}`,
+      "Content-Type": "application/json", Prefer: "return=representation", ...(opts.headers || {}) } });
+  let res = await call();
+  if (res.status === 401 && typeof sbRefresh === "function" && await sbRefresh()) res = await call();
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.status === 204 ? null : res.json();
+}
+const hireShared = () => sharedOn() && AUTH.mode === "supabase" && !!(currentUser());
+async function loadHiring() {
+  if (!hireShared()) { HIRING = lsGet(HIRING_KEY, []); return; }
+  try { HIRING = await hireReq("?select=*&order=batch.desc,college.asc"); hireError = null; saveHiringLocal(); }
+  catch (e) { hireError = e.message; HIRING = lsGet(HIRING_KEY, []); }
+}
+async function pushDrive(d) {
+  if (hireShared()) await hireReq("?on_conflict=id", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify(d) });
+}
+async function removeDrive(id) {
+  if (hireShared()) await hireReq(`?id=eq.${encodeURIComponent(id)}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
+}
+
+/* ---- options / filters ---- */
+function allBUs() { return [...new Set([...DEFAULT_BUS, ...HIRING.map(d => d.bu).filter(Boolean)])]; }
+function allCollegeNames() {
+  return [...new Set([...COLLEGES.map(c => c.name), ...userColleges.map(c => c.name)])].sort();
+}
+function fillSelect(sel, items, allLabel) {
+  const cur = sel.value;
+  sel.innerHTML = `<option value="">${allLabel}</option>` + items.map(v => `<option>${esc(v)}</option>`).join("");
+  if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
+}
+function hireBatches() {
+  const ys = [...new Set(HIRING.map(d => String(d.batch)).filter(Boolean))].sort((a, b) => b - a);
+  return ys;
+}
+
+function hFiltered() {
+  const batch = hireEls.batch.value, bu = hireEls.bu.value, col = hireEls.college.value;
+  const q = hireEls.search.value.trim().toLowerCase();
+  return HIRING.filter(d => String(d.batch) === batch)
+    .filter(d => !bu || d.bu === bu)
+    .filter(d => !col || d.college === col)
+    .filter(d => !q || [d.college, d.bu, d.role].some(v => (v || "").toLowerCase().includes(q)));
+}
+const hSum = (list, k) => list.reduce((s, d) => s + (Number(d[k]) || 0), 0);
+
+function renderHiring() {
+  hireEls.add.hidden = !canEditHiring();
+  // batch selector
+  const batches = hireBatches();
+  const curB = hireEls.batch.value;
+  hireEls.batch.innerHTML = (batches.length ? batches : [String(new Date().getFullYear() + 1)])
+    .map(y => `<option>${esc(y)}</option>`).join("");
+  if (batches.includes(curB)) hireEls.batch.value = curB;
+  const batch = hireEls.batch.value;
+  const inBatch = HIRING.filter(d => String(d.batch) === batch);
+  fillSelect(hireEls.bu, [...new Set(inBatch.map(d => d.bu).filter(Boolean))].sort(), "All BUs");
+  fillSelect(hireEls.college, [...new Set(inBatch.map(d => d.college).filter(Boolean))].sort(), "All colleges");
+
+  const list = hFiltered();
+  const openN = list.filter(d => hStatus(d)[0] !== "closed").length;
+  hireEls.meta.textContent = `${list.length} drive${list.length === 1 ? "" : "s"}${hireError ? " · ⚠ live sync unavailable, showing local copy" : ""}`;
+
+  // KPIs
+  const tot = Object.fromEntries(FUNNEL_FIELDS.map(k => [k, hSum(list, k)]));
+  const rej = hSum(list, "rej");
+  const kpis = [
+    ["Applications", hFmt(tot.apps), `${list.length} drives`],
+    ["L1 shortlisted", hFmt(tot.l1), hPct(tot.l1, tot.apps) + " of apps"],
+    ["L2 shortlisted", hFmt(tot.l2), hPct(tot.l2, tot.l1) + " of L1"],
+    ["Interview selects", hFmt(tot.sel), hPct(tot.sel, tot.l2) + " of L2", "good"],
+    ["Offers accepted", hFmt(tot.acc), hPct(tot.acc, tot.sel) + " of selects"],
+    ["Joined", hFmt(tot.joined), hPct(tot.joined, tot.acc) + " of accepted", "good"],
+    ["Offer rate", hPct(tot.sel, tot.apps), "selects ÷ apps"],
+    ["Open drives", `${openN} / ${list.length}`, "by deadline"],
+  ];
+  hireEls.kpis.innerHTML = kpis.map(k =>
+    `<div class="kpi"><div class="lab">${k[0]}</div><div class="val ${k[3] || ""}">${k[1]}</div><div class="sub">${k[2]}</div></div>`).join("");
+
+  // funnel
+  hireEls.funnelHint.textContent = `· batch ${batch}${hireEls.bu.value ? " · " + hireEls.bu.value : ""}${hireEls.college.value ? " · " + hireEls.college.value : ""}`;
+  const stages = [["Applications received", tot.apps, null, false], ["L1 assessment shortlisted", tot.l1, tot.apps, false],
+    ["L2 assessment shortlisted", tot.l2, tot.l1, false], ["Interview selects", tot.sel, tot.l2, true],
+    ["Offers accepted", tot.acc, tot.sel, true], ["Joined", tot.joined, tot.acc, true]];
+  const top = tot.apps || 1;
+  hireEls.funnel.innerHTML = stages.map(([name, v, prev, sel]) => {
+    const w = Math.max(v / top * 100, v > 0 ? 3 : 0);
+    const conv = prev === null ? "100% — top of funnel" : `<b>${hPct(v, prev)}</b> of previous`;
+    return `<div class="fstage"><div class="fname">${name}</div>
+      <div class="fbar ${sel ? "sel" : ""}"><i style="width:${w}%"></i><span>${hFmt(v)}</span></div>
+      <div class="fconv">${conv}</div></div>`;
+  }).join("");
+
+  // BU roll-up (ignores the BU dropdown so you always see the full comparison;
+  // respects the college + search filters)
+  const forBu = inBatch
+    .filter(d => !hireEls.college.value || d.college === hireEls.college.value)
+    .filter(d => { const q = hireEls.search.value.trim().toLowerCase(); return !q || [d.college, d.bu, d.role].some(v => (v || "").toLowerCase().includes(q)); });
+  const buGroups = {};
+  for (const d of forBu) (buGroups[d.bu || "—"] = buGroups[d.bu || "—"] || []).push(d);
+  const buHead = `<thead><tr><th>Business Unit</th><th>Drives</th><th>Applications</th><th>L1</th><th>L2</th>
+    <th>Selects</th><th>Rejects</th><th>Accepted</th><th>Joined</th><th>Offer rate</th></tr></thead>`;
+  const buRows = Object.entries(buGroups).sort((a, b) => hSum(b[1], "apps") - hSum(a[1], "apps")).map(([bu, ds]) =>
+    `<tr><td class="lft">${esc(bu)}</td><td class="num">${ds.length}</td>
+     <td class="num">${hFmt(hSum(ds, "apps"))}</td><td class="num">${hFmt(hSum(ds, "l1"))}</td><td class="num">${hFmt(hSum(ds, "l2"))}</td>
+     <td class="num sel">${hFmt(hSum(ds, "sel"))}</td><td class="num rej">${hFmt(hSum(ds, "rej"))}</td>
+     <td class="num">${hFmt(hSum(ds, "acc"))}</td><td class="num">${hFmt(hSum(ds, "joined"))}</td>
+     <td class="num">${hPct(hSum(ds, "sel"), hSum(ds, "apps"))}</td></tr>`).join("");
+  const buFoot = forBu.length ? `<tr class="total"><td class="lft">All BUs</td><td class="num">${forBu.length}</td>
+     <td class="num">${hFmt(hSum(forBu, "apps"))}</td><td class="num">${hFmt(hSum(forBu, "l1"))}</td><td class="num">${hFmt(hSum(forBu, "l2"))}</td>
+     <td class="num">${hFmt(hSum(forBu, "sel"))}</td><td class="num">${hFmt(hSum(forBu, "rej"))}</td>
+     <td class="num">${hFmt(hSum(forBu, "acc"))}</td><td class="num">${hFmt(hSum(forBu, "joined"))}</td>
+     <td class="num">${hPct(hSum(forBu, "sel"), hSum(forBu, "apps"))}</td></tr>` : "";
+  hireEls.buTable.innerHTML = buHead + `<tbody>${buRows || `<tr><td colspan="10" style="color:var(--text-muted)">No data for this batch.</td></tr>`}</tbody>` + (buFoot ? `<tfoot>${buFoot}</tfoot>` : "");
+
+  // drives table (a SPOC may edit only drives for colleges they own)
+  const drHead = `<thead><tr><th>College</th><th>BU</th><th>Role</th><th>CTC</th><th>Status</th><th>Opened</th><th>Deadline</th>
+    <th>Apps</th><th>L1</th><th>L2</th><th>Selects</th><th>Rejects</th><th>Accepted</th><th>Joined</th><th>Offer%</th></tr></thead>`;
+  const drRows = list.slice().sort((a, b) => (a.college || "").localeCompare(b.college || "") || (a.bu || "").localeCompare(b.bu || "")).map(d => {
+    const [cls, lab] = hStatus(d);
+    const edit = canEditDrive(d);
+    return `<tr class="${edit ? "drow" : ""}" ${edit ? `data-drive="${esc(d.id)}"` : ""}>
+      <td class="lft">${esc(d.college || "—")}</td><td class="lft">${esc(d.bu || "—")}</td><td class="lft">${esc(d.role || "—")}</td>
+      <td class="num">${d.ctc ? "₹" + d.ctc + "L" : "—"}</td><td><span class="hstatus ${cls}">${lab}</span></td>
+      <td>${hDate(d.opened)}</td><td>${hDate(d.deadline)}</td>
+      <td class="num">${hFmt(d.apps)}</td><td class="num">${hFmt(d.l1)}</td><td class="num">${hFmt(d.l2)}</td>
+      <td class="num sel">${hFmt(d.sel)}</td><td class="num rej">${hFmt(d.rej)}</td>
+      <td class="num">${hFmt(d.acc)}</td><td class="num">${hFmt(d.joined)}</td><td class="num">${hPct(d.sel, d.apps)}</td></tr>`;
+  }).join("");
+  hireEls.drivesTable.innerHTML = drHead + `<tbody>${drRows}</tbody>`;
+  hireEls.empty.hidden = list.length > 0;
+  hireEls.drivesTable.hidden = list.length === 0;
+}
+
+/* ---- add / edit drive modal ---- */
+let driveEditId = null;
+function fillDriveDatalists() {
+  H("d_collegeList").innerHTML = editableColleges().map(n => `<option value="${esc(n)}">`).join("");
+  H("d_buList").innerHTML = allBUs().map(n => `<option value="${esc(n)}">`).join("");
+}
+function openDrive(id) {
+  if (!canEditHiring()) return;
+  const d = id ? HIRING.find(x => x.id === id) : null;
+  if (d && !canEditDrive(d)) return;   // a SPOC can't edit another SPOC's college
+  driveEditId = id || null;
+  fillDriveDatalists();
+  H("driveTitle").textContent = d ? "Edit hiring drive" : "Add a hiring drive";
+  H("driveDelete").hidden = !d;
+  H("d_err").textContent = "";
+  const g = (k, def = "") => d ? (d[k] ?? "") : def;
+  H("d_batch").value = d ? d.batch : (hireEls.batch.value || "");
+  H("d_college").value = g("college"); H("d_bu").value = g("bu"); H("d_role").value = g("role");
+  H("d_ctc").value = g("ctc"); H("d_opened").value = g("opened"); H("d_deadline").value = g("deadline");
+  H("d_apps").value = g("apps"); H("d_l1").value = g("l1"); H("d_l2").value = g("l2");
+  H("d_sel").value = g("sel"); H("d_rej").value = g("rej"); H("d_acc").value = g("acc"); H("d_join").value = g("joined");
+  openModal("driveOverlay");
+}
+H("hAddBtn").addEventListener("click", () => openDrive(null));
+H("driveCancel").addEventListener("click", () => closeModal("driveOverlay"));
+hireEls.drivesTable.addEventListener("click", e => {
+  const tr = e.target.closest("tr[data-drive]");
+  if (tr) openDrive(tr.dataset.drive);
+});
+[hireEls.batch, hireEls.bu, hireEls.college].forEach(s => s.addEventListener("change", renderHiring));
+hireEls.search.addEventListener("input", renderHiring);
+
+H("driveForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const num = id => { const v = parseInt(H(id).value, 10); return isNaN(v) ? 0 : Math.max(0, v); };
+  const batch = parseInt(H("d_batch").value, 10);
+  const college = H("d_college").value.trim(), bu = H("d_bu").value.trim();
+  if (!batch) { H("d_err").textContent = "Enter a batch year."; return; }
+  if (!college) { H("d_err").textContent = "Enter a college."; return; }
+  if (!bu) { H("d_err").textContent = "Enter a Business Unit."; return; }
+  // a SPOC may only file drives for colleges they own
+  if (hRole() === "spoc" && !ownedByMe(college)) {
+    H("d_err").textContent = "You can only record drives for colleges you own."; return;
+  }
+  const ctcRaw = parseFloat(H("d_ctc").value);
+  const d = {
+    id: driveEditId || (crypto.randomUUID ? crypto.randomUUID() : "d" + Date.now() + Math.random().toString(36).slice(2, 7)),
+    batch, college, bu, role: H("d_role").value.trim() || null,
+    ctc: isNaN(ctcRaw) ? null : ctcRaw,
+    opened: H("d_opened").value || null, deadline: H("d_deadline").value || null,
+    apps: num("d_apps"), l1: num("d_l1"), l2: num("d_l2"), sel: num("d_sel"),
+    rej: num("d_rej"), acc: num("d_acc"), joined: num("d_join"),
+    // the owning SPOC (from the college) — RLS ties a SPOC's writes to this
+    spoc: collegeOwner(college) || null,
+  };
+  H("driveSave").disabled = true; H("driveSave").textContent = "Saving…";
+  try {
+    await pushDrive(d);
+    const i = HIRING.findIndex(x => x.id === d.id);
+    if (i >= 0) HIRING[i] = d; else HIRING.push(d);
+    saveHiringLocal();
+    closeModal("driveOverlay");
+    hireEls.batch.value = String(batch);
+    renderHiring();
+  } catch (err) { H("d_err").textContent = "Couldn't save: " + err.message; }
+  H("driveSave").disabled = false; H("driveSave").textContent = "Save drive";
+});
+H("driveDelete").addEventListener("click", async () => {
+  if (!driveEditId || !confirm("Delete this drive? This can't be undone.")) return;
+  H("driveDelete").disabled = true;
+  try {
+    await removeDrive(driveEditId);
+    HIRING = HIRING.filter(x => x.id !== driveEditId);
+    saveHiringLocal(); closeModal("driveOverlay"); renderHiring();
+  } catch (err) { H("d_err").textContent = "Couldn't delete: " + err.message; }
+  H("driveDelete").disabled = false;
 });
 
 els.clearBtn.addEventListener("click", () => {
@@ -3130,7 +3519,7 @@ $("loginForm").addEventListener("submit", async e => {
     if (r.error) { $("lg_err").textContent = r.error === "network" ? "Network error — check your connection." : "Invalid email or password."; return; }
     session = r.session; lsSet(A_SESSION, session);
     $("lg_err").textContent = ""; showGate(false); renderAuthChip();
-    try { userColleges = []; baseEdits = {}; await loadShared(); await loadPending(); } catch (e2) {}
+    try { userColleges = []; baseEdits = {}; await loadShared(); await loadPending(); await loadHiring(); } catch (e2) {}
     render(); return;
   }
   if (doLogin($("lg_user").value, $("lg_pass").value)) {
@@ -3306,7 +3695,7 @@ populateFilters();
   // once we have a signed-in session (otherwise wait for the login handler)
   if (sharedOn() && (AUTH.mode !== "supabase" || loggedIn)) {
     userColleges = []; baseEdits = {};
-    try { await loadShared(); await loadPending(); } catch (e) {}
+    try { await loadShared(); await loadPending(); await loadHiring(); } catch (e) {}
   }
   if (AUTH.enabled && !loggedIn) showGate(true);
   else { showGate(false); renderAuthChip(); }
