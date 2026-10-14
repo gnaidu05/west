@@ -2583,7 +2583,10 @@ async function hireReq(query, opts = {}) {
   let res = await call();
   if (res.status === 401 && typeof sbRefresh === "function" && await sbRefresh()) res = await call();
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.status === 204 ? null : res.json();
+  // writes use Prefer: return=minimal and come back with an empty body, so
+  // parse only when there's actually something to parse
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 }
 const hireShared = () => sharedOn() && AUTH.mode === "supabase" && !!(currentUser());
 async function loadHiring() {
