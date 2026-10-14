@@ -2597,6 +2597,13 @@ async function pushDrive(d) {
 async function removeDrive(id) {
   if (hireShared()) await hireReq(`?id=eq.${encodeURIComponent(id)}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
 }
+// friendlier message for the common setup slips
+function hireErrMsg(err, verb) {
+  const m = String(err && err.message || err);
+  if (/404/.test(m)) return `Couldn't ${verb}: the hiring table isn't set up yet — an admin needs to run supabase/hiring_drives.sql in Supabase.`;
+  if (/401|403/.test(m)) return `Couldn't ${verb}: you don't have permission (only Admin and the owning SPOC can edit). If you just signed in, try again.`;
+  return `Couldn't ${verb}: ${m}`;
+}
 
 /* ---- options / filters ---- */
 function allBUs() { return [...new Set([...DEFAULT_BUS, ...HIRING.map(d => d.bu).filter(Boolean)])]; }
@@ -2638,7 +2645,10 @@ function renderHiring() {
 
   const list = hFiltered();
   const openN = list.filter(d => hStatus(d)[0] !== "closed").length;
-  hireEls.meta.textContent = `${list.length} drive${list.length === 1 ? "" : "s"}${hireError ? " · ⚠ live sync unavailable, showing local copy" : ""}`;
+  const syncNote = hireError ? (/404/.test(hireError)
+    ? " · ⚠ not set up — an admin needs to run supabase/hiring_drives.sql"
+    : " · ⚠ live sync unavailable, showing local copy") : "";
+  hireEls.meta.textContent = `${list.length} drive${list.length === 1 ? "" : "s"}${syncNote}`;
 
   // KPIs
   const tot = Object.fromEntries(FUNNEL_FIELDS.map(k => [k, hSum(list, k)]));
@@ -2775,7 +2785,7 @@ H("driveForm").addEventListener("submit", async e => {
     closeModal("driveOverlay");
     hireEls.batch.value = String(batch);
     renderHiring();
-  } catch (err) { H("d_err").textContent = "Couldn't save: " + err.message; }
+  } catch (err) { H("d_err").textContent = hireErrMsg(err, "save"); }
   H("driveSave").disabled = false; H("driveSave").textContent = "Save drive";
 });
 H("driveDelete").addEventListener("click", async () => {
@@ -2785,7 +2795,7 @@ H("driveDelete").addEventListener("click", async () => {
     await removeDrive(driveEditId);
     HIRING = HIRING.filter(x => x.id !== driveEditId);
     saveHiringLocal(); closeModal("driveOverlay"); renderHiring();
-  } catch (err) { H("d_err").textContent = "Couldn't delete: " + err.message; }
+  } catch (err) { H("d_err").textContent = hireErrMsg(err, "delete"); }
   H("driveDelete").disabled = false;
 });
 
